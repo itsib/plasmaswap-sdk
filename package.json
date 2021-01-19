@@ -1,14 +1,14 @@
 {
-  "name": "@plasmafi-sdk/plasmaswap-sdk",
+  "name": "@plasma-fi/sdk",
   "license": "MIT",
-  "version": "0.0.1",
-  "description": "🛠 An SDK for building dapp on PlasmaSwap",
+  "version": "0.0.3",
+  "description": "🛠 An SDK for building dapp on PlasmaSwap.",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
     "dist"
   ],
-  "repository": "https://github.com/plasmadlt/plasmafi-sdk.git",
+  "repository": "https://github.com/itsib/plasmaswap-sdk.git",
   "keywords": [
     "plasmaswap",
     "ethereum",
@@ -19,11 +19,9 @@
     "lint": "tsdx lint src test",
     "build": "tsdx build",
     "start": "tsdx watch",
-    "test": "tsdx test",
-    "prepublishOnly": "tsdx build"
+    "test": "tsdx test"
   },
   "dependencies": {
-    "@plasmafi-sdk/plasmaswap-core": "^1.0.0",
     "big.js": "^5.2.2",
     "decimal.js-light": "^2.5.0",
     "jsbi": "^3.1.1",
@@ -47,14 +45,15 @@
     "@types/big.js": "^4.0.5",
     "@types/jest": "^24.0.25",
     "babel-plugin-transform-jsbi-to-bigint": "^1.3.1",
-    "tsdx": "^0.12.3"
+    "tsdx": "^0.14.1",
+    "version-bump-prompt": "^6.1.0"
   },
   "engines": {
     "node": ">=10"
   },
   "prettier": {
-    "printWidth": 120,
-    "semi": false,
+    "printWidth": 160,
+    "semi": true,
     "singleQuote": true
   }
 }
