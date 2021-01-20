@@ -1,16 +1,5 @@
 import invariant from 'tiny-invariant';
-import {
-  ChainId,
-  LiquidityProvider,
-  Pair,
-  Rounding,
-  Route,
-  Token,
-  TokenAmount,
-  Trade,
-  TradeType,
-  WETH as _WETH,
-} from '../src';
+import { ChainId, LiquidityProvider, Pair, Rounding, Route, Token, TokenAmount, Trade, TradeType, WETH as _WETH } from '../src';
 
 const ADDRESSES = ['0x0000000000000000000000000000000000000001', '0x0000000000000000000000000000000000000002', '0x0000000000000000000000000000000000000003'];
 const CHAIN_ID = ChainId.RINKEBY;
@@ -41,9 +30,21 @@ describe('entities', () => {
       let pairs: Pair[];
       it('Pair', () => {
         pairs = [
-          new Pair(new TokenAmount(tokens[0], decimalize(1, tokens[0].decimals)), new TokenAmount(tokens[1], decimalize(1, tokens[1].decimals)), LiquidityProvider.UNISWAP),
-          new Pair(new TokenAmount(tokens[1], decimalize(1, tokens[1].decimals)), new TokenAmount(tokens[2], decimalize(1, tokens[2].decimals)), LiquidityProvider.UNISWAP),
-          new Pair(new TokenAmount(tokens[2], decimalize(1, tokens[2].decimals)), new TokenAmount(WETH, decimalize(1234, WETH.decimals)), LiquidityProvider.UNISWAP),
+          new Pair(
+            new TokenAmount(tokens[0], decimalize(1, tokens[0].decimals)),
+            new TokenAmount(tokens[1], decimalize(1, tokens[1].decimals)),
+            LiquidityProvider.UNISWAP,
+          ),
+          new Pair(
+            new TokenAmount(tokens[1], decimalize(1, tokens[1].decimals)),
+            new TokenAmount(tokens[2], decimalize(1, tokens[2].decimals)),
+            LiquidityProvider.UNISWAP,
+          ),
+          new Pair(
+            new TokenAmount(tokens[2], decimalize(1, tokens[2].decimals)),
+            new TokenAmount(WETH, decimalize(1234, WETH.decimals)),
+            LiquidityProvider.UNISWAP,
+          ),
         ];
       });
 
@@ -99,11 +100,13 @@ describe('entities', () => {
         let route: Route;
         it('TradeType.EXACT_INPUT', () => {
           route = new Route(
-            [new Pair(
-              new TokenAmount(tokens[1], decimalize(5, tokens[1].decimals)),
-              new TokenAmount(WETH, decimalize(10, WETH.decimals)),
-              LiquidityProvider.UNISWAP,
-            )],
+            [
+              new Pair(
+                new TokenAmount(tokens[1], decimalize(5, tokens[1].decimals)),
+                new TokenAmount(WETH, decimalize(10, WETH.decimals)),
+                LiquidityProvider.UNISWAP,
+              ),
+            ],
             tokens[1],
           );
           const inputAmount = new TokenAmount(tokens[1], decimalize(1, tokens[1].decimals));
