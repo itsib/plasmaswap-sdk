@@ -4,15 +4,15 @@ import { getDefaultProvider } from '@ethersproject/providers';
 import invariant from 'tiny-invariant';
 import IERC20 from './abis/erc20.json';
 import ISwapPair from './abis/swap-pair.json';
-import { ChainId } from './constants';
+import { ChainId, LiquidityProvider } from './constants';
 import { TokenAmount } from './entities/fractions/tokenAmount';
 import { Pair } from './entities/pair';
 import { Token } from './entities/token';
 
 let TOKEN_DECIMALS_CACHE: { [chainId: number]: { [address: string]: number } } = {
   [ChainId.MAINNET]: {
-    '0xE0B7927c4aF23765Cb51314A0E0521A9645F0E2A': 9 // DGD
-  }
+    '0xE0B7927c4aF23765Cb51314A0E0521A9645F0E2A': 9, // DGD
+  },
 };
 
 /**
@@ -37,7 +37,7 @@ export abstract class Fetcher {
     address: string,
     provider = getDefaultProvider(getNetwork(chainId)),
     symbol?: string,
-    name?: string
+    name?: string,
   ): Promise<Token> {
     const parsedDecimals =
       typeof TOKEN_DECIMALS_CACHE?.[chainId]?.[address] === 'number'
@@ -47,8 +47,8 @@ export abstract class Fetcher {
               ...TOKEN_DECIMALS_CACHE,
               [chainId]: {
                 ...TOKEN_DECIMALS_CACHE?.[chainId],
-                [address]: decimals
-              }
+                [address]: decimals,
+              },
             };
             return decimals;
           });
@@ -59,13 +59,22 @@ export abstract class Fetcher {
    * Fetches information about a pair and constructs a pair from the given two tokens.
    * @param tokenA first token
    * @param tokenB second token
+   * @param liquidityProvider
    * @param provider the provider to use to fetch the data
    */
-  public static async fetchPairData(tokenA: Token, tokenB: Token, provider = getDefaultProvider(getNetwork(tokenA.chainId))): Promise<Pair> {
+  public static async fetchPairData(
+    tokenA: Token,
+    tokenB: Token,
+    liquidityProvider: LiquidityProvider,
+    provider = getDefaultProvider(getNetwork(tokenA.chainId)),
+  ): Promise<Pair> {
     invariant(tokenA.chainId === tokenB.chainId, 'CHAIN_ID');
-    const address = Pair.getAddress(tokenA, tokenB);
+
+    const address = Pair.getAddress(tokenA, tokenB, liquidityProvider);
     const [reserves0, reserves1] = await new Contract(address, ISwapPair, provider).getReserves();
+
     const balances = tokenA.sortsBefore(tokenB) ? [reserves0, reserves1] : [reserves1, reserves0];
-    return new Pair(new TokenAmount(tokenA, balances[0]), new TokenAmount(tokenB, balances[1]));
+
+    return new Pair(new TokenAmount(tokenA, balances[0]), new TokenAmount(tokenB, balances[1]), liquidityProvider);
   }
 }

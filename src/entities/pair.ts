@@ -1,46 +1,87 @@
+import { getCreate2Address } from '@ethersproject/address';
+import { keccak256, pack } from '@ethersproject/solidity';
+import JSBI from 'jsbi';
+import invariant from 'tiny-invariant';
+import {
+  _1000,
+  _997,
+  BigintIsh,
+  ChainId,
+  LiquidityProvider,
+  FACTORY_ADDRESS,
+  FIVE,
+  INIT_CODE_HASH,
+  LIQUIDITY_TOKEN_NAME,
+  LIQUIDITY_TOKEN_SYMBOL,
+  MINIMUM_LIQUIDITY,
+  ONE,
+  ZERO,
+} from '../constants';
+import { InsufficientInputAmountError, InsufficientReservesError } from '../errors';
+import { parseBigintIsh, sqrt } from '../utils';
 import { Price } from './fractions/price';
 import { TokenAmount } from './fractions/tokenAmount';
-import invariant from 'tiny-invariant';
-import JSBI from 'jsbi';
-import { pack, keccak256 } from '@ethersproject/solidity';
-import { getCreate2Address } from '@ethersproject/address';
-
-import { BigintIsh, FACTORY_ADDRESS, INIT_CODE_HASH, MINIMUM_LIQUIDITY, ZERO, ONE, FIVE, _997, _1000, ChainId } from '../constants';
-import { sqrt, parseBigintIsh } from '../utils';
-import { InsufficientReservesError, InsufficientInputAmountError } from '../errors';
 import { Token } from './token';
 
-let PAIR_ADDRESS_CACHE: { [token0Address: string]: { [token1Address: string]: string } } = {};
+let PAIR_ADDRESS_CACHE: {
+  [provider: number]: {
+    [token0Address: string]: {
+      [token1Address: string]: string;
+    };
+  };
+} = {};
 
 export class Pair {
   public readonly liquidityToken: Token;
+
+  public readonly liquidityProvider: LiquidityProvider;
+
   private readonly tokenAmounts: [TokenAmount, TokenAmount];
 
-  public static getAddress(tokenA: Token, tokenB: Token): string {
+  public static getAddress(tokenA: Token, tokenB: Token, liquidityProvider: LiquidityProvider): string {
     const tokens = tokenA.sortsBefore(tokenB) ? [tokenA, tokenB] : [tokenB, tokenA]; // does safety checks
 
-    if (PAIR_ADDRESS_CACHE?.[tokens[0].address]?.[tokens[1].address] === undefined) {
+    if (PAIR_ADDRESS_CACHE?.[liquidityProvider]?.[tokens[0].address]?.[tokens[1].address] === undefined) {
+      if (!FACTORY_ADDRESS[liquidityProvider][tokenA.chainId]) {
+        throw new Error(`Cannot find factory address for provider id ${liquidityProvider} in chain id ${tokenA.chainId}`);
+      }
+
+      const address = getCreate2Address(
+        FACTORY_ADDRESS[liquidityProvider][tokenA.chainId],
+        keccak256(['bytes'], [pack(['address', 'address'], [tokens[0].address, tokens[1].address])]),
+        INIT_CODE_HASH[liquidityProvider],
+      );
+
       PAIR_ADDRESS_CACHE = {
         ...PAIR_ADDRESS_CACHE,
-        [tokens[0].address]: {
-          ...PAIR_ADDRESS_CACHE?.[tokens[0].address],
-          [tokens[1].address]: getCreate2Address(
-            FACTORY_ADDRESS,
-            keccak256(['bytes'], [pack(['address', 'address'], [tokens[0].address, tokens[1].address])]),
-            INIT_CODE_HASH
-          )
-        }
+        [liquidityProvider]: {
+          ...PAIR_ADDRESS_CACHE[liquidityProvider],
+          [tokens[0].address]: {
+            ...PAIR_ADDRESS_CACHE?.[liquidityProvider]?.[tokens[0].address],
+            [tokens[1].address]: address,
+          },
+        },
       };
     }
 
-    return PAIR_ADDRESS_CACHE[tokens[0].address][tokens[1].address];
+    return PAIR_ADDRESS_CACHE[liquidityProvider][tokens[0].address][tokens[1].address];
   }
 
-  public constructor(tokenAmountA: TokenAmount, tokenAmountB: TokenAmount) {
+  public constructor(tokenAmountA: TokenAmount, tokenAmountB: TokenAmount, liquidityProvider: LiquidityProvider) {
     const tokenAmounts = tokenAmountA.token.sortsBefore(tokenAmountB.token) // does safety checks
       ? [tokenAmountA, tokenAmountB]
       : [tokenAmountB, tokenAmountA];
-    this.liquidityToken = new Token(tokenAmounts[0].token.chainId, Pair.getAddress(tokenAmounts[0].token, tokenAmounts[1].token), 18, 'P-LP', 'Plasmaswap');
+
+    this.liquidityProvider = liquidityProvider;
+
+    this.liquidityToken = new Token(
+      tokenAmounts[0].token.chainId,
+      Pair.getAddress(tokenAmounts[0].token, tokenAmounts[1].token, liquidityProvider),
+      18,
+      LIQUIDITY_TOKEN_SYMBOL[liquidityProvider],
+      LIQUIDITY_TOKEN_NAME[liquidityProvider],
+    );
+
     this.tokenAmounts = tokenAmounts as [TokenAmount, TokenAmount];
   }
 
@@ -105,19 +146,23 @@ export class Pair {
 
   public getOutputAmount(inputAmount: TokenAmount): [TokenAmount, Pair] {
     invariant(this.involvesToken(inputAmount.token), 'TOKEN');
+
     if (JSBI.equal(this.reserve0.raw, ZERO) || JSBI.equal(this.reserve1.raw, ZERO)) {
       throw new InsufficientReservesError();
     }
+
     const inputReserve = this.reserveOf(inputAmount.token);
     const outputReserve = this.reserveOf(inputAmount.token.equals(this.token0) ? this.token1 : this.token0);
     const inputAmountWithFee = JSBI.multiply(inputAmount.raw, _997);
     const numerator = JSBI.multiply(inputAmountWithFee, outputReserve.raw);
     const denominator = JSBI.add(JSBI.multiply(inputReserve.raw, _1000), inputAmountWithFee);
     const outputAmount = new TokenAmount(inputAmount.token.equals(this.token0) ? this.token1 : this.token0, JSBI.divide(numerator, denominator));
+
     if (JSBI.equal(outputAmount.raw, ZERO)) {
       throw new InsufficientInputAmountError();
     }
-    return [outputAmount, new Pair(inputReserve.add(inputAmount), outputReserve.subtract(outputAmount))];
+
+    return [outputAmount, new Pair(inputReserve.add(inputAmount), outputReserve.subtract(outputAmount), this.liquidityProvider)];
   }
 
   public getInputAmount(outputAmount: TokenAmount): [TokenAmount, Pair] {
@@ -135,7 +180,8 @@ export class Pair {
     const numerator = JSBI.multiply(JSBI.multiply(inputReserve.raw, outputAmount.raw), _1000);
     const denominator = JSBI.multiply(JSBI.subtract(outputReserve.raw, outputAmount.raw), _997);
     const inputAmount = new TokenAmount(outputAmount.token.equals(this.token0) ? this.token1 : this.token0, JSBI.add(JSBI.divide(numerator, denominator), ONE));
-    return [inputAmount, new Pair(inputReserve.add(inputAmount), outputReserve.subtract(outputAmount))];
+
+    return [inputAmount, new Pair(inputReserve.add(inputAmount), outputReserve.subtract(outputAmount), this.liquidityProvider)];
   }
 
   public getLiquidityMinted(totalSupply: TokenAmount, tokenAmountA: TokenAmount, tokenAmountB: TokenAmount): TokenAmount {

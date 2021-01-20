@@ -1,5 +1,18 @@
 import JSBI from 'jsbi';
-import { ChainId, ETHER, CurrencyAmount, Pair, Percent, Route, Token, TokenAmount, Trade, TradeType, WETH } from '../src';
+import {
+  ChainId,
+  CurrencyAmount,
+  ETHER,
+  LiquidityProvider,
+  Pair,
+  Percent,
+  Route,
+  Token,
+  TokenAmount,
+  Trade,
+  TradeType,
+  WETH,
+} from '../src';
 
 describe('Trade', () => {
   const token0 = new Token(ChainId.MAINNET, '0x0000000000000000000000000000000000000001', 18, 't0');
@@ -7,15 +20,15 @@ describe('Trade', () => {
   const token2 = new Token(ChainId.MAINNET, '0x0000000000000000000000000000000000000003', 18, 't2');
   const token3 = new Token(ChainId.MAINNET, '0x0000000000000000000000000000000000000004', 18, 't3');
 
-  const pair_0_1 = new Pair(new TokenAmount(token0, JSBI.BigInt(1000)), new TokenAmount(token1, JSBI.BigInt(1000)));
-  const pair_0_2 = new Pair(new TokenAmount(token0, JSBI.BigInt(1000)), new TokenAmount(token2, JSBI.BigInt(1100)));
-  const pair_0_3 = new Pair(new TokenAmount(token0, JSBI.BigInt(1000)), new TokenAmount(token3, JSBI.BigInt(900)));
-  const pair_1_2 = new Pair(new TokenAmount(token1, JSBI.BigInt(1200)), new TokenAmount(token2, JSBI.BigInt(1000)));
-  const pair_1_3 = new Pair(new TokenAmount(token1, JSBI.BigInt(1200)), new TokenAmount(token3, JSBI.BigInt(1300)));
+  const pair_0_1 = new Pair(new TokenAmount(token0, JSBI.BigInt(1000)), new TokenAmount(token1, JSBI.BigInt(1000)), LiquidityProvider.UNISWAP);
+  const pair_0_2 = new Pair(new TokenAmount(token0, JSBI.BigInt(1000)), new TokenAmount(token2, JSBI.BigInt(1100)), LiquidityProvider.UNISWAP);
+  const pair_0_3 = new Pair(new TokenAmount(token0, JSBI.BigInt(1000)), new TokenAmount(token3, JSBI.BigInt(900)), LiquidityProvider.UNISWAP);
+  const pair_1_2 = new Pair(new TokenAmount(token1, JSBI.BigInt(1200)), new TokenAmount(token2, JSBI.BigInt(1000)), LiquidityProvider.UNISWAP);
+  const pair_1_3 = new Pair(new TokenAmount(token1, JSBI.BigInt(1200)), new TokenAmount(token3, JSBI.BigInt(1300)), LiquidityProvider.UNISWAP);
 
-  const pair_weth_0 = new Pair(new TokenAmount(WETH[ChainId.MAINNET], JSBI.BigInt(1000)), new TokenAmount(token0, JSBI.BigInt(1000)));
+  const pair_weth_0 = new Pair(new TokenAmount(WETH[ChainId.MAINNET], JSBI.BigInt(1000)), new TokenAmount(token0, JSBI.BigInt(1000)), LiquidityProvider.UNISWAP);
 
-  const empty_pair_0_1 = new Pair(new TokenAmount(token0, JSBI.BigInt(0)), new TokenAmount(token1, JSBI.BigInt(0)));
+  const empty_pair_0_1 = new Pair(new TokenAmount(token0, JSBI.BigInt(0)), new TokenAmount(token1, JSBI.BigInt(0)), LiquidityProvider.UNISWAP);
 
   it('can be constructed with ETHER as input', () => {
     const trade = new Trade(new Route([pair_weth_0], ETHER), CurrencyAmount.ether(JSBI.BigInt(100)), TradeType.EXACT_INPUT);

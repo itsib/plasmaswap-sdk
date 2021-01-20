@@ -1,5 +1,16 @@
 import invariant from 'tiny-invariant';
-import { ChainId, WETH as _WETH, TradeType, Rounding, Token, TokenAmount, Pair, Route, Trade } from '../src';
+import {
+  ChainId,
+  LiquidityProvider,
+  Pair,
+  Rounding,
+  Route,
+  Token,
+  TokenAmount,
+  Trade,
+  TradeType,
+  WETH as _WETH,
+} from '../src';
 
 const ADDRESSES = ['0x0000000000000000000000000000000000000001', '0x0000000000000000000000000000000000000002', '0x0000000000000000000000000000000000000003'];
 const CHAIN_ID = ChainId.RINKEBY;
@@ -7,7 +18,7 @@ const WETH = _WETH[ChainId.RINKEBY];
 const DECIMAL_PERMUTATIONS: [number, number, number][] = [
   [0, 0, 0],
   [0, 9, 18],
-  [18, 18, 18]
+  [18, 18, 18],
 ];
 
 function decimalize(amount: number, decimals: number): bigint {
@@ -30,9 +41,9 @@ describe('entities', () => {
       let pairs: Pair[];
       it('Pair', () => {
         pairs = [
-          new Pair(new TokenAmount(tokens[0], decimalize(1, tokens[0].decimals)), new TokenAmount(tokens[1], decimalize(1, tokens[1].decimals))),
-          new Pair(new TokenAmount(tokens[1], decimalize(1, tokens[1].decimals)), new TokenAmount(tokens[2], decimalize(1, tokens[2].decimals))),
-          new Pair(new TokenAmount(tokens[2], decimalize(1, tokens[2].decimals)), new TokenAmount(WETH, decimalize(1234, WETH.decimals)))
+          new Pair(new TokenAmount(tokens[0], decimalize(1, tokens[0].decimals)), new TokenAmount(tokens[1], decimalize(1, tokens[1].decimals)), LiquidityProvider.UNISWAP),
+          new Pair(new TokenAmount(tokens[1], decimalize(1, tokens[1].decimals)), new TokenAmount(tokens[2], decimalize(1, tokens[2].decimals)), LiquidityProvider.UNISWAP),
+          new Pair(new TokenAmount(tokens[2], decimalize(1, tokens[2].decimals)), new TokenAmount(WETH, decimalize(1234, WETH.decimals)), LiquidityProvider.UNISWAP),
         ];
       });
 
@@ -49,10 +60,10 @@ describe('entities', () => {
         invariant(route.input instanceof Token);
         invariant(route.output instanceof Token);
         expect(route.midPrice.quote(new TokenAmount(route.input, decimalize(1, route.input.decimals)))).toEqual(
-          new TokenAmount(route.output, decimalize(1234, route.output.decimals))
+          new TokenAmount(route.output, decimalize(1234, route.output.decimals)),
         );
         expect(route.midPrice.invert().quote(new TokenAmount(route.output, decimalize(1234, route.output.decimals)))).toEqual(
-          new TokenAmount(route.input, decimalize(1, route.input.decimals))
+          new TokenAmount(route.input, decimalize(1, route.input.decimals)),
         );
 
         expect(route.midPrice.toSignificant(1)).toEqual('1000');
@@ -88,8 +99,12 @@ describe('entities', () => {
         let route: Route;
         it('TradeType.EXACT_INPUT', () => {
           route = new Route(
-            [new Pair(new TokenAmount(tokens[1], decimalize(5, tokens[1].decimals)), new TokenAmount(WETH, decimalize(10, WETH.decimals)))],
-            tokens[1]
+            [new Pair(
+              new TokenAmount(tokens[1], decimalize(5, tokens[1].decimals)),
+              new TokenAmount(WETH, decimalize(10, WETH.decimals)),
+              LiquidityProvider.UNISWAP,
+            )],
+            tokens[1],
           );
           const inputAmount = new TokenAmount(tokens[1], decimalize(1, tokens[1].decimals));
           const expectedOutputAmount = new TokenAmount(WETH, '1662497915624478906');
@@ -136,10 +151,11 @@ describe('entities', () => {
               [
                 new Pair(
                   new TokenAmount(tokens[1], decimalize(1, tokens[1].decimals)),
-                  new TokenAmount(WETH, decimalize(10, WETH.decimals) + (tokens[1].decimals === 9 ? BigInt('30090280812437312') : BigInt('30090270812437322')))
-                )
+                  new TokenAmount(WETH, decimalize(10, WETH.decimals) + (tokens[1].decimals === 9 ? BigInt('30090280812437312') : BigInt('30090270812437322'))),
+                  LiquidityProvider.UNISWAP,
+                ),
               ],
-              tokens[1]
+              tokens[1],
             );
             const outputAmount = new TokenAmount(tokens[1], '1');
             const trade = new Trade(route, outputAmount, TradeType.EXACT_INPUT);

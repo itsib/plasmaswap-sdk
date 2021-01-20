@@ -11,7 +11,9 @@ export class InsufficientReservesError extends Error {
   public constructor() {
     super();
     this.name = this.constructor.name;
-    if (CAN_SET_PROTOTYPE) Object.setPrototypeOf(this, new.target.prototype);
+    if (CAN_SET_PROTOTYPE) {
+      Object.setPrototypeOf(this, new.target.prototype);
+    }
   }
 }
 
@@ -25,6 +27,8 @@ export class InsufficientInputAmountError extends Error {
   public constructor() {
     super();
     this.name = this.constructor.name;
-    if (CAN_SET_PROTOTYPE) Object.setPrototypeOf(this, new.target.prototype);
+    if (CAN_SET_PROTOTYPE) {
+      Object.setPrototypeOf(this, new.target.prototype);
+    }
   }
 }
