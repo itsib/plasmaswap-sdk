@@ -67,6 +67,16 @@ export class Pair {
     return PAIR_ADDRESS_CACHE[liquidityProvider][tokens[0].address][tokens[1].address];
   }
 
+  public static toTokenOfLiquidity(tokenA: Token, tokenB: Token, liquidityProvider: LiquidityProvider): Token {
+    return new Token(
+      tokenA.chainId,
+      Pair.getAddress(tokenA, tokenB, liquidityProvider),
+      18,
+      LIQUIDITY_TOKEN_SYMBOL[liquidityProvider],
+      LIQUIDITY_TOKEN_NAME[liquidityProvider],
+    );
+  }
+
   public constructor(tokenAmountA: TokenAmount, tokenAmountB: TokenAmount, liquidityProvider: LiquidityProvider) {
     const tokenAmounts = tokenAmountA.token.sortsBefore(tokenAmountB.token) // does safety checks
       ? [tokenAmountA, tokenAmountB]
@@ -74,13 +84,7 @@ export class Pair {
 
     this.liquidityProvider = liquidityProvider;
 
-    this.liquidityToken = new Token(
-      tokenAmounts[0].token.chainId,
-      Pair.getAddress(tokenAmounts[0].token, tokenAmounts[1].token, liquidityProvider),
-      18,
-      LIQUIDITY_TOKEN_SYMBOL[liquidityProvider],
-      LIQUIDITY_TOKEN_NAME[liquidityProvider],
-    );
+    this.liquidityToken = Pair.toTokenOfLiquidity(tokenAmounts[0].token, tokenAmounts[1].token, liquidityProvider);
 
     this.tokenAmounts = tokenAmounts as [TokenAmount, TokenAmount];
   }
