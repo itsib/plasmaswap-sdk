@@ -44,6 +44,23 @@ export const FACTORY_ADDRESS = {
   },
 };
 
+export const ROUTER_ADDRESS = {
+  [LiquidityProvider.UNISWAP]: {
+    [ChainId.MAINNET]: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
+    [ChainId.ROPSTEN]: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
+    [ChainId.RINKEBY]: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
+    [ChainId.GÖRLI]: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
+    [ChainId.KOVAN]: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
+  },
+  [LiquidityProvider.PLASMA]: {
+    [ChainId.MAINNET]: '',
+    [ChainId.ROPSTEN]: '',
+    [ChainId.RINKEBY]: '',
+    [ChainId.GÖRLI]: '',
+    [ChainId.KOVAN]: '0x905df0e2cd022bc1a67bf15df485b18ea631d304',
+  },
+};
+
 export const INIT_CODE_HASH = {
   [LiquidityProvider.UNISWAP]: '0x96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f',
   [LiquidityProvider.PLASMA]: '0xe60eb03e61b5fbeba179f6defb71bb00c5db9dab3b10d39c3985d66081de6d3d',

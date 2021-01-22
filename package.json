@@ -21,7 +21,7 @@
     "build": "tsdx build",
     "start": "tsdx watch",
     "test": "tsdx test",
-    "publish": "./publish.sh"
+    "pub": "./publish.sh"
   },
   "dependencies": {
     "big.js": "^5.2.2",

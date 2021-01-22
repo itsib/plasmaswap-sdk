@@ -67,6 +67,12 @@ export class Pair {
     return PAIR_ADDRESS_CACHE[liquidityProvider][tokens[0].address][tokens[1].address];
   }
 
+  /**
+   * Given two tokens return the liquidity token that represents its liquidity shares
+   * @param tokenA one of the two tokens
+   * @param tokenB the other token
+   * @param liquidityProvider
+   */
   public static toTokenOfLiquidity(tokenA: Token, tokenB: Token, liquidityProvider: LiquidityProvider): Token {
     return new Token(
       tokenA.chainId,
