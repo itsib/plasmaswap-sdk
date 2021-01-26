@@ -8,9 +8,7 @@ import {
   BigintIsh,
   ChainId,
   LiquidityProvider,
-  FACTORY_ADDRESS,
   FIVE,
-  INIT_CODE_HASH,
   LIQUIDITY_TOKEN_NAME,
   LIQUIDITY_TOKEN_SYMBOL,
   MINIMUM_LIQUIDITY,
@@ -18,7 +16,7 @@ import {
   ZERO,
 } from '../constants';
 import { InsufficientInputAmountError, InsufficientReservesError } from '../errors';
-import { parseBigintIsh, sqrt } from '../utils';
+import { getFactoryAddress, getInitCodeHash, parseBigintIsh, sqrt } from '../utils';
 import { Price } from './fractions/price';
 import { TokenAmount } from './fractions/tokenAmount';
 import { Token } from './token';
@@ -42,14 +40,20 @@ export class Pair {
     const tokens = tokenA.sortsBefore(tokenB) ? [tokenA, tokenB] : [tokenB, tokenA]; // does safety checks
 
     if (PAIR_ADDRESS_CACHE?.[liquidityProvider]?.[tokens[0].address]?.[tokens[1].address] === undefined) {
-      if (!FACTORY_ADDRESS[liquidityProvider][tokenA.chainId]) {
+      const factoryAddress = getFactoryAddress(tokenA.chainId, liquidityProvider);
+      if (!factoryAddress) {
         throw new Error(`Cannot find factory address for provider id ${liquidityProvider} in chain id ${tokenA.chainId}`);
       }
 
+      const initCodeHash = getInitCodeHash(tokenA.chainId, liquidityProvider);
+      if (!initCodeHash) {
+        throw new Error(`Cannot find init code hash for provider id ${liquidityProvider} in chain id ${tokenA.chainId}`);
+      }
+
       const address = getCreate2Address(
-        FACTORY_ADDRESS[liquidityProvider][tokenA.chainId],
+        factoryAddress,
         keccak256(['bytes'], [pack(['address', 'address'], [tokens[0].address, tokens[1].address])]),
-        INIT_CODE_HASH[liquidityProvider],
+        initCodeHash,
       );
 
       PAIR_ADDRESS_CACHE = {

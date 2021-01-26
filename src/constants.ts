@@ -36,7 +36,7 @@ export const FACTORY_ADDRESS = {
     [ChainId.KOVAN]: '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f',
   },
   [LiquidityProvider.PLASMA]: {
-    [ChainId.MAINNET]: '',
+    [ChainId.MAINNET]: '0xd87Ad19db2c4cCbf897106dE034D52e3DD90ea60',
     [ChainId.ROPSTEN]: '',
     [ChainId.RINKEBY]: '',
     [ChainId.GÖRLI]: '',
@@ -53,7 +53,7 @@ export const ROUTER_ADDRESS = {
     [ChainId.KOVAN]: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
   },
   [LiquidityProvider.PLASMA]: {
-    [ChainId.MAINNET]: '',
+    [ChainId.MAINNET]: '0x5ec243F1F7ECFC137e98365C30c9A28691d86132',
     [ChainId.ROPSTEN]: '',
     [ChainId.RINKEBY]: '',
     [ChainId.GÖRLI]: '',
@@ -62,8 +62,20 @@ export const ROUTER_ADDRESS = {
 };
 
 export const INIT_CODE_HASH = {
-  [LiquidityProvider.UNISWAP]: '0x96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f',
-  [LiquidityProvider.PLASMA]: '0xe60eb03e61b5fbeba179f6defb71bb00c5db9dab3b10d39c3985d66081de6d3d',
+  [LiquidityProvider.UNISWAP]: {
+    [ChainId.MAINNET]: '0x96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f',
+    [ChainId.ROPSTEN]: '0x96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f',
+    [ChainId.RINKEBY]: '0x96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f',
+    [ChainId.GÖRLI]: '0x96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f',
+    [ChainId.KOVAN]: '0x96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f',
+  },
+  [LiquidityProvider.PLASMA]: {
+    [ChainId.MAINNET]: '0x611ee9501fb19c9df82695e66f6c58d69d86907b531dfbed652231515ae84081',
+    [ChainId.ROPSTEN]: '',
+    [ChainId.RINKEBY]: '',
+    [ChainId.GÖRLI]: '',
+    [ChainId.KOVAN]: '0xe60eb03e61b5fbeba179f6defb71bb00c5db9dab3b10d39c3985d66081de6d3d',
+  }
 };
 
 export const MINIMUM_LIQUIDITY = JSBI.BigInt(1000);

@@ -3,7 +3,17 @@ import warning from 'tiny-warning';
 import JSBI from 'jsbi';
 import { getAddress } from '@ethersproject/address';
 
-import { BigintIsh, ZERO, ONE, TWO, THREE, SolidityType, SOLIDITY_TYPE_MAXIMA } from './constants';
+import {
+  BigintIsh,
+  ZERO,
+  ONE,
+  TWO,
+  THREE,
+  SolidityType,
+  SOLIDITY_TYPE_MAXIMA,
+  ChainId,
+  LiquidityProvider, FACTORY_ADDRESS, ROUTER_ADDRESS, INIT_CODE_HASH,
+} from './constants';
 
 export function validateSolidityTypeInstance(value: JSBI, solidityType: SolidityType): void {
   invariant(JSBI.greaterThanOrEqual(value, ZERO), `${value} is not a ${solidityType}.`);
@@ -75,4 +85,25 @@ export function sortedInsert<T>(items: T[], add: T, maxSize: number, comparator:
     items.splice(lo, 0, add);
     return isFull ? items.pop()! : null;
   }
+}
+
+export function getRouterAddress(chainId?: ChainId, liquidityProvider?: LiquidityProvider): string | null {
+  if (chainId === undefined || liquidityProvider === undefined) {
+    return null;
+  }
+  return ROUTER_ADDRESS?.[liquidityProvider]?.[chainId] ?? null;
+}
+
+export function getFactoryAddress(chainId?: ChainId, liquidityProvider?: LiquidityProvider): string | null {
+  if (chainId === undefined || liquidityProvider === undefined) {
+    return null;
+  }
+  return FACTORY_ADDRESS?.[liquidityProvider]?.[chainId] ?? null;
+}
+
+export function getInitCodeHash(chainId?: ChainId, liquidityProvider?: LiquidityProvider): string | null {
+  if (chainId === undefined || liquidityProvider === undefined) {
+    return null;
+  }
+  return INIT_CODE_HASH?.[liquidityProvider]?.[chainId] ?? null;
 }
