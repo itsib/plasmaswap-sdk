@@ -23,5 +23,6 @@ export * from './errors';
 export * from './entities';
 export * from './router';
 export * from './fetcher';
+export * from './utils';
 
 export { IERC20, ISwapPair, ISwapRouter };
