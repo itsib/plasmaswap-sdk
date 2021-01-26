@@ -75,7 +75,7 @@ export const INIT_CODE_HASH = {
     [ChainId.RINKEBY]: '',
     [ChainId.GÖRLI]: '',
     [ChainId.KOVAN]: '0xe60eb03e61b5fbeba179f6defb71bb00c5db9dab3b10d39c3985d66081de6d3d',
-  }
+  },
 };
 
 export const MINIMUM_LIQUIDITY = JSBI.BigInt(1000);

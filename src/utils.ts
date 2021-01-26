@@ -1,18 +1,21 @@
+import { getAddress } from '@ethersproject/address';
+import JSBI from 'jsbi';
 import invariant from 'tiny-invariant';
 import warning from 'tiny-warning';
-import JSBI from 'jsbi';
-import { getAddress } from '@ethersproject/address';
 
 import {
   BigintIsh,
-  ZERO,
-  ONE,
-  TWO,
-  THREE,
-  SolidityType,
-  SOLIDITY_TYPE_MAXIMA,
   ChainId,
-  LiquidityProvider, FACTORY_ADDRESS, ROUTER_ADDRESS, INIT_CODE_HASH,
+  FACTORY_ADDRESS,
+  INIT_CODE_HASH,
+  LiquidityProvider,
+  ONE,
+  ROUTER_ADDRESS,
+  SOLIDITY_TYPE_MAXIMA,
+  SolidityType,
+  THREE,
+  TWO,
+  ZERO,
 } from './constants';
 
 export function validateSolidityTypeInstance(value: JSBI, solidityType: SolidityType): void {
