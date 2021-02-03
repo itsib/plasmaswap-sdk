@@ -14,6 +14,7 @@ export enum ChainId {
 export enum LiquidityProvider {
   PLASMA,
   UNISWAP,
+  SUSHISWAP,
 }
 
 export enum TradeType {
@@ -42,6 +43,13 @@ export const FACTORY_ADDRESS = {
     [ChainId.GÖRLI]: '',
     [ChainId.KOVAN]: '0x7A6521ba7Ba45C908be726D719ACd547D4a8E246',
   },
+  [LiquidityProvider.SUSHISWAP]: {
+    [ChainId.MAINNET]: '0xc0aee478e3658e2610c5f7a4a2e1777ce9e4f2ac',
+    [ChainId.ROPSTEN]: '',
+    [ChainId.RINKEBY]: '',
+    [ChainId.GÖRLI]: '',
+    [ChainId.KOVAN]: '',
+  },
 };
 
 export const ROUTER_ADDRESS = {
@@ -58,6 +66,13 @@ export const ROUTER_ADDRESS = {
     [ChainId.RINKEBY]: '',
     [ChainId.GÖRLI]: '',
     [ChainId.KOVAN]: '0x905df0e2cd022bc1a67bf15df485b18ea631d304',
+  },
+  [LiquidityProvider.SUSHISWAP]: {
+    [ChainId.MAINNET]: '0xd9e1ce17f2641f24ae83637ab66a2cca9c378b9f',
+    [ChainId.ROPSTEN]: '',
+    [ChainId.RINKEBY]: '',
+    [ChainId.GÖRLI]: '',
+    [ChainId.KOVAN]: '',
   },
 };
 
@@ -76,6 +91,13 @@ export const INIT_CODE_HASH = {
     [ChainId.GÖRLI]: '',
     [ChainId.KOVAN]: '0xe60eb03e61b5fbeba179f6defb71bb00c5db9dab3b10d39c3985d66081de6d3d',
   },
+  [LiquidityProvider.SUSHISWAP]: {
+    [ChainId.MAINNET]: '0xe18a34eb0e04b04f7a0ac29a6e80748dca96319b42c54d679cb821dca90c6303',
+    [ChainId.ROPSTEN]: '',
+    [ChainId.RINKEBY]: '',
+    [ChainId.GÖRLI]: '',
+    [ChainId.KOVAN]: '',
+  },
 };
 
 export const MINIMUM_LIQUIDITY = JSBI.BigInt(1000);
@@ -83,11 +105,13 @@ export const MINIMUM_LIQUIDITY = JSBI.BigInt(1000);
 export const LIQUIDITY_TOKEN_NAME = {
   [LiquidityProvider.UNISWAP]: 'Uniswap V2',
   [LiquidityProvider.PLASMA]: 'Plasmaswap',
+  [LiquidityProvider.SUSHISWAP]: 'Sushiswap',
 };
 
 export const LIQUIDITY_TOKEN_SYMBOL = {
   [LiquidityProvider.UNISWAP]: 'UNI-V2',
   [LiquidityProvider.PLASMA]: 'P-LP',
+  [LiquidityProvider.SUSHISWAP]: 'SLP',
 };
 
 // exports for internal consumption
