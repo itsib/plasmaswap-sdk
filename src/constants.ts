@@ -48,7 +48,7 @@ export const FACTORY_ADDRESS = {
     [ChainId.ROPSTEN]: '',
     [ChainId.RINKEBY]: '',
     [ChainId.GÖRLI]: '',
-    [ChainId.KOVAN]: '',
+    [ChainId.KOVAN]: '0x037ff091278fE527a78b8A3f7E70F03Ed6104172',
   },
 };
 
@@ -72,7 +72,7 @@ export const ROUTER_ADDRESS = {
     [ChainId.ROPSTEN]: '',
     [ChainId.RINKEBY]: '',
     [ChainId.GÖRLI]: '',
-    [ChainId.KOVAN]: '',
+    [ChainId.KOVAN]: '0xEa9e36c9DfA184AC6901b593c4a485cAc741A796',
   },
 };
 
@@ -96,7 +96,7 @@ export const INIT_CODE_HASH = {
     [ChainId.ROPSTEN]: '',
     [ChainId.RINKEBY]: '',
     [ChainId.GÖRLI]: '',
-    [ChainId.KOVAN]: '',
+    [ChainId.KOVAN]: '0xedca77572b66460ac267f466ce5a1ae9186fe6cd9380d3bc16e51ede43817dee',
   },
 };
 
