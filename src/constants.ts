@@ -100,6 +100,18 @@ export const INIT_CODE_HASH = {
   },
 };
 
+export const FACTORY_CREATED_AT_TIMESTAMP = {
+  [LiquidityProvider.UNISWAP]: 1588609990,
+  [LiquidityProvider.PLASMA]: 1611490340,
+  [LiquidityProvider.SUSHISWAP]: 1599214223,
+}
+
+export const FACTORY_CREATED_AT_BLOCK_NUMBER = {
+  [LiquidityProvider.UNISWAP]: 10000834,
+  [LiquidityProvider.PLASMA]: 11718233,
+  [LiquidityProvider.SUSHISWAP]: 10794228,
+}
+
 export const MINIMUM_LIQUIDITY = JSBI.BigInt(1000);
 
 export const LIQUIDITY_TOKEN_NAME = {
