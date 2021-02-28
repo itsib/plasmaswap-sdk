@@ -7,6 +7,8 @@ import {
   BigintIsh,
   ChainId,
   FACTORY_ADDRESS,
+  FACTORY_CREATED_AT_BLOCK_NUMBER,
+  FACTORY_CREATED_AT_TIMESTAMP,
   INIT_CODE_HASH,
   LiquidityProvider,
   ONE,
@@ -109,4 +111,11 @@ export function getInitCodeHash(chainId?: ChainId, liquidityProvider?: Liquidity
     return null;
   }
   return INIT_CODE_HASH?.[liquidityProvider]?.[chainId] ?? null;
+}
+
+export function getFactoryCreatedAt(lp: LiquidityProvider): { blockNumber: number; timestamp: number } {
+  return {
+    blockNumber: FACTORY_CREATED_AT_BLOCK_NUMBER[lp],
+    timestamp: FACTORY_CREATED_AT_TIMESTAMP[lp],
+  };
 }
