@@ -5,7 +5,7 @@ import invariant from 'tiny-invariant';
 import JSBI from 'jsbi';
 
 import { BigintIsh, Rounding, TEN } from '../../constants';
-import { Currency } from '../currency';
+import { Currency, ETHER } from '../currency';
 import { Route } from '../route';
 import { Fraction } from './fraction';
 import { CurrencyAmount } from './currencyAmount';
@@ -61,6 +61,16 @@ export class Price extends Fraction {
       return new TokenAmount(this.quoteCurrency, super.multiply(currencyAmount.raw).quotient);
     }
     return CurrencyAmount.ether(super.multiply(currencyAmount.raw).quotient);
+  }
+
+  public quotePerOne(): CurrencyAmount {
+    const rawAmount = JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(this.baseCurrency.decimals));
+    const amount = this.baseCurrency === ETHER ? CurrencyAmount.ether(rawAmount) : new TokenAmount(this.baseCurrency as Token, rawAmount);
+
+    if (this.quoteCurrency instanceof Token) {
+      return new TokenAmount(this.quoteCurrency, super.multiply(amount.raw).quotient);
+    }
+    return CurrencyAmount.ether(super.multiply(amount.raw).quotient);
   }
 
   public toSignificant(significantDigits: number = 6, format?: object, rounding?: Rounding): string {
