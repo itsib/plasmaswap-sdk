@@ -36,6 +36,7 @@ export const FACTORY_ADDRESS = {
     [ChainId.RINKEBY]: '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f',
     [ChainId.GÖRLI]: '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f',
     [ChainId.KOVAN]: '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f',
+    [ChainId.MATIC]: '',
   },
   [LiquidityProvider.PLASMA]: {
     [ChainId.MAINNET]: '0xd87Ad19db2c4cCbf897106dE034D52e3DD90ea60',
@@ -43,6 +44,7 @@ export const FACTORY_ADDRESS = {
     [ChainId.RINKEBY]: '',
     [ChainId.GÖRLI]: '',
     [ChainId.KOVAN]: '0x7A6521ba7Ba45C908be726D719ACd547D4a8E246',
+    [ChainId.MATIC]: '',
   },
   [LiquidityProvider.SUSHISWAP]: {
     [ChainId.MAINNET]: '0xc0aee478e3658e2610c5f7a4a2e1777ce9e4f2ac',
@@ -50,6 +52,7 @@ export const FACTORY_ADDRESS = {
     [ChainId.RINKEBY]: '',
     [ChainId.GÖRLI]: '',
     [ChainId.KOVAN]: '0x8D4FD620CB7Ed677870b8b62f22c166cC76fb519',
+    [ChainId.MATIC]: '',
   },
 };
 
@@ -60,6 +63,7 @@ export const ROUTER_ADDRESS = {
     [ChainId.RINKEBY]: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
     [ChainId.GÖRLI]: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
     [ChainId.KOVAN]: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
+    [ChainId.MATIC]: '',
   },
   [LiquidityProvider.PLASMA]: {
     [ChainId.MAINNET]: '0x5ec243F1F7ECFC137e98365C30c9A28691d86132',
@@ -67,6 +71,7 @@ export const ROUTER_ADDRESS = {
     [ChainId.RINKEBY]: '',
     [ChainId.GÖRLI]: '',
     [ChainId.KOVAN]: '0x905df0e2cd022bc1a67bf15df485b18ea631d304',
+    [ChainId.MATIC]: '',
   },
   [LiquidityProvider.SUSHISWAP]: {
     [ChainId.MAINNET]: '0xd9e1ce17f2641f24ae83637ab66a2cca9c378b9f',
@@ -74,6 +79,7 @@ export const ROUTER_ADDRESS = {
     [ChainId.RINKEBY]: '',
     [ChainId.GÖRLI]: '',
     [ChainId.KOVAN]: '0x4A0b3a56ECb360924639F57Cd41d0358Aed9aCDd',
+    [ChainId.MATIC]: '',
   },
 };
 
@@ -84,6 +90,7 @@ export const INIT_CODE_HASH = {
     [ChainId.RINKEBY]: '0x96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f',
     [ChainId.GÖRLI]: '0x96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f',
     [ChainId.KOVAN]: '0x96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f',
+    [ChainId.MATIC]: '',
   },
   [LiquidityProvider.PLASMA]: {
     [ChainId.MAINNET]: '0x611ee9501fb19c9df82695e66f6c58d69d86907b531dfbed652231515ae84081',
@@ -91,6 +98,7 @@ export const INIT_CODE_HASH = {
     [ChainId.RINKEBY]: '',
     [ChainId.GÖRLI]: '',
     [ChainId.KOVAN]: '0xe60eb03e61b5fbeba179f6defb71bb00c5db9dab3b10d39c3985d66081de6d3d',
+    [ChainId.MATIC]: '',
   },
   [LiquidityProvider.SUSHISWAP]: {
     [ChainId.MAINNET]: '0xe18a34eb0e04b04f7a0ac29a6e80748dca96319b42c54d679cb821dca90c6303',
@@ -98,6 +106,7 @@ export const INIT_CODE_HASH = {
     [ChainId.RINKEBY]: '',
     [ChainId.GÖRLI]: '',
     [ChainId.KOVAN]: '0xa0f8210a4091231cb34588d36a21ac73a6681adda0d825bf06c963da5ff4af47',
+    [ChainId.MATIC]: '',
   },
 };
 
