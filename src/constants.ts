@@ -44,7 +44,7 @@ export const FACTORY_ADDRESS = {
     [ChainId.RINKEBY]: '',
     [ChainId.GÖRLI]: '',
     [ChainId.KOVAN]: '0x7A6521ba7Ba45C908be726D719ACd547D4a8E246',
-    [ChainId.MATIC]: '',
+    [ChainId.MATIC]: '0x745c475CC101cA5580eFf6F723976480881BC008',
   },
   [LiquidityProvider.SUSHISWAP]: {
     [ChainId.MAINNET]: '0xc0aee478e3658e2610c5f7a4a2e1777ce9e4f2ac',
@@ -52,7 +52,7 @@ export const FACTORY_ADDRESS = {
     [ChainId.RINKEBY]: '',
     [ChainId.GÖRLI]: '',
     [ChainId.KOVAN]: '0x8D4FD620CB7Ed677870b8b62f22c166cC76fb519',
-    [ChainId.MATIC]: '',
+    [ChainId.MATIC]: '0xc35DADB65012eC5796536bD9864eD8773aBc74C4',
   },
 };
 
@@ -71,7 +71,7 @@ export const ROUTER_ADDRESS = {
     [ChainId.RINKEBY]: '',
     [ChainId.GÖRLI]: '',
     [ChainId.KOVAN]: '0x905df0e2cd022bc1a67bf15df485b18ea631d304',
-    [ChainId.MATIC]: '',
+    [ChainId.MATIC]: '0x5D5BADeF6F69cBafDF443D6226dC00B24626367E',
   },
   [LiquidityProvider.SUSHISWAP]: {
     [ChainId.MAINNET]: '0xd9e1ce17f2641f24ae83637ab66a2cca9c378b9f',
@@ -79,7 +79,7 @@ export const ROUTER_ADDRESS = {
     [ChainId.RINKEBY]: '',
     [ChainId.GÖRLI]: '',
     [ChainId.KOVAN]: '0x4A0b3a56ECb360924639F57Cd41d0358Aed9aCDd',
-    [ChainId.MATIC]: '',
+    [ChainId.MATIC]: '0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506',
   },
 };
 
@@ -98,7 +98,7 @@ export const INIT_CODE_HASH = {
     [ChainId.RINKEBY]: '',
     [ChainId.GÖRLI]: '',
     [ChainId.KOVAN]: '0xe60eb03e61b5fbeba179f6defb71bb00c5db9dab3b10d39c3985d66081de6d3d',
-    [ChainId.MATIC]: '',
+    [ChainId.MATIC]: '0xb19b1e3807140bf48c498cb50370e129d9bd9e5e333bf0e67d9ce7507e634b72',
   },
   [LiquidityProvider.SUSHISWAP]: {
     [ChainId.MAINNET]: '0xe18a34eb0e04b04f7a0ac29a6e80748dca96319b42c54d679cb821dca90c6303',
@@ -106,7 +106,7 @@ export const INIT_CODE_HASH = {
     [ChainId.RINKEBY]: '',
     [ChainId.GÖRLI]: '',
     [ChainId.KOVAN]: '0xa0f8210a4091231cb34588d36a21ac73a6681adda0d825bf06c963da5ff4af47',
-    [ChainId.MATIC]: '',
+    [ChainId.MATIC]: '0xe18a34eb0e04b04f7a0ac29a6e80748dca96319b42c54d679cb821dca90c6303',
   },
 };
 
