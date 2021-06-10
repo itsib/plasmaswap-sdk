@@ -1,6 +1,5 @@
 import JSBI from 'jsbi';
-
-import { SolidityType } from '../constants';
+import { ChainId, SolidityType } from '../constants';
 import { validateSolidityTypeInstance } from '../utils';
 
 /**
@@ -18,6 +17,17 @@ export class Currency {
    */
   public static readonly ETHER: Currency = new Currency(18, 'ETH', 'Ethereum');
 
+  public static readonly MATIC: Currency = new Currency(18, 'MATIC', 'Matic')
+
+  public static readonly NATIVE = {
+    [ChainId.MAINNET]: Currency.ETHER,
+    [ChainId.KOVAN]: Currency.ETHER,
+    [ChainId.ROPSTEN]: Currency.ETHER,
+    [ChainId.RINKEBY]: Currency.ETHER,
+    [ChainId.GÖRLI]: Currency.ETHER,
+    [ChainId.MATIC]: Currency.MATIC,
+  }
+
   /**
    * Constructs an instance of the base class `Currency`. The only instance of the base class `Currency` is `Currency.ETHER`.
    * @param decimals decimals of the currency
@@ -31,7 +41,47 @@ export class Currency {
     this.symbol = symbol;
     this.name = name;
   }
+
+  public static getNativeCurrency(chainId?: ChainId) {
+    if (!chainId) {
+      throw Error(`No chainId ${chainId}`)
+    }
+    if (!(chainId in Currency.NATIVE)) {
+      throw Error(`No native currency defined for chainId ${chainId}`)
+    }
+    return Currency.NATIVE[chainId]
+  }
+
+  public static getNativeCurrencySymbol(chainId?: ChainId) {
+    const nativeCurrency = this.getNativeCurrency(chainId)
+    return nativeCurrency.symbol
+  }
+
+  public static getNativeCurrencyName(chainId?: ChainId) {
+    const nativeCurrency = this.getNativeCurrency(chainId)
+    return nativeCurrency.name
+  }
+
+  public getSymbol(chainId?: ChainId) {
+    if (!chainId) {
+      return this?.symbol
+    }
+    if (this?.symbol === 'ETH') {
+      return Currency.getNativeCurrencySymbol(chainId)
+    }
+    return this?.symbol
+  }
+
+  public getName(chainId?: ChainId) {
+    if (!chainId) {
+      return this?.name
+    }
+    if (this?.name === 'Ether') {
+      return Currency.getNativeCurrencyName(chainId)
+    }
+    return this?.name
+  }
 }
 
-const ETHER = Currency.ETHER;
-export { ETHER };
+const NATIVE = Currency.ETHER
+export { NATIVE }
