@@ -17,7 +17,7 @@ export class Currency {
    */
   public static readonly ETHER: Currency = new Currency(18, 'ETH', 'Ethereum');
 
-  public static readonly MATIC: Currency = new Currency(18, 'MATIC', 'Matic')
+  public static readonly MATIC: Currency = new Currency(18, 'MATIC', 'Matic');
 
   public static readonly NATIVE = {
     [ChainId.MAINNET]: Currency.ETHER,
@@ -26,7 +26,7 @@ export class Currency {
     [ChainId.RINKEBY]: Currency.ETHER,
     [ChainId.GÖRLI]: Currency.ETHER,
     [ChainId.MATIC]: Currency.MATIC,
-  }
+  };
 
   /**
    * Constructs an instance of the base class `Currency`. The only instance of the base class `Currency` is `Currency.ETHER`.
@@ -44,44 +44,44 @@ export class Currency {
 
   public static getNativeCurrency(chainId?: ChainId) {
     if (!chainId) {
-      throw Error(`No chainId ${chainId}`)
+      throw Error(`No chainId ${chainId}`);
     }
     if (!(chainId in Currency.NATIVE)) {
-      throw Error(`No native currency defined for chainId ${chainId}`)
+      throw Error(`No native currency defined for chainId ${chainId}`);
     }
-    return Currency.NATIVE[chainId]
+    return Currency.NATIVE[chainId];
   }
 
   public static getNativeCurrencySymbol(chainId?: ChainId) {
-    const nativeCurrency = this.getNativeCurrency(chainId)
-    return nativeCurrency.symbol
+    const nativeCurrency = this.getNativeCurrency(chainId);
+    return nativeCurrency.symbol;
   }
 
   public static getNativeCurrencyName(chainId?: ChainId) {
-    const nativeCurrency = this.getNativeCurrency(chainId)
-    return nativeCurrency.name
+    const nativeCurrency = this.getNativeCurrency(chainId);
+    return nativeCurrency.name;
   }
 
   public getSymbol(chainId?: ChainId) {
     if (!chainId) {
-      return this?.symbol
+      return this?.symbol;
     }
     if (this?.symbol === 'ETH') {
-      return Currency.getNativeCurrencySymbol(chainId)
+      return Currency.getNativeCurrencySymbol(chainId);
     }
-    return this?.symbol
+    return this?.symbol;
   }
 
   public getName(chainId?: ChainId) {
     if (!chainId) {
-      return this?.name
+      return this?.name;
     }
     if (this?.name === 'Ether') {
-      return Currency.getNativeCurrencyName(chainId)
+      return Currency.getNativeCurrencyName(chainId);
     }
-    return this?.name
+    return this?.name;
   }
 }
 
-const NATIVE = Currency.ETHER
-export { NATIVE }
+const NATIVE = Currency.ETHER;
+export { NATIVE };

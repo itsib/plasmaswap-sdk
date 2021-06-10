@@ -81,11 +81,14 @@ describe('Router', () => {
     });
     describe('exact out', () => {
       it('ether to token1', () => {
-        const result = Router.swapCallParameters(Trade.exactOut(new Route([pair_weth_0, pair_0_1], NATIVE, token1), new TokenAmount(token1, JSBI.BigInt(100))), {
-          ttl: 50,
-          recipient: '0x0000000000000000000000000000000000000004',
-          allowedSlippage: new Percent('1', '100'),
-        });
+        const result = Router.swapCallParameters(
+          Trade.exactOut(new Route([pair_weth_0, pair_0_1], NATIVE, token1), new TokenAmount(token1, JSBI.BigInt(100))),
+          {
+            ttl: 50,
+            recipient: '0x0000000000000000000000000000000000000004',
+            allowedSlippage: new Percent('1', '100'),
+          },
+        );
         expect(result.methodName).toEqual('swapETHForExactTokens');
         expect(result.args.slice(0, -1)).toEqual([
           '0x64',
