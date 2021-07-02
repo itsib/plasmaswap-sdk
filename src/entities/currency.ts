@@ -1,31 +1,29 @@
 import JSBI from 'jsbi';
-import { ChainId, SolidityType } from '../constants';
+import { ChainId, SolidityType } from '../constants/constants';
 import { validateSolidityTypeInstance } from '../utils';
 
 /**
- * A currency is any fungible financial instrument on Ethereum, including Ether and all ERC20 tokens.
+ * A currency is any fungible financial instrument on Ethereum, including Ether, Matic and all ERC20 tokens.
  *
- * The only instance of the base class `Currency` is Ether.
+ * The only instance of the base class `Currency` is Ether or Matic.
  */
 export class Currency {
   public readonly decimals: number;
   public readonly symbol?: string;
   public readonly name?: string;
 
-  /**
-   * The only instance of the base class `Currency`.
-   */
   public static readonly ETHER: Currency = new Currency(18, 'ETH', 'Ethereum');
 
   public static readonly MATIC: Currency = new Currency(18, 'MATIC', 'Matic');
 
-  public static readonly NATIVE = {
+  public static readonly NATIVE: {[chainId in ChainId]: Currency} = {
     [ChainId.MAINNET]: Currency.ETHER,
     [ChainId.KOVAN]: Currency.ETHER,
     [ChainId.ROPSTEN]: Currency.ETHER,
     [ChainId.RINKEBY]: Currency.ETHER,
     [ChainId.GÖRLI]: Currency.ETHER,
     [ChainId.MATIC]: Currency.MATIC,
+    [ChainId.MUMBAI]: Currency.MATIC,
   };
 
   /**
@@ -42,7 +40,7 @@ export class Currency {
     this.name = name;
   }
 
-  public static getNativeCurrency(chainId?: ChainId) {
+  public static getNative(chainId?: ChainId): Currency {
     if (!chainId) {
       throw Error(`No chainId ${chainId}`);
     }
@@ -52,36 +50,17 @@ export class Currency {
     return Currency.NATIVE[chainId];
   }
 
-  public static getNativeCurrencySymbol(chainId?: ChainId) {
-    const nativeCurrency = this.getNativeCurrency(chainId);
+  public static getNativeSymbol(chainId?: ChainId): string | undefined {
+    const nativeCurrency = this.getNative(chainId);
     return nativeCurrency.symbol;
   }
 
-  public static getNativeCurrencyName(chainId?: ChainId) {
-    const nativeCurrency = this.getNativeCurrency(chainId);
+  public static getNativeName(chainId?: ChainId): string | undefined {
+    const nativeCurrency = this.getNative(chainId);
     return nativeCurrency.name;
-  }
-
-  public getSymbol(chainId?: ChainId) {
-    if (!chainId) {
-      return this?.symbol;
-    }
-    if (this?.symbol === 'ETH') {
-      return Currency.getNativeCurrencySymbol(chainId);
-    }
-    return this?.symbol;
-  }
-
-  public getName(chainId?: ChainId) {
-    if (!chainId) {
-      return this?.name;
-    }
-    if (this?.name === 'Ether') {
-      return Currency.getNativeCurrencyName(chainId);
-    }
-    return this?.name;
   }
 }
 
-const NATIVE = Currency.ETHER;
+const NATIVE = Currency.NATIVE;
+
 export { NATIVE };

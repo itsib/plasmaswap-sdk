@@ -1,4 +1,4 @@
-import { LiquidityProvider, ChainId, Pair, Price, Token, TokenAmount, WETH } from '../src';
+import { LiquidityProvider, ChainId, Pair, Price, Token, TokenAmount, WNATIVE } from '../src';
 
 describe('Pair', () => {
   const USDC = new Token(ChainId.MAINNET, '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', 18, 'USDC', 'USD Coin');
@@ -6,7 +6,7 @@ describe('Pair', () => {
 
   describe('constructor', () => {
     it('cannot be used for tokens on different chains', () => {
-      expect(() => new Pair(new TokenAmount(USDC, '100'), new TokenAmount(WETH[ChainId.RINKEBY], '100'), LiquidityProvider.UNISWAP)).toThrow('CHAIN_IDS');
+      expect(() => new Pair(new TokenAmount(USDC, '100'), new TokenAmount(WNATIVE[ChainId.RINKEBY], '100'), LiquidityProvider.UNISWAP)).toThrow('CHAIN_IDS');
     });
   });
 
@@ -71,7 +71,7 @@ describe('Pair', () => {
     });
 
     it('throws if invalid token', () => {
-      expect(() => pair.priceOf(WETH[ChainId.MAINNET])).toThrow('TOKEN');
+      expect(() => pair.priceOf(WNATIVE[ChainId.MAINNET])).toThrow('TOKEN');
     });
   });
 
@@ -86,7 +86,7 @@ describe('Pair', () => {
     });
 
     it('throws if not in the pair', () => {
-      expect(() => new Pair(new TokenAmount(DAI, '101'), new TokenAmount(USDC, '100'), LiquidityProvider.UNISWAP).reserveOf(WETH[ChainId.MAINNET])).toThrow(
+      expect(() => new Pair(new TokenAmount(DAI, '101'), new TokenAmount(USDC, '100'), LiquidityProvider.UNISWAP).reserveOf(WNATIVE[ChainId.MAINNET])).toThrow(
         'TOKEN',
       );
     });
@@ -101,6 +101,6 @@ describe('Pair', () => {
   describe('#involvesToken', () => {
     expect(new Pair(new TokenAmount(USDC, '100'), new TokenAmount(DAI, '100'), LiquidityProvider.UNISWAP).involvesToken(USDC)).toEqual(true);
     expect(new Pair(new TokenAmount(USDC, '100'), new TokenAmount(DAI, '100'), LiquidityProvider.UNISWAP).involvesToken(DAI)).toEqual(true);
-    expect(new Pair(new TokenAmount(USDC, '100'), new TokenAmount(DAI, '100'), LiquidityProvider.UNISWAP).involvesToken(WETH[ChainId.MAINNET])).toEqual(false);
+    expect(new Pair(new TokenAmount(USDC, '100'), new TokenAmount(DAI, '100'), LiquidityProvider.UNISWAP).involvesToken(WNATIVE[ChainId.MAINNET])).toEqual(false);
   });
 });

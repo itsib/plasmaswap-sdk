@@ -1,11 +1,9 @@
-import invariant from 'tiny-invariant';
-import JSBI from 'jsbi';
-import _Decimal from 'decimal.js-light';
 import _Big, { RoundingMode } from 'big.js';
+import _Decimal from 'decimal.js-light';
+import JSBI from 'jsbi';
+import invariant from 'tiny-invariant';
 import toFormat from 'toformat';
-
-import { BigintIsh, Rounding } from '../../constants';
-import { ONE } from '../../constants';
+import { BigintIsh, ONE, Rounding } from '../../constants/constants';
 import { parseBigintIsh } from '../../utils';
 
 const Decimal = toFormat(_Decimal);
@@ -32,12 +30,16 @@ export class Fraction {
     this.denominator = parseBigintIsh(denominator);
   }
 
-  // performs floor division
+  /**
+   * Performs floor division
+   */
   public get quotient(): JSBI {
     return JSBI.divide(this.numerator, this.denominator);
   }
 
-  // remainder after floor division
+  /**
+   * Remainder after floor division
+   */
   public get remainder(): Fraction {
     return new Fraction(JSBI.remainder(this.numerator, this.denominator), this.denominator);
   }

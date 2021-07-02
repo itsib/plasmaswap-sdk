@@ -1,11 +1,9 @@
-import { Token } from '../token';
-import { TokenAmount } from './tokenAmount';
+import { toCurrencyAmount } from '../../utils';
 import { currencyEquals } from '../token';
 import invariant from 'tiny-invariant';
 import JSBI from 'jsbi';
-
-import { BigintIsh, Rounding, TEN } from '../../constants';
-import { Currency, NATIVE } from '../currency';
+import { BigintIsh, Rounding, TEN } from '../../constants/constants';
+import { Currency } from '../currency';
 import { Route } from '../route';
 import { Fraction } from './fraction';
 import { CurrencyAmount } from './currencyAmount';
@@ -54,23 +52,24 @@ export class Price extends Fraction {
     return new Price(this.baseCurrency, other.quoteCurrency, fraction.denominator, fraction.numerator);
   }
 
-  // performs floor division on overflow
+  /**
+   * Performs floor division on overflow
+   * @param currencyAmount
+   */
   public quote(currencyAmount: CurrencyAmount): CurrencyAmount {
     invariant(currencyEquals(currencyAmount.currency, this.baseCurrency), 'TOKEN');
-    if (this.quoteCurrency instanceof Token) {
-      return new TokenAmount(this.quoteCurrency, super.multiply(currencyAmount.raw).quotient);
-    }
-    return CurrencyAmount.ether(super.multiply(currencyAmount.raw).quotient);
+
+    return toCurrencyAmount(this.quoteCurrency, super.multiply(currencyAmount.raw).quotient);
   }
 
+  /**
+   * Returns quote per one baseCurrency
+   */
   public quotePerOne(): CurrencyAmount {
-    const rawAmount = JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(this.baseCurrency.decimals));
-    const amount = this.baseCurrency === NATIVE ? CurrencyAmount.ether(rawAmount) : new TokenAmount(this.baseCurrency as Token, rawAmount);
+    const amountOneRaw = JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(this.baseCurrency.decimals));
+    const amountOne = toCurrencyAmount(this.baseCurrency, amountOneRaw);
 
-    if (this.quoteCurrency instanceof Token) {
-      return new TokenAmount(this.quoteCurrency, super.multiply(amount.raw).quotient);
-    }
-    return CurrencyAmount.ether(super.multiply(amount.raw).quotient);
+    return toCurrencyAmount(this.quoteCurrency, super.multiply(amountOne.raw).quotient);
   }
 
   public toSignificant(significantDigits: number = 6, format?: object, rounding?: Rounding): string {

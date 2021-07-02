@@ -1,5 +1,5 @@
 import invariant from 'tiny-invariant';
-import { ChainId, LiquidityProvider, Pair, Rounding, Route, Token, TokenAmount, Trade, TradeType, WETH as _WETH } from '../src';
+import { ChainId, LiquidityProvider, Pair, Rounding, Route, Token, TokenAmount, Trade, TradeType, WNATIVE as _WETH } from '../src';
 
 const ADDRESSES = ['0x0000000000000000000000000000000000000001', '0x0000000000000000000000000000000000000002', '0x0000000000000000000000000000000000000003'];
 const CHAIN_ID = ChainId.RINKEBY;

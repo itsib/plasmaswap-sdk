@@ -11,18 +11,19 @@ export {
   LiquidityProvider,
   TradeType,
   Rounding,
-  FACTORY_ADDRESS,
-  ROUTER_ADDRESS,
-  INIT_CODE_HASH,
+  NETWORK_LABEL,
+  NETWORK_NAME,
+  LP_CONFIGURATIONS,
   MINIMUM_LIQUIDITY,
   LIQUIDITY_TOKEN_SYMBOL,
   LIQUIDITY_TOKEN_NAME,
-} from './constants';
+  LIQUIDITY_PROVIDER_NAME,
+  LIQUIDITY_PROVIDER_SYMBOL,
+} from './constants/constants';
 
 export * from './errors';
 export * from './entities';
 export * from './router';
-export * from './fetcher';
 export * from './utils';
 
 export { IERC20, ISwapPair, ISwapRouter };

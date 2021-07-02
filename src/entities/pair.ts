@@ -1,5 +1,6 @@
 import { getCreate2Address } from '@ethersproject/address';
 import { keccak256, pack } from '@ethersproject/solidity';
+import { InsufficientInputAmountError, InsufficientReservesError } from '../errors';
 import JSBI from 'jsbi';
 import invariant from 'tiny-invariant';
 import {
@@ -7,27 +8,29 @@ import {
   _997,
   BigintIsh,
   ChainId,
-  LiquidityProvider,
   FIVE,
+  LIQUIDITY_PROVIDER_NAME,
   LIQUIDITY_TOKEN_NAME,
   LIQUIDITY_TOKEN_SYMBOL,
+  LiquidityProvider,
   MINIMUM_LIQUIDITY,
+  NETWORK_LABEL,
   ONE,
   ZERO,
-} from '../constants';
-import { InsufficientInputAmountError, InsufficientReservesError } from '../errors';
-import { getFactoryAddress, getInitCodeHash, parseBigintIsh, sqrt } from '../utils';
-import { Price } from './fractions/price';
-import { TokenAmount } from './fractions/tokenAmount';
+} from '../constants/constants';
+import { getLpConfiguration, parseBigintIsh, sqrt } from '../utils';
+import { TokenAmount, Price } from './fractions';
 import { Token } from './token';
 
-let PAIR_ADDRESS_CACHE: {
+type PairAddressCache = {
   [provider: number]: {
     [token0Address: string]: {
       [token1Address: string]: string;
     };
   };
-} = {};
+}
+
+const PAIR_ADDRESS_CACHE: PairAddressCache = {};
 
 export class Pair {
   public readonly liquidityToken: Token;
@@ -36,65 +39,58 @@ export class Pair {
 
   private readonly tokenAmounts: [TokenAmount, TokenAmount];
 
-  public static getAddress(tokenA: Token, tokenB: Token, liquidityProvider: LiquidityProvider): string {
+  public static getAddress(tokenA: Token, tokenB: Token, lp: LiquidityProvider): string {
     const tokens = tokenA.sortsBefore(tokenB) ? [tokenA, tokenB] : [tokenB, tokenA]; // does safety checks
+    const conf = getLpConfiguration(tokenA.chainId, lp);
 
-    if (PAIR_ADDRESS_CACHE?.[liquidityProvider]?.[tokens[0].address]?.[tokens[1].address] === undefined) {
-      const factoryAddress = getFactoryAddress(tokenA.chainId, liquidityProvider);
-      if (!factoryAddress) {
-        throw new Error(`Cannot find factory address for provider id ${liquidityProvider} in chain id ${tokenA.chainId}`);
-      }
-
-      const initCodeHash = getInitCodeHash(tokenA.chainId, liquidityProvider);
-      if (!initCodeHash) {
-        throw new Error(`Cannot find init code hash for provider id ${liquidityProvider} in chain id ${tokenA.chainId}`);
-      }
-
-      const address = getCreate2Address(
-        factoryAddress,
-        keccak256(['bytes'], [pack(['address', 'address'], [tokens[0].address, tokens[1].address])]),
-        initCodeHash,
-      );
-
-      PAIR_ADDRESS_CACHE = {
-        ...PAIR_ADDRESS_CACHE,
-        [liquidityProvider]: {
-          ...PAIR_ADDRESS_CACHE[liquidityProvider],
-          [tokens[0].address]: {
-            ...PAIR_ADDRESS_CACHE?.[liquidityProvider]?.[tokens[0].address],
-            [tokens[1].address]: address,
-          },
-        },
-      };
+    if (!conf) {
+      throw new Error(`Unsupported liquidity provider ${LIQUIDITY_PROVIDER_NAME[lp]} in network ${NETWORK_LABEL[tokenA.chainId]}`);
     }
 
-    return PAIR_ADDRESS_CACHE[liquidityProvider][tokens[0].address][tokens[1].address];
+    // To check cashed liquidity pool address, and generate address and save it
+    if (!PAIR_ADDRESS_CACHE?.[lp]?.[tokens[0].address]?.[tokens[1].address]) {
+      const address = getCreate2Address(
+        conf.factory,
+        keccak256(['bytes'], [pack(['address', 'address'], [tokens[0].address, tokens[1].address])]),
+        conf.initCodeHash,
+      );
+
+      if (!PAIR_ADDRESS_CACHE[lp]) {
+        PAIR_ADDRESS_CACHE[lp] = {};
+      }
+      if (!PAIR_ADDRESS_CACHE[lp][tokens[0].address]) {
+        PAIR_ADDRESS_CACHE[lp][tokens[0].address] = {};
+      }
+      PAIR_ADDRESS_CACHE[lp][tokens[0].address][tokens[1].address] = address;
+    }
+
+    return PAIR_ADDRESS_CACHE[lp][tokens[0].address][tokens[1].address];
   }
 
   /**
    * Given two tokens return the liquidity token that represents its liquidity shares
    * @param tokenA one of the two tokens
    * @param tokenB the other token
-   * @param liquidityProvider
+   * @param lp
    */
-  public static toTokenOfLiquidity(tokenA: Token, tokenB: Token, liquidityProvider: LiquidityProvider): Token {
+  public static toTokenOfLiquidity(tokenA: Token, tokenB: Token, lp: LiquidityProvider): Token {
     return new Token(
       tokenA.chainId,
-      Pair.getAddress(tokenA, tokenB, liquidityProvider),
+      Pair.getAddress(tokenA, tokenB, lp),
       18,
-      LIQUIDITY_TOKEN_SYMBOL[liquidityProvider],
-      LIQUIDITY_TOKEN_NAME[liquidityProvider],
+      LIQUIDITY_TOKEN_SYMBOL[lp],
+      LIQUIDITY_TOKEN_NAME[lp],
     );
   }
 
-  public constructor(tokenAmountA: TokenAmount, tokenAmountB: TokenAmount, liquidityProvider: LiquidityProvider) {
+  public constructor(tokenAmountA: TokenAmount, tokenAmountB: TokenAmount, lp: LiquidityProvider) {
     const tokenAmounts = tokenAmountA.token.sortsBefore(tokenAmountB.token) // does safety checks
       ? [tokenAmountA, tokenAmountB]
       : [tokenAmountB, tokenAmountA];
 
-    this.liquidityProvider = liquidityProvider;
+    this.liquidityProvider = lp;
 
-    this.liquidityToken = Pair.toTokenOfLiquidity(tokenAmounts[0].token, tokenAmounts[1].token, liquidityProvider);
+    this.liquidityToken = Pair.toTokenOfLiquidity(tokenAmounts[0].token, tokenAmounts[1].token, lp);
 
     this.tokenAmounts = tokenAmounts as [TokenAmount, TokenAmount];
   }

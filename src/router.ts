@@ -1,4 +1,4 @@
-import { TradeType } from './constants';
+import { TradeType } from './constants/constants';
 import invariant from 'tiny-invariant';
 import { validateAndParseAddress } from './utils';
 import { CurrencyAmount, NATIVE, Percent, Trade } from './entities';
@@ -74,10 +74,12 @@ export abstract class Router {
    * @param options options for the call parameters
    */
   public static swapCallParameters(trade: Trade, options: TradeOptions | TradeOptionsDeadline): SwapParameters {
-    const etherIn = trade.inputAmount.currency === NATIVE;
-    const etherOut = trade.outputAmount.currency === NATIVE;
-    // the router does not support both ether in and out
-    invariant(!(etherIn && etherOut), 'ETHER_IN_OUT');
+    const chainId = trade.route.chainId
+    const nativeIn = trade.inputAmount.currency === NATIVE[chainId];
+    const nativeOut = trade.outputAmount.currency === NATIVE[chainId];
+
+    // The router does not support both native currency in and out
+    invariant(!(nativeIn && nativeOut), 'NATIVE_IN_OUT');
     invariant(!('ttl' in options) || options.ttl > 0, 'TTL');
 
     const to: string = validateAndParseAddress(options.recipient);
@@ -93,12 +95,12 @@ export abstract class Router {
     let value: string;
     switch (trade.tradeType) {
       case TradeType.EXACT_INPUT:
-        if (etherIn) {
+        if (nativeIn) {
           methodName = useFeeOnTransfer ? 'swapExactETHForTokensSupportingFeeOnTransferTokens' : 'swapExactETHForTokens';
           // (uint amountOutMin, address[] calldata path, address to, uint deadline)
           args = [amountOut, path, to, deadline];
           value = amountIn;
-        } else if (etherOut) {
+        } else if (nativeOut) {
           methodName = useFeeOnTransfer ? 'swapExactTokensForETHSupportingFeeOnTransferTokens' : 'swapExactTokensForETH';
           // (uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline)
           args = [amountIn, amountOut, path, to, deadline];
@@ -112,12 +114,12 @@ export abstract class Router {
         break;
       case TradeType.EXACT_OUTPUT:
         invariant(!useFeeOnTransfer, 'EXACT_OUT_FOT');
-        if (etherIn) {
+        if (nativeIn) {
           methodName = 'swapETHForExactTokens';
           // (uint amountOut, address[] calldata path, address to, uint deadline)
           args = [amountOut, path, to, deadline];
           value = amountIn;
-        } else if (etherOut) {
+        } else if (nativeOut) {
           methodName = 'swapTokensForExactETH';
           // (uint amountOut, uint amountInMax, address[] calldata path, address to, uint deadline)
           args = [amountOut, amountIn, path, to, deadline];
