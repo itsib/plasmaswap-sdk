@@ -181,7 +181,8 @@ export class Trade {
 
     this.route = route;
     this.tradeType = tradeType;
-    this.inputAmount = tradeType === TradeType.EXACT_INPUT ? amount : route.input === NATIVE[route.chainId] ? CurrencyAmount.native(route.chainId, amounts[0].raw) : amounts[0];
+    this.inputAmount =
+      tradeType === TradeType.EXACT_INPUT ? amount : route.input === NATIVE[route.chainId] ? CurrencyAmount.native(route.chainId, amounts[0].raw) : amounts[0];
     this.outputAmount =
       tradeType === TradeType.EXACT_OUTPUT
         ? amount

@@ -75,7 +75,7 @@ export const LP_CONFIGURATIONS: { [chainId in ChainId]: { [lpProvider in Liquidi
       initCodeHash: '0x611ee9501fb19c9df82695e66f6c58d69d86907b531dfbed652231515ae84081',
       createdTimestamp: 1611490369,
       createdBlockNumber: 11718234,
-      graphUrl: 'https://api.thegraph.com/subgraphs/name/itsib/plasmaswap-v2'
+      graphUrl: 'https://api.thegraph.com/subgraphs/name/itsib/plasmaswap-v2',
     },
     [LiquidityProvider.SUSHISWAP]: {
       factory: '0xc0aee478e3658e2610c5f7a4a2e1777ce9e4f2ac',
@@ -83,7 +83,7 @@ export const LP_CONFIGURATIONS: { [chainId in ChainId]: { [lpProvider in Liquidi
       initCodeHash: '0xe18a34eb0e04b04f7a0ac29a6e80748dca96319b42c54d679cb821dca90c6303',
       createdTimestamp: 1599214239,
       createdBlockNumber: 10794229,
-      graphUrl: 'https://api.thegraph.com/subgraphs/name/sushiswap/exchange'
+      graphUrl: 'https://api.thegraph.com/subgraphs/name/sushiswap/exchange',
     },
   },
   [ChainId.ROPSTEN]: {
@@ -152,10 +152,10 @@ export const LP_CONFIGURATIONS: { [chainId in ChainId]: { [lpProvider in Liquidi
       initCodeHash: '0xe18a34eb0e04b04f7a0ac29a6e80748dca96319b42c54d679cb821dca90c6303',
       createdTimestamp: 1614311449,
       createdBlockNumber: 11333218,
-    }
+    },
   },
   [ChainId.MUMBAI]: {},
-}
+};
 
 export const MINIMUM_LIQUIDITY = JSBI.BigInt(1000);
 

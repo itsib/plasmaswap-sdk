@@ -16,7 +16,10 @@ export class Route {
     const chainId: ChainId = pairs[0].chainId;
 
     invariant(pairs.length > 0, 'PAIRS');
-    invariant(pairs.every(pair => pair.chainId === chainId), 'CHAIN_IDS');
+    invariant(
+      pairs.every(pair => pair.chainId === chainId),
+      'CHAIN_IDS',
+    );
     invariant((input instanceof Token && pairs[0].involvesToken(input)) || (input === NATIVE[chainId] && pairs[0].involvesToken(WNATIVE[chainId])), 'INPUT');
     invariant(
       typeof output === 'undefined' ||

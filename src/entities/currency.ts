@@ -16,7 +16,7 @@ export class Currency {
 
   public static readonly MATIC: Currency = new Currency(18, 'MATIC', 'Matic');
 
-  public static readonly NATIVE: {[chainId in ChainId]: Currency} = {
+  public static readonly NATIVE: { [chainId in ChainId]: Currency } = {
     [ChainId.MAINNET]: Currency.ETHER,
     [ChainId.KOVAN]: Currency.ETHER,
     [ChainId.ROPSTEN]: Currency.ETHER,

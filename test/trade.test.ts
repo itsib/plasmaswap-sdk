@@ -1,18 +1,5 @@
 import JSBI from 'jsbi';
-import {
-  ChainId,
-  CurrencyAmount,
-  LiquidityProvider,
-  NATIVE,
-  Pair,
-  Percent,
-  Route,
-  Token,
-  TokenAmount,
-  Trade,
-  TradeType,
-  WNATIVE,
-} from '../src';
+import { ChainId, CurrencyAmount, LiquidityProvider, NATIVE, Pair, Percent, Route, Token, TokenAmount, Trade, TradeType, WNATIVE } from '../src';
 
 describe('Trade', () => {
   const token0 = new Token(ChainId.MAINNET, '0x0000000000000000000000000000000000000001', 18, 't0');
@@ -46,7 +33,11 @@ describe('Trade', () => {
   });
 
   it('can be constructed with ETHER as output', () => {
-    const trade = new Trade(new Route([pair_weth_0], token0, NATIVE[ChainId.MAINNET]), CurrencyAmount.native(ChainId.MAINNET, JSBI.BigInt(100)), TradeType.EXACT_OUTPUT);
+    const trade = new Trade(
+      new Route([pair_weth_0], token0, NATIVE[ChainId.MAINNET]),
+      CurrencyAmount.native(ChainId.MAINNET, JSBI.BigInt(100)),
+      TradeType.EXACT_OUTPUT,
+    );
     expect(trade.inputAmount.currency).toEqual(token0);
     expect(trade.outputAmount.currency).toEqual(NATIVE[ChainId.MAINNET]);
   });

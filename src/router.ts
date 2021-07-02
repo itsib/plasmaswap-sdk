@@ -74,7 +74,7 @@ export abstract class Router {
    * @param options options for the call parameters
    */
   public static swapCallParameters(trade: Trade, options: TradeOptions | TradeOptionsDeadline): SwapParameters {
-    const chainId = trade.route.chainId
+    const chainId = trade.route.chainId;
     const nativeIn = trade.inputAmount.currency === NATIVE[chainId];
     const nativeOut = trade.outputAmount.currency === NATIVE[chainId];
 

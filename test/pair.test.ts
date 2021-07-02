@@ -101,6 +101,8 @@ describe('Pair', () => {
   describe('#involvesToken', () => {
     expect(new Pair(new TokenAmount(USDC, '100'), new TokenAmount(DAI, '100'), LiquidityProvider.UNISWAP).involvesToken(USDC)).toEqual(true);
     expect(new Pair(new TokenAmount(USDC, '100'), new TokenAmount(DAI, '100'), LiquidityProvider.UNISWAP).involvesToken(DAI)).toEqual(true);
-    expect(new Pair(new TokenAmount(USDC, '100'), new TokenAmount(DAI, '100'), LiquidityProvider.UNISWAP).involvesToken(WNATIVE[ChainId.MAINNET])).toEqual(false);
+    expect(new Pair(new TokenAmount(USDC, '100'), new TokenAmount(DAI, '100'), LiquidityProvider.UNISWAP).involvesToken(WNATIVE[ChainId.MAINNET])).toEqual(
+      false,
+    );
   });
 });

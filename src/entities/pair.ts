@@ -28,7 +28,7 @@ type PairAddressCache = {
       [token1Address: string]: string;
     };
   };
-}
+};
 
 const PAIR_ADDRESS_CACHE: PairAddressCache = {};
 
@@ -74,13 +74,7 @@ export class Pair {
    * @param lp
    */
   public static toTokenOfLiquidity(tokenA: Token, tokenB: Token, lp: LiquidityProvider): Token {
-    return new Token(
-      tokenA.chainId,
-      Pair.getAddress(tokenA, tokenB, lp),
-      18,
-      LIQUIDITY_TOKEN_SYMBOL[lp],
-      LIQUIDITY_TOKEN_NAME[lp],
-    );
+    return new Token(tokenA.chainId, Pair.getAddress(tokenA, tokenB, lp), 18, LIQUIDITY_TOKEN_SYMBOL[lp], LIQUIDITY_TOKEN_NAME[lp]);
   }
 
   public constructor(tokenAmountA: TokenAmount, tokenAmountB: TokenAmount, lp: LiquidityProvider) {
