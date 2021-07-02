@@ -4,7 +4,7 @@
 
 ## Running tests
 
-To run the tests, follow these steps. You must have at least node v10 and [yarn](https://yarnpkg.com/) installed.
+To run the tests, follow these steps. You must have at least node v10 installed.
 
 First clone the repository:
 
@@ -21,13 +21,13 @@ cd plasmafi-sdk/
 Install dependencies
 
 ```sh
-yarn install
+npm i
 ```
 
 Run tests
 
 ```sh
-yarn test
+npm test
 ```
 
 You should see output like the following:
