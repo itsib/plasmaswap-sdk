@@ -50,6 +50,16 @@ export const NETWORK_NAME: { [chainId in ChainId]: string } = {
   [ChainId.MUMBAI]: 'Polygon Matic Mumbai',
 };
 
+export const NATIVE_NAME: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: 'Ethereum',
+  [ChainId.RINKEBY]: 'Ethereum',
+  [ChainId.ROPSTEN]: 'Ethereum',
+  [ChainId.GÖRLI]: 'Ethereum',
+  [ChainId.KOVAN]: 'Ethereum',
+  [ChainId.MATIC]: 'Matic',
+  [ChainId.MUMBAI]: 'Matic',
+};
+
 export interface LpConfiguration {
   factory: string;
   router: string;
