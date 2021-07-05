@@ -1,4 +1,4 @@
-import { BigintIsh } from 'constants/constants';
+import { BigintIsh } from '../constants/constants';
 import JSBI from 'jsbi';
 
 export function parseBigintIsh(bigintIsh: BigintIsh): JSBI {

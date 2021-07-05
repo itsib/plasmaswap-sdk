@@ -1,4 +1,4 @@
-import { SOLIDITY_TYPE_MAXIMA, SolidityType, ZERO } from 'constants/constants';
+import { SOLIDITY_TYPE_MAXIMA, SolidityType, ZERO } from '../constants/constants';
 import JSBI from 'jsbi';
 import invariant from 'tiny-invariant';
 

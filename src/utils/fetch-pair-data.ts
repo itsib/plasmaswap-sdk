@@ -1,9 +1,11 @@
 import { Contract } from '@ethersproject/contracts';
 import { getNetwork } from '@ethersproject/networks';
 import { getDefaultProvider } from '@ethersproject/providers';
-import ISwapPair from 'abis/swap-pair.json';
-import { LiquidityProvider } from 'constants/constants';
-import { Pair, Token, TokenAmount } from 'entities';
+import ISwapPair from '../abis/swap-pair.json';
+import { LiquidityProvider } from '../constants/constants';
+import { Pair } from '../entities/pair';
+import { Token } from '../entities/currency';
+import { TokenAmount } from '../amounts/currency-amount';
 import invariant from 'tiny-invariant';
 
 /**

@@ -1,9 +1,9 @@
-import { TradeType } from 'constants/constants';
-import { NativeAmount } from 'amounts/native-amount';
-import { Percent } from 'amounts/percent';
-import { Trade } from 'entities/trade';
 import invariant from 'tiny-invariant';
-import { validateAndParseAddress } from 'utils/validate-and-parse-address';
+import { NativeAmount } from './amounts/currency-amount';
+import { Percent } from './amounts/percent';
+import { TradeType } from './constants/constants';
+import { Trade } from './entities/trade';
+import { validateAndParseAddress } from './utils/validate-and-parse-address';
 
 /**
  * Options for producing the arguments to send call to the router.

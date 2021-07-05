@@ -1,9 +1,9 @@
 import { Contract } from '@ethersproject/contracts';
 import { getNetwork } from '@ethersproject/networks';
 import { getDefaultProvider } from '@ethersproject/providers';
-import IERC20 from 'abis/erc20.json';
-import { ChainId } from 'constants/constants';
-import { Token } from 'entities';
+import IERC20 from '../abis/erc20.json';
+import { ChainId } from '../constants/constants';
+import { Token } from '../entities/currency';
 
 const TOKEN_DECIMALS_CACHE: { [chainId: number]: { [address: string]: number } } = {
   [ChainId.MAINNET]: {

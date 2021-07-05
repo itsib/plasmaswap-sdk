@@ -1,13 +1,12 @@
-import { Fraction } from 'amounts/fraction';
-import { NativeAmount } from 'amounts/native-amount';
-import { Percent } from 'amounts/percent';
-import { Price } from 'amounts/price';
-import { TokenAmount } from 'amounts/token-amount';
-import { ONE, TradeType, ZERO } from 'constants/constants';
 import invariant from 'tiny-invariant';
-import { Currency } from 'types/currency';
-import { sortedInsert } from 'utils/sorted-insert';
-import { toCurrencyAmount } from 'utils/to-currency-amount';
+import { Fraction } from '../amounts/fraction';
+import { NativeAmount, TokenAmount } from '../amounts/currency-amount';
+import { Percent } from '../amounts/percent';
+import { Price } from '../amounts/price';
+import { ONE, TradeType, ZERO } from '../constants/constants';
+import { Currency } from '../entities/currency';
+import { sortedInsert } from '../utils/sorted-insert';
+import { toCurrencyAmount } from '../utils/to-currency-amount';
 import { Pair } from './pair';
 import { Route } from './route';
 

@@ -1,4 +1,4 @@
-import { ONE, SolidityType, THREE, TWO, ZERO } from 'constants/constants';
+import { ONE, SolidityType, THREE, TWO, ZERO } from '../constants/constants';
 import JSBI from 'jsbi';
 import { validateSolidityTypeInstance } from './validate-solidity-type-instance';
 

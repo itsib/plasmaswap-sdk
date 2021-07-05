@@ -1,7 +1,9 @@
 import { getCreate2Address } from '@ethersproject/address';
 import { keccak256, pack } from '@ethersproject/solidity';
-import { Price } from 'amounts/price';
-import { TokenAmount } from 'amounts/token-amount';
+import JSBI from 'jsbi';
+import invariant from 'tiny-invariant';
+import { Price } from '../amounts/price';
+import { TokenAmount } from '../amounts/currency-amount';
 import {
   _1000,
   _997,
@@ -16,14 +18,12 @@ import {
   NETWORK_LABEL,
   ONE,
   ZERO,
-} from 'constants/constants';
-import { InsufficientInputAmountError, InsufficientReservesError } from 'errors';
-import JSBI from 'jsbi';
-import invariant from 'tiny-invariant';
-import { getLpConfiguration } from 'utils/get-lp-configuration';
-import { parseBigintIsh } from 'utils/parse-bigint-ish';
-import { sqrt } from 'utils/sqrt';
-import { Token } from './token';
+} from '../constants/constants';
+import { InsufficientInputAmountError, InsufficientReservesError } from '../errors';
+import { getLpConfiguration } from '../utils/get-lp-configuration';
+import { parseBigintIsh } from '../utils/parse-bigint-ish';
+import { sqrt } from '../utils/sqrt';
+import { Token } from './currency';
 
 type PairAddressCache = {
   [provider: number]: {

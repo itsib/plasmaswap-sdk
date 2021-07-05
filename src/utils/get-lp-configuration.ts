@@ -1,4 +1,4 @@
-import { ChainId, LiquidityProvider, LP_CONFIGURATIONS, LpConfiguration } from 'constants/constants';
+import { ChainId, LiquidityProvider, LP_CONFIGURATIONS, LpConfiguration } from '../constants/constants';
 
 /**
  * Returns Liquidity pool contracts configuration

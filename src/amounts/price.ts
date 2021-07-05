@@ -1,11 +1,11 @@
-import { BigintIsh, Rounding, TEN } from 'constants/constants';
-import { Route } from 'entities/route';
 import JSBI from 'jsbi';
 import invariant from 'tiny-invariant';
-import { Currency } from 'types/currency';
-import { toCurrencyAmount } from 'utils/to-currency-amount';
+import { BigintIsh, Rounding, TEN } from '../constants/constants';
+import { Route } from '../entities/route';
+import { Currency } from '../entities/currency';
+import { toCurrencyAmount } from '../utils/to-currency-amount';
 import { Fraction } from './fraction';
-import { NativeAmount } from './native-amount';
+import { NativeAmount } from './currency-amount';
 
 export class Price extends Fraction {
   public readonly baseCurrency: Currency; // input i.e. denominator
