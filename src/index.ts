@@ -21,7 +21,9 @@ export {
   LIQUIDITY_PROVIDER_SYMBOL,
 } from './constants/constants';
 
+export * from './types';
 export * from './errors';
+export * from './amounts';
 export * from './entities';
 export * from './router';
 export * from './utils';

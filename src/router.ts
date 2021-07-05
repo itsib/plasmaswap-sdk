@@ -1,7 +1,9 @@
-import { TradeType } from './constants/constants';
+import { TradeType } from 'constants/constants';
+import { NativeAmount } from 'amounts/native-amount';
+import { Percent } from 'amounts/percent';
+import { Trade } from 'entities/trade';
 import invariant from 'tiny-invariant';
-import { validateAndParseAddress } from './utils';
-import { CurrencyAmount, NATIVE, Percent, Trade } from './entities';
+import { validateAndParseAddress } from 'utils/validate-and-parse-address';
 
 /**
  * Options for producing the arguments to send call to the router.
@@ -54,7 +56,7 @@ export interface SwapParameters {
   value: string;
 }
 
-function toHex(currencyAmount: CurrencyAmount) {
+function toHex(currencyAmount: NativeAmount) {
   return `0x${currencyAmount.raw.toString(16)}`;
 }
 
@@ -68,15 +70,15 @@ export abstract class Router {
    * Cannot be constructed.
    */
   private constructor() {}
+
   /**
    * Produces the on-chain method name to call and the hex encoded parameters to pass as arguments for a given trade.
    * @param trade to produce call parameters for
    * @param options options for the call parameters
    */
   public static swapCallParameters(trade: Trade, options: TradeOptions | TradeOptionsDeadline): SwapParameters {
-    const chainId = trade.route.chainId;
-    const nativeIn = trade.inputAmount.currency === NATIVE[chainId];
-    const nativeOut = trade.outputAmount.currency === NATIVE[chainId];
+    const nativeIn = trade.inputAmount.currency.isNative;
+    const nativeOut = trade.outputAmount.currency.isNative;
 
     // The router does not support both native currency in and out
     invariant(!(nativeIn && nativeOut), 'NATIVE_IN_OUT');

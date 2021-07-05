@@ -1,5 +1,5 @@
 import JSBI from 'jsbi';
-import { ChainId, CurrencyAmount, LiquidityProvider, NATIVE, Pair, Percent, Route, Token, TokenAmount, Trade, TradeType, WNATIVE } from '../src';
+import { ChainId, NativeAmount, LiquidityProvider, NATIVE, Pair, Percent, Route, Token, TokenAmount, Trade, TradeType, WNATIVE } from '../src';
 
 describe('Trade', () => {
   const token0 = new Token(ChainId.MAINNET, '0x0000000000000000000000000000000000000001', 18, 't0');
@@ -13,16 +13,12 @@ describe('Trade', () => {
   const pair_1_2 = new Pair(new TokenAmount(token1, JSBI.BigInt(1200)), new TokenAmount(token2, JSBI.BigInt(1000)), LiquidityProvider.UNISWAP);
   const pair_1_3 = new Pair(new TokenAmount(token1, JSBI.BigInt(1200)), new TokenAmount(token3, JSBI.BigInt(1300)), LiquidityProvider.UNISWAP);
 
-  const pair_weth_0 = new Pair(
-    new TokenAmount(WNATIVE[ChainId.MAINNET], JSBI.BigInt(1000)),
-    new TokenAmount(token0, JSBI.BigInt(1000)),
-    LiquidityProvider.UNISWAP,
-  );
+  const pair_weth_0 = new Pair(new TokenAmount(WNATIVE[ChainId.MAINNET], JSBI.BigInt(1000)), new TokenAmount(token0, JSBI.BigInt(1000)), LiquidityProvider.UNISWAP);
 
   const empty_pair_0_1 = new Pair(new TokenAmount(token0, JSBI.BigInt(0)), new TokenAmount(token1, JSBI.BigInt(0)), LiquidityProvider.UNISWAP);
 
   it('can be constructed with ETHER as input', () => {
-    const trade = new Trade(new Route([pair_weth_0], NATIVE[ChainId.MAINNET]), CurrencyAmount.native(ChainId.MAINNET, JSBI.BigInt(100)), TradeType.EXACT_INPUT);
+    const trade = new Trade(new Route([pair_weth_0], NATIVE[ChainId.MAINNET]), NativeAmount.native(ChainId.MAINNET, JSBI.BigInt(100)), TradeType.EXACT_INPUT);
     expect(trade.inputAmount.currency).toEqual(NATIVE[ChainId.MAINNET]);
     expect(trade.outputAmount.currency).toEqual(token0);
   });
@@ -33,11 +29,7 @@ describe('Trade', () => {
   });
 
   it('can be constructed with ETHER as output', () => {
-    const trade = new Trade(
-      new Route([pair_weth_0], token0, NATIVE[ChainId.MAINNET]),
-      CurrencyAmount.native(ChainId.MAINNET, JSBI.BigInt(100)),
-      TradeType.EXACT_OUTPUT,
-    );
+    const trade = new Trade(new Route([pair_weth_0], token0, NATIVE[ChainId.MAINNET]), NativeAmount.native(ChainId.MAINNET, JSBI.BigInt(100)), TradeType.EXACT_OUTPUT);
     expect(trade.inputAmount.currency).toEqual(token0);
     expect(trade.outputAmount.currency).toEqual(NATIVE[ChainId.MAINNET]);
   });
@@ -99,7 +91,7 @@ describe('Trade', () => {
     });
 
     it('works for ETHER currency input', () => {
-      const result = Trade.bestTradeExactIn([pair_weth_0, pair_0_1, pair_0_3, pair_1_3], CurrencyAmount.native(ChainId.MAINNET, JSBI.BigInt(100)), token3);
+      const result = Trade.bestTradeExactIn([pair_weth_0, pair_0_1, pair_0_3, pair_1_3], NativeAmount.native(ChainId.MAINNET, JSBI.BigInt(100)), token3);
       expect(result).toHaveLength(2);
       expect(result[0].inputAmount.currency).toEqual(NATIVE[ChainId.MAINNET]);
       expect(result[0].route.path).toEqual([WNATIVE[ChainId.MAINNET], token0, token1, token3]);
@@ -248,7 +240,7 @@ describe('Trade', () => {
       expect(result[1].outputAmount.currency).toEqual(token3);
     });
     it('works for ETHER currency output', () => {
-      const result = Trade.bestTradeExactOut([pair_weth_0, pair_0_1, pair_0_3, pair_1_3], token3, CurrencyAmount.native(ChainId.MAINNET, JSBI.BigInt(100)));
+      const result = Trade.bestTradeExactOut([pair_weth_0, pair_0_1, pair_0_3, pair_1_3], token3, NativeAmount.native(ChainId.MAINNET, JSBI.BigInt(100)));
       expect(result).toHaveLength(2);
       expect(result[0].inputAmount.currency).toEqual(token3);
       expect(result[0].route.path).toEqual([token3, token0, WNATIVE[ChainId.MAINNET]]);

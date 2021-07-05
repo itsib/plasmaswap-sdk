@@ -24,27 +24,19 @@ describe.only('Fraction', () => {
   });
   describe('#add', () => {
     it('multiples denoms and adds nums', () => {
-      expect(new Fraction(JSBI.BigInt(1), JSBI.BigInt(10)).add(new Fraction(JSBI.BigInt(4), JSBI.BigInt(12)))).toEqual(
-        new Fraction(JSBI.BigInt(52), JSBI.BigInt(120)),
-      );
+      expect(new Fraction(JSBI.BigInt(1), JSBI.BigInt(10)).add(new Fraction(JSBI.BigInt(4), JSBI.BigInt(12)))).toEqual(new Fraction(JSBI.BigInt(52), JSBI.BigInt(120)));
     });
 
     it('same denom', () => {
-      expect(new Fraction(JSBI.BigInt(1), JSBI.BigInt(5)).add(new Fraction(JSBI.BigInt(2), JSBI.BigInt(5)))).toEqual(
-        new Fraction(JSBI.BigInt(3), JSBI.BigInt(5)),
-      );
+      expect(new Fraction(JSBI.BigInt(1), JSBI.BigInt(5)).add(new Fraction(JSBI.BigInt(2), JSBI.BigInt(5)))).toEqual(new Fraction(JSBI.BigInt(3), JSBI.BigInt(5)));
     });
   });
   describe('#subtract', () => {
     it('multiples denoms and subtracts nums', () => {
-      expect(new Fraction(JSBI.BigInt(1), JSBI.BigInt(10)).subtract(new Fraction(JSBI.BigInt(4), JSBI.BigInt(12)))).toEqual(
-        new Fraction(JSBI.BigInt(-28), JSBI.BigInt(120)),
-      );
+      expect(new Fraction(JSBI.BigInt(1), JSBI.BigInt(10)).subtract(new Fraction(JSBI.BigInt(4), JSBI.BigInt(12)))).toEqual(new Fraction(JSBI.BigInt(-28), JSBI.BigInt(120)));
     });
     it('same denom', () => {
-      expect(new Fraction(JSBI.BigInt(3), JSBI.BigInt(5)).subtract(new Fraction(JSBI.BigInt(2), JSBI.BigInt(5)))).toEqual(
-        new Fraction(JSBI.BigInt(1), JSBI.BigInt(5)),
-      );
+      expect(new Fraction(JSBI.BigInt(3), JSBI.BigInt(5)).subtract(new Fraction(JSBI.BigInt(2), JSBI.BigInt(5)))).toEqual(new Fraction(JSBI.BigInt(1), JSBI.BigInt(5)));
     });
   });
   describe('#lessThan', () => {
@@ -70,28 +62,16 @@ describe.only('Fraction', () => {
   });
   describe('#multiplty', () => {
     it('correct', () => {
-      expect(new Fraction(JSBI.BigInt(1), JSBI.BigInt(10)).multiply(new Fraction(JSBI.BigInt(4), JSBI.BigInt(12)))).toEqual(
-        new Fraction(JSBI.BigInt(4), JSBI.BigInt(120)),
-      );
-      expect(new Fraction(JSBI.BigInt(1), JSBI.BigInt(3)).multiply(new Fraction(JSBI.BigInt(4), JSBI.BigInt(12)))).toEqual(
-        new Fraction(JSBI.BigInt(4), JSBI.BigInt(36)),
-      );
-      expect(new Fraction(JSBI.BigInt(5), JSBI.BigInt(12)).multiply(new Fraction(JSBI.BigInt(4), JSBI.BigInt(12)))).toEqual(
-        new Fraction(JSBI.BigInt(20), JSBI.BigInt(144)),
-      );
+      expect(new Fraction(JSBI.BigInt(1), JSBI.BigInt(10)).multiply(new Fraction(JSBI.BigInt(4), JSBI.BigInt(12)))).toEqual(new Fraction(JSBI.BigInt(4), JSBI.BigInt(120)));
+      expect(new Fraction(JSBI.BigInt(1), JSBI.BigInt(3)).multiply(new Fraction(JSBI.BigInt(4), JSBI.BigInt(12)))).toEqual(new Fraction(JSBI.BigInt(4), JSBI.BigInt(36)));
+      expect(new Fraction(JSBI.BigInt(5), JSBI.BigInt(12)).multiply(new Fraction(JSBI.BigInt(4), JSBI.BigInt(12)))).toEqual(new Fraction(JSBI.BigInt(20), JSBI.BigInt(144)));
     });
   });
   describe('#divide', () => {
     it('correct', () => {
-      expect(new Fraction(JSBI.BigInt(1), JSBI.BigInt(10)).divide(new Fraction(JSBI.BigInt(4), JSBI.BigInt(12)))).toEqual(
-        new Fraction(JSBI.BigInt(12), JSBI.BigInt(40)),
-      );
-      expect(new Fraction(JSBI.BigInt(1), JSBI.BigInt(3)).divide(new Fraction(JSBI.BigInt(4), JSBI.BigInt(12)))).toEqual(
-        new Fraction(JSBI.BigInt(12), JSBI.BigInt(12)),
-      );
-      expect(new Fraction(JSBI.BigInt(5), JSBI.BigInt(12)).divide(new Fraction(JSBI.BigInt(4), JSBI.BigInt(12)))).toEqual(
-        new Fraction(JSBI.BigInt(60), JSBI.BigInt(48)),
-      );
+      expect(new Fraction(JSBI.BigInt(1), JSBI.BigInt(10)).divide(new Fraction(JSBI.BigInt(4), JSBI.BigInt(12)))).toEqual(new Fraction(JSBI.BigInt(12), JSBI.BigInt(40)));
+      expect(new Fraction(JSBI.BigInt(1), JSBI.BigInt(3)).divide(new Fraction(JSBI.BigInt(4), JSBI.BigInt(12)))).toEqual(new Fraction(JSBI.BigInt(12), JSBI.BigInt(12)));
+      expect(new Fraction(JSBI.BigInt(5), JSBI.BigInt(12)).divide(new Fraction(JSBI.BigInt(4), JSBI.BigInt(12)))).toEqual(new Fraction(JSBI.BigInt(60), JSBI.BigInt(48)));
     });
   });
 });

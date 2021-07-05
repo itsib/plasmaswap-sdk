@@ -43,23 +43,15 @@ describe('Pair', () => {
 
   describe('#token0Price', () => {
     it('returns price of token0 in terms of token1', () => {
-      expect(new Pair(new TokenAmount(USDC, '101'), new TokenAmount(DAI, '100'), LiquidityProvider.UNISWAP).token0Price).toEqual(
-        new Price(DAI, USDC, '100', '101'),
-      );
-      expect(new Pair(new TokenAmount(DAI, '100'), new TokenAmount(USDC, '101'), LiquidityProvider.UNISWAP).token0Price).toEqual(
-        new Price(DAI, USDC, '100', '101'),
-      );
+      expect(new Pair(new TokenAmount(USDC, '101'), new TokenAmount(DAI, '100'), LiquidityProvider.UNISWAP).token0Price).toEqual(new Price(DAI, USDC, '100', '101'));
+      expect(new Pair(new TokenAmount(DAI, '100'), new TokenAmount(USDC, '101'), LiquidityProvider.UNISWAP).token0Price).toEqual(new Price(DAI, USDC, '100', '101'));
     });
   });
 
   describe('#token1Price', () => {
     it('returns price of token1 in terms of token0', () => {
-      expect(new Pair(new TokenAmount(USDC, '101'), new TokenAmount(DAI, '100'), LiquidityProvider.UNISWAP).token1Price).toEqual(
-        new Price(USDC, DAI, '101', '100'),
-      );
-      expect(new Pair(new TokenAmount(DAI, '100'), new TokenAmount(USDC, '101'), LiquidityProvider.UNISWAP).token1Price).toEqual(
-        new Price(USDC, DAI, '101', '100'),
-      );
+      expect(new Pair(new TokenAmount(USDC, '101'), new TokenAmount(DAI, '100'), LiquidityProvider.UNISWAP).token1Price).toEqual(new Price(USDC, DAI, '101', '100'));
+      expect(new Pair(new TokenAmount(DAI, '100'), new TokenAmount(USDC, '101'), LiquidityProvider.UNISWAP).token1Price).toEqual(new Price(USDC, DAI, '101', '100'));
     });
   });
 
@@ -77,18 +69,12 @@ describe('Pair', () => {
 
   describe('#reserveOf', () => {
     it('returns reserves of the given token', () => {
-      expect(new Pair(new TokenAmount(USDC, '100'), new TokenAmount(DAI, '101'), LiquidityProvider.UNISWAP).reserveOf(USDC)).toEqual(
-        new TokenAmount(USDC, '100'),
-      );
-      expect(new Pair(new TokenAmount(DAI, '101'), new TokenAmount(USDC, '100'), LiquidityProvider.UNISWAP).reserveOf(USDC)).toEqual(
-        new TokenAmount(USDC, '100'),
-      );
+      expect(new Pair(new TokenAmount(USDC, '100'), new TokenAmount(DAI, '101'), LiquidityProvider.UNISWAP).reserveOf(USDC)).toEqual(new TokenAmount(USDC, '100'));
+      expect(new Pair(new TokenAmount(DAI, '101'), new TokenAmount(USDC, '100'), LiquidityProvider.UNISWAP).reserveOf(USDC)).toEqual(new TokenAmount(USDC, '100'));
     });
 
     it('throws if not in the pair', () => {
-      expect(() => new Pair(new TokenAmount(DAI, '101'), new TokenAmount(USDC, '100'), LiquidityProvider.UNISWAP).reserveOf(WNATIVE[ChainId.MAINNET])).toThrow(
-        'TOKEN',
-      );
+      expect(() => new Pair(new TokenAmount(DAI, '101'), new TokenAmount(USDC, '100'), LiquidityProvider.UNISWAP).reserveOf(WNATIVE[ChainId.MAINNET])).toThrow('TOKEN');
     });
   });
 
@@ -101,8 +87,6 @@ describe('Pair', () => {
   describe('#involvesToken', () => {
     expect(new Pair(new TokenAmount(USDC, '100'), new TokenAmount(DAI, '100'), LiquidityProvider.UNISWAP).involvesToken(USDC)).toEqual(true);
     expect(new Pair(new TokenAmount(USDC, '100'), new TokenAmount(DAI, '100'), LiquidityProvider.UNISWAP).involvesToken(DAI)).toEqual(true);
-    expect(new Pair(new TokenAmount(USDC, '100'), new TokenAmount(DAI, '100'), LiquidityProvider.UNISWAP).involvesToken(WNATIVE[ChainId.MAINNET])).toEqual(
-      false,
-    );
+    expect(new Pair(new TokenAmount(USDC, '100'), new TokenAmount(DAI, '100'), LiquidityProvider.UNISWAP).involvesToken(WNATIVE[ChainId.MAINNET])).toEqual(false);
   });
 });

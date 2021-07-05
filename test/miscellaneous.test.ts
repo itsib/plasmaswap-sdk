@@ -24,9 +24,7 @@ describe('miscellaneous', () => {
     const tokenB = new Token(ChainId.RINKEBY, '0x0000000000000000000000000000000000000002', 18);
     const pair = new Pair(new TokenAmount(tokenA, '10000'), new TokenAmount(tokenB, '10000'), LiquidityProvider.UNISWAP);
 
-    expect(
-      pair.getLiquidityMinted(new TokenAmount(pair.liquidityToken, '10000'), new TokenAmount(tokenA, '2000'), new TokenAmount(tokenB, '2000')).raw.toString(),
-    ).toEqual('2000');
+    expect(pair.getLiquidityMinted(new TokenAmount(pair.liquidityToken, '10000'), new TokenAmount(tokenA, '2000'), new TokenAmount(tokenB, '2000')).raw.toString()).toEqual('2000');
   });
 
   it('getLiquidityValue:!feeOn', async () => {

@@ -1,10 +1,10 @@
 import _Big, { RoundingMode } from 'big.js';
+import { BigintIsh, ONE, Rounding } from 'constants/constants';
 import _Decimal from 'decimal.js-light';
 import JSBI from 'jsbi';
 import invariant from 'tiny-invariant';
 import toFormat from 'toformat';
-import { BigintIsh, ONE, Rounding } from '../../constants/constants';
-import { parseBigintIsh } from '../../utils';
+import { parseBigintIsh } from 'utils/parse-bigint-ish';
 
 const Decimal = toFormat(_Decimal);
 const Big = toFormat(_Big);

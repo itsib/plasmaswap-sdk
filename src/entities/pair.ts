@@ -1,8 +1,7 @@
 import { getCreate2Address } from '@ethersproject/address';
 import { keccak256, pack } from '@ethersproject/solidity';
-import { InsufficientInputAmountError, InsufficientReservesError } from '../errors';
-import JSBI from 'jsbi';
-import invariant from 'tiny-invariant';
+import { Price } from 'amounts/price';
+import { TokenAmount } from 'amounts/token-amount';
 import {
   _1000,
   _997,
@@ -17,9 +16,13 @@ import {
   NETWORK_LABEL,
   ONE,
   ZERO,
-} from '../constants/constants';
-import { getLpConfiguration, parseBigintIsh, sqrt } from '../utils';
-import { TokenAmount, Price } from './fractions';
+} from 'constants/constants';
+import { InsufficientInputAmountError, InsufficientReservesError } from 'errors';
+import JSBI from 'jsbi';
+import invariant from 'tiny-invariant';
+import { getLpConfiguration } from 'utils/get-lp-configuration';
+import { parseBigintIsh } from 'utils/parse-bigint-ish';
+import { sqrt } from 'utils/sqrt';
 import { Token } from './token';
 
 type PairAddressCache = {
@@ -49,11 +52,7 @@ export class Pair {
 
     // To check cashed liquidity pool address, and generate address and save it
     if (!PAIR_ADDRESS_CACHE?.[lp]?.[tokens[0].address]?.[tokens[1].address]) {
-      const address = getCreate2Address(
-        conf.factory,
-        keccak256(['bytes'], [pack(['address', 'address'], [tokens[0].address, tokens[1].address])]),
-        conf.initCodeHash,
-      );
+      const address = getCreate2Address(conf.factory, keccak256(['bytes'], [pack(['address', 'address'], [tokens[0].address, tokens[1].address])]), conf.initCodeHash);
 
       if (!PAIR_ADDRESS_CACHE[lp]) {
         PAIR_ADDRESS_CACHE[lp] = {};
@@ -171,11 +170,7 @@ export class Pair {
 
   public getInputAmount(outputAmount: TokenAmount): [TokenAmount, Pair] {
     invariant(this.involvesToken(outputAmount.token), 'TOKEN');
-    if (
-      JSBI.equal(this.reserve0.raw, ZERO) ||
-      JSBI.equal(this.reserve1.raw, ZERO) ||
-      JSBI.greaterThanOrEqual(outputAmount.raw, this.reserveOf(outputAmount.token).raw)
-    ) {
+    if (JSBI.equal(this.reserve0.raw, ZERO) || JSBI.equal(this.reserve1.raw, ZERO) || JSBI.greaterThanOrEqual(outputAmount.raw, this.reserveOf(outputAmount.token).raw)) {
       throw new InsufficientReservesError();
     }
 

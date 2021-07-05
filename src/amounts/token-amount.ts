@@ -1,10 +1,10 @@
+import { BigintIsh } from 'constants/constants';
 import JSBI from 'jsbi';
 import invariant from 'tiny-invariant';
-import { BigintIsh } from '../../constants/constants';
-import { Token } from '../token';
-import { CurrencyAmount } from './currencyAmount';
+import { Token } from 'entities/token';
+import { AbstractAmount } from './abstract-amount';
 
-export class TokenAmount extends CurrencyAmount {
+export class TokenAmount extends AbstractAmount {
   public readonly token: Token;
 
   // amount _must_ be raw, i.e. in the native representation

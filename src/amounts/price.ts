@@ -1,12 +1,11 @@
-import { toCurrencyAmount } from '../../utils';
-import { currencyEquals } from '../token';
-import invariant from 'tiny-invariant';
+import { BigintIsh, Rounding, TEN } from 'constants/constants';
+import { Route } from 'entities/route';
 import JSBI from 'jsbi';
-import { BigintIsh, Rounding, TEN } from '../../constants/constants';
-import { Currency } from '../currency';
-import { Route } from '../route';
+import invariant from 'tiny-invariant';
+import { Currency } from 'types/currency';
+import { toCurrencyAmount } from 'utils/to-currency-amount';
 import { Fraction } from './fraction';
-import { CurrencyAmount } from './currencyAmount';
+import { NativeAmount } from './native-amount';
 
 export class Price extends Fraction {
   public readonly baseCurrency: Currency; // input i.e. denominator
@@ -47,7 +46,7 @@ export class Price extends Fraction {
   }
 
   public multiply(other: Price): Price {
-    invariant(currencyEquals(this.quoteCurrency, other.baseCurrency), 'TOKEN');
+    invariant(this.quoteCurrency.equals(other.baseCurrency), 'TOKEN');
     const fraction = super.multiply(other);
     return new Price(this.baseCurrency, other.quoteCurrency, fraction.denominator, fraction.numerator);
   }
@@ -56,8 +55,8 @@ export class Price extends Fraction {
    * Performs floor division on overflow
    * @param currencyAmount
    */
-  public quote(currencyAmount: CurrencyAmount): CurrencyAmount {
-    invariant(currencyEquals(currencyAmount.currency, this.baseCurrency), 'TOKEN');
+  public quote(currencyAmount: NativeAmount): NativeAmount {
+    invariant(currencyAmount.currency.equals(this.baseCurrency), 'TOKEN');
 
     return toCurrencyAmount(this.quoteCurrency, super.multiply(currencyAmount.raw).quotient);
   }
@@ -65,7 +64,7 @@ export class Price extends Fraction {
   /**
    * Returns quote per one baseCurrency
    */
-  public quotePerOne(): CurrencyAmount {
+  public quotePerOne(): NativeAmount {
     const amountOneRaw = JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(this.baseCurrency.decimals));
     const amountOne = toCurrencyAmount(this.baseCurrency, amountOneRaw);
 

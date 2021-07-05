@@ -1,18 +1,21 @@
+import { ChainId } from 'constants/constants';
+import { NATIVE } from 'entities/native';
 import invariant from 'tiny-invariant';
-import { ChainId } from '../constants/constants';
-import { validateAndParseAddress } from '../utils';
-import { Currency } from './currency';
+import { Currency } from 'types/currency';
+import { validateAndParseAddress } from 'utils/validate-and-parse-address';
+import { AbstractCurrency } from './abstract-currency';
 
 /**
  * Represents an ERC20 token with a unique address and some metadata.
  */
-export class Token extends Currency {
-  public readonly chainId: ChainId;
+export class Token extends AbstractCurrency {
   public readonly address: string;
 
+  public readonly isNative: false = false;
+  public readonly isToken: true = true;
+
   public constructor(chainId: ChainId, address: string, decimals: number, symbol?: string, name?: string) {
-    super(decimals, symbol, name);
-    this.chainId = chainId;
+    super(chainId, decimals, symbol, name);
     this.address = validateAndParseAddress(address);
   }
 
@@ -20,12 +23,8 @@ export class Token extends Currency {
    * Returns true if the two tokens are equivalent, i.e. have the same chainId and address.
    * @param other other token to compare
    */
-  public equals(other: Token): boolean {
-    // short circuit on reference equality
-    if (this === other) {
-      return true;
-    }
-    return this.chainId === other.chainId && this.address === other.address;
+  public equals(other: Currency): boolean {
+    return other.isToken && this.chainId === other.chainId && this.address === other.address;
   }
 
   /**
@@ -39,20 +38,22 @@ export class Token extends Currency {
     invariant(this.address !== other.address, 'ADDRESSES');
     return this.address.toLowerCase() < other.address.toLowerCase();
   }
-}
 
-/**
- * Compares two currencies for equality
- */
-export function currencyEquals(currencyA: Currency, currencyB: Currency): boolean {
-  if (currencyA instanceof Token && currencyB instanceof Token) {
-    return currencyA.equals(currencyB);
-  } else if (currencyA instanceof Token) {
-    return false;
-  } else if (currencyB instanceof Token) {
-    return false;
-  } else {
-    return currencyA === currencyB;
+  /**
+   * Return this token, which does not need to be wrapped
+   */
+  public wrapped(): Token {
+    return this;
+  }
+
+  /**
+   * Return this token, which does not need to be wrapped
+   */
+  public unwrapped(): Currency {
+    if (this.equals(WNATIVE[this.chainId])) {
+      return NATIVE[this.chainId];
+    }
+    return this;
   }
 }
 
