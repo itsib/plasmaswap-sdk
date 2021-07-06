@@ -59,7 +59,7 @@ export abstract class AbstractCurrency {
    * Return the wrapped version of this currency that can be used with the Uniswap contracts. Currencies must
    * implement this to be used in Uniswap
    */
-  public abstract wrapped(): Currency;
+  public abstract wrapped(): Token;
 
   /**
    * Returns native version of currency (WETH => ETH)
@@ -92,7 +92,7 @@ export class Native extends AbstractCurrency {
     return other.isNative && other.chainId === this.chainId;
   }
 
-  public wrapped(): Currency {
+  public wrapped(): Token {
     const wNative = WNATIVE[this.chainId];
     invariant(!!wNative, 'WRAPPED');
     return wNative;
@@ -140,7 +140,7 @@ export class Token extends AbstractCurrency {
   /**
    * Return this token, which does not need to be wrapped
    */
-  public wrapped(): Currency {
+  public wrapped(): Token {
     return this;
   }
 
