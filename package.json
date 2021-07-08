@@ -1,7 +1,7 @@
 {
   "name": "@plasma-fi/sdk",
   "description": "🛠 An SDK for building dapp on PlasmaSwap.",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -24,7 +24,7 @@
     "test": "tsdx test",
     "lint": "tsdx lint src test",
     "lint:fix": "tsdx lint src test --fix",
-    "publish": "./publish.sh"
+    "prepublish": "./pre-publish.sh"
   },
   "dependencies": {
     "big.js": "^5.2.2",

@@ -14,5 +14,3 @@ npm run lint
 npm run build
 
 node ./node_modules/.bin/bump --tag --push --all
-
-npm publish
