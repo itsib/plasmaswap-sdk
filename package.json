@@ -24,7 +24,7 @@
     "test": "tsdx test",
     "lint": "tsdx lint src test",
     "lint:fix": "tsdx lint src test --fix",
-    "prepublish": "./pre-publish.sh"
+    "prepublishOnly": "./pre-publish.sh"
   },
   "dependencies": {
     "big.js": "^5.2.2",

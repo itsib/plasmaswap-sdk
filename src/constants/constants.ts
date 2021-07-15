@@ -10,7 +10,6 @@ export enum ChainId {
   GÖRLI = 5,
   KOVAN = 42,
   MATIC = 137,
-  MUMBAI = 80001,
 }
 
 export enum LiquidityProvider {
@@ -37,7 +36,6 @@ export const NETWORK_LABEL: { [chainId in ChainId]: string } = {
   [ChainId.GÖRLI]: 'Görli',
   [ChainId.KOVAN]: 'Kovan',
   [ChainId.MATIC]: 'Polygon',
-  [ChainId.MUMBAI]: 'Mumbai',
 };
 
 export const NETWORK_NAME: { [chainId in ChainId]: string } = {
@@ -47,7 +45,6 @@ export const NETWORK_NAME: { [chainId in ChainId]: string } = {
   [ChainId.GÖRLI]: 'Goerli Test Network',
   [ChainId.KOVAN]: 'Kovan Test Network',
   [ChainId.MATIC]: 'Polygon Matic',
-  [ChainId.MUMBAI]: 'Polygon Matic Mumbai',
 };
 
 export interface LpConfiguration {
@@ -154,7 +151,6 @@ export const LP_CONFIGURATIONS: { [chainId in ChainId]: { [lpProvider in Liquidi
       createdBlockNumber: 11333218,
     },
   },
-  [ChainId.MUMBAI]: {},
 };
 
 export const MINIMUM_LIQUIDITY = JSBI.BigInt(1000);
