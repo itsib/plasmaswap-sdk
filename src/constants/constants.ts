@@ -142,6 +142,7 @@ export const LP_CONFIGURATIONS: { [chainId in ChainId]: { [lpProvider in Liquidi
       initCodeHash: '0xb19b1e3807140bf48c498cb50370e129d9bd9e5e333bf0e67d9ce7507e634b72',
       createdTimestamp: 1623075489,
       createdBlockNumber: 15441546,
+      graphUrl: 'https://api.thegraph.com/subgraphs/name/itsib/plasmaswap-poligon',
     },
     [LiquidityProvider.SUSHISWAP]: {
       factory: '0xc35DADB65012eC5796536bD9864eD8773aBc74C4',
@@ -149,6 +150,7 @@ export const LP_CONFIGURATIONS: { [chainId in ChainId]: { [lpProvider in Liquidi
       initCodeHash: '0xe18a34eb0e04b04f7a0ac29a6e80748dca96319b42c54d679cb821dca90c6303',
       createdTimestamp: 1614311449,
       createdBlockNumber: 11333218,
+      graphUrl: 'https://api.thegraph.com/subgraphs/name/sushiswap/matic-exchange',
     },
   },
 };
