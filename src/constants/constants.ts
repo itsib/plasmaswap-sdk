@@ -157,10 +157,13 @@ export const LP_CONFIGURATIONS: { [chainId in ChainId]: { [lpProvider in Liquidi
 
 export const MINIMUM_LIQUIDITY = JSBI.BigInt(1000);
 
+/**
+ * The name of the LP token affects the signature, DO NOT CHANGE IT!!!
+ */
 export const LIQUIDITY_TOKEN_NAME = {
   [LiquidityProvider.UNISWAP]: 'Uniswap V2',
   [LiquidityProvider.PLASMA]: 'Plasmaswap',
-  [LiquidityProvider.SUSHISWAP]: 'Sushiswap',
+  [LiquidityProvider.SUSHISWAP]: 'SushiSwap LP Token',
 };
 
 export const LIQUIDITY_TOKEN_SYMBOL = {
