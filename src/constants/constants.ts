@@ -18,6 +18,30 @@ export enum LiquidityProvider {
   SUSHISWAP,
 }
 
+export enum Trade0xLiquiditySource {
+  Native = 'Native',
+  Uniswap = 'Uniswap',
+  UniswapV2 = 'Uniswap_V2',
+  UniswapV3 = 'Uniswap_V3',
+  Eth2Dai = 'Eth2Dai',
+  Kyber = 'Kyber',
+  Curve = 'Curve',
+  LiquidityProvider = 'LiquidityProvider',
+  MultiBridge = 'MultiBridge',
+  Balancer = 'Balancer',
+  BalancerV2 = 'Balancer_V2',
+  Cream = 'CREAM',
+  Bancor = 'Bancor',
+  MStable = 'mStable',
+  Mooniswap = 'Mooniswap',
+  MultiHop = 'MultiHop',
+  Shell = 'Shell',
+  Swerve = 'Swerve',
+  SnowSwap = 'SnowSwap',
+  SushiSwap = 'SushiSwap',
+  Dodo = 'DODO',
+}
+
 export enum TradeType {
   EXACT_INPUT,
   EXACT_OUTPUT,
@@ -28,6 +52,8 @@ export enum Rounding {
   ROUND_HALF_UP,
   ROUND_UP,
 }
+
+export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 export const NETWORK_LABEL: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: 'Ethereum',
@@ -183,6 +209,8 @@ export const LIQUIDITY_PROVIDER_NAME: { [provider in LiquidityProvider]: string 
   [LiquidityProvider.UNISWAP]: 'Uniswap',
   [LiquidityProvider.SUSHISWAP]: 'SushiSwap',
 };
+
+export const SUPPORTED_0X_CHAINS: ChainId[] = [ChainId.MAINNET, ChainId.MATIC, ChainId.ROPSTEN];
 
 // Exports for internal consumption
 export const ZERO = JSBI.BigInt(0);

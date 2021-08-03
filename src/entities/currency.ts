@@ -168,3 +168,11 @@ export const WNATIVE: { [chainId: number]: Token } = {
 };
 
 export type Currency = Native | Token;
+
+export function isCurrency(obj?: any): boolean {
+  if (!obj && typeof obj !== 'object') {
+    return false;
+  }
+
+  return obj instanceof Native || obj instanceof Token;
+}

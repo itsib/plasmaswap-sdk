@@ -112,3 +112,11 @@ export class TokenAmount extends AbstractCurrencyAmount {
 }
 
 export type CurrencyAmount = NativeAmount | TokenAmount;
+
+export function isCurrencyAmount(obj?: any): boolean {
+  if (!obj && typeof obj !== 'object') {
+    return false;
+  }
+
+  return obj instanceof NativeAmount || obj instanceof TokenAmount;
+}

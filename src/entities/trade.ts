@@ -1,6 +1,6 @@
 import invariant from 'tiny-invariant';
 import { Fraction } from '../amounts/fraction';
-import { NativeAmount, TokenAmount } from '../amounts/currency-amount';
+import { CurrencyAmount, NativeAmount, TokenAmount } from '../amounts/currency-amount';
 import { Percent } from '../amounts/percent';
 import { Price } from '../amounts/price';
 import { ONE, TradeType, ZERO } from '../constants/constants';
@@ -16,7 +16,7 @@ import { Route } from './route';
  * @param inputAmount the input amount of the trade
  * @param outputAmount the output amount of the trade
  */
-function computePriceImpact(midPrice: Price, inputAmount: NativeAmount, outputAmount: NativeAmount): Percent {
+function computePriceImpact(midPrice: Price, inputAmount: CurrencyAmount, outputAmount: CurrencyAmount): Percent {
   const exactQuote = midPrice.raw.multiply(inputAmount.raw);
   // calculate slippage := (exactQuote - outputAmount) / exactQuote
   const slippage = exactQuote.subtract(outputAmount.raw).divide(exactQuote);
@@ -25,8 +25,8 @@ function computePriceImpact(midPrice: Price, inputAmount: NativeAmount, outputAm
 
 // minimal interface so the input output comparator may be shared across types
 interface InputOutput {
-  readonly inputAmount: NativeAmount;
-  readonly outputAmount: NativeAmount;
+  readonly inputAmount: CurrencyAmount;
+  readonly outputAmount: CurrencyAmount;
 }
 
 // comparator function that allows sorting trades by their output amounts, in decreasing order, and then input amounts
@@ -96,11 +96,11 @@ export class Trade {
   /**
    * The input amount for the trade assuming no slippage.
    */
-  public readonly inputAmount: NativeAmount;
+  public readonly inputAmount: CurrencyAmount;
   /**
    * The output amount for the trade assuming no slippage.
    */
-  public readonly outputAmount: NativeAmount;
+  public readonly outputAmount: CurrencyAmount;
   /**
    * The price expressed in terms of output amount/input amount.
    */
@@ -119,7 +119,7 @@ export class Trade {
    * @param route route of the exact in trade
    * @param amountIn the amount being passed in
    */
-  public static exactIn(route: Route, amountIn: NativeAmount): Trade {
+  public static exactIn(route: Route, amountIn: CurrencyAmount): Trade {
     return new Trade(route, amountIn, TradeType.EXACT_INPUT);
   }
 
@@ -128,11 +128,11 @@ export class Trade {
    * @param route route of the exact out trade
    * @param amountOut the amount returned by the trade
    */
-  public static exactOut(route: Route, amountOut: NativeAmount): Trade {
+  public static exactOut(route: Route, amountOut: CurrencyAmount): Trade {
     return new Trade(route, amountOut, TradeType.EXACT_OUTPUT);
   }
 
-  public constructor(route: Route, amount: NativeAmount, tradeType: TradeType) {
+  public constructor(route: Route, amount: CurrencyAmount, tradeType: TradeType) {
     const amounts: TokenAmount[] = new Array(route.path.length);
     const nextPairs: Pair[] = new Array(route.pairs.length);
     if (tradeType === TradeType.EXACT_INPUT) {
@@ -169,7 +169,7 @@ export class Trade {
    * Get the minimum amount that must be received from this trade for the given slippage tolerance
    * @param slippageTolerance tolerance of unfavorable slippage from the execution price of this trade
    */
-  public minimumAmountOut(slippageTolerance: Percent): NativeAmount {
+  public minimumAmountOut(slippageTolerance: Percent): CurrencyAmount {
     invariant(!slippageTolerance.lessThan(ZERO), 'SLIPPAGE_TOLERANCE');
 
     if (this.tradeType === TradeType.EXACT_OUTPUT) {
@@ -188,7 +188,7 @@ export class Trade {
    * Get the maximum amount in that can be spent via this trade for the given slippage tolerance
    * @param slippageTolerance tolerance of unfavorable slippage from the execution price of this trade
    */
-  public maximumAmountIn(slippageTolerance: Percent): NativeAmount {
+  public maximumAmountIn(slippageTolerance: Percent): CurrencyAmount {
     invariant(!slippageTolerance.lessThan(ZERO), 'SLIPPAGE_TOLERANCE');
     if (this.tradeType === TradeType.EXACT_INPUT) {
       return this.inputAmount;
@@ -215,12 +215,12 @@ export class Trade {
    */
   public static bestTradeExactIn(
     pairs: Pair[],
-    currencyAmountIn: NativeAmount,
+    currencyAmountIn: CurrencyAmount,
     currencyOut: Currency,
     { maxNumResults = 3, maxHops = 3 }: BestTradeOptions = {},
     // used in recursion.
     currentPairs: Pair[] = [],
-    originalAmountIn: NativeAmount = currencyAmountIn,
+    originalAmountIn: CurrencyAmount = currencyAmountIn,
     bestTrades: Trade[] = [],
   ): Trade[] {
     invariant(pairs.length > 0, 'PAIRS');
@@ -297,11 +297,11 @@ export class Trade {
   public static bestTradeExactOut(
     pairs: Pair[],
     currencyIn: Currency,
-    currencyAmountOut: NativeAmount,
+    currencyAmountOut: CurrencyAmount,
     { maxNumResults = 3, maxHops = 3 }: BestTradeOptions = {},
     // used in recursion.
     currentPairs: Pair[] = [],
-    originalAmountOut: NativeAmount = currencyAmountOut,
+    originalAmountOut: CurrencyAmount = currencyAmountOut,
     bestTrades: Trade[] = [],
   ): Trade[] {
     invariant(pairs.length > 0, 'PAIRS');

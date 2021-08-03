@@ -3,6 +3,7 @@
   "description": "🛠 An SDK for building dapp on PlasmaSwap.",
   "version": "1.0.12",
   "license": "MIT",
+  "author": "itsib.su@gmail.com",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
@@ -12,7 +13,9 @@
   "keywords": [
     "plasmaswap",
     "ethereum",
-    "plasma.finance"
+    "plasma.finance",
+    "0x",
+    "hyperdex"
   ],
   "module": "dist/sdk.esm.js",
   "engines": {
@@ -36,6 +39,7 @@
   },
   "peerDependencies": {
     "@ethersproject/address": "^5.0.0-beta",
+    "@ethersproject/bignumber": "^5.0.0-beta",
     "@ethersproject/contracts": "^5.0.0-beta",
     "@ethersproject/networks": "^5.0.0-beta",
     "@ethersproject/providers": "^5.0.0-beta",
@@ -43,6 +47,7 @@
   },
   "devDependencies": {
     "@ethersproject/address": "^5.0.2",
+    "@ethersproject/bignumber": "^5.0.2",
     "@ethersproject/contracts": "^5.0.2",
     "@ethersproject/networks": "^5.0.2",
     "@ethersproject/providers": "^5.0.5",
