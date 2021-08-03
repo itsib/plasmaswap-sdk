@@ -4,15 +4,7 @@ import Big from 'big.js';
 import invariant from 'tiny-invariant';
 import { CurrencyAmount, Fraction, isCurrencyAmount, Percent, Price } from '../amounts';
 import { NativeAmount } from '../amounts/currency-amount';
-import {
-  ChainId,
-  ONE,
-  SUPPORTED_0X_CHAINS,
-  Trade0xLiquiditySource,
-  TradeType,
-  ZERO,
-  ZERO_ADDRESS,
-} from '../constants/constants';
+import { ChainId, ONE, SUPPORTED_0X_CHAINS, Trade0xLiquiditySource, TradeType, ZERO, ZERO_ADDRESS } from '../constants/constants';
 import { fetch0xQuote, fetchNativePriceInUsd, FetchQuoteQuery, toCurrencyAmount } from '../utils';
 import { Currency, isCurrency, Token } from './currency';
 
@@ -57,7 +49,6 @@ export interface Trade0xProportion {
 }
 
 export class Trade0x {
-
   public readonly tradeType: TradeType;
 
   public readonly inputAmount: CurrencyAmount;
@@ -98,12 +89,12 @@ export class Trade0x {
     invariant(SUPPORTED_0X_CHAINS.includes(chainId), 'Unsupported chainId');
 
     const tradeType = isCurrencyAmount(opts.from) ? TradeType.EXACT_INPUT : TradeType.EXACT_OUTPUT;
-    const toCurrency = isCurrency(opts.to) ? opts.to as Currency : (opts.to as CurrencyAmount).currency;
-    const fromCurrency = isCurrency(opts.from) ? opts.from as Currency : (opts.from as CurrencyAmount).currency;
+    const toCurrency = isCurrency(opts.to) ? (opts.to as Currency) : (opts.to as CurrencyAmount).currency;
+    const fromCurrency = isCurrency(opts.from) ? (opts.from as Currency) : (opts.from as CurrencyAmount).currency;
 
     const query: FetchQuoteQuery = {
-      buyToken: toCurrency instanceof Token ? toCurrency.address : toCurrency.symbol as string,
-      sellToken: fromCurrency instanceof Token ? fromCurrency.address : fromCurrency.symbol as string,
+      buyToken: toCurrency instanceof Token ? toCurrency.address : (toCurrency.symbol as string),
+      sellToken: fromCurrency instanceof Token ? fromCurrency.address : (fromCurrency.symbol as string),
       buyAmount: isCurrencyAmount(opts.to) ? (opts.to as CurrencyAmount).raw.toString() : undefined,
       sellAmount: isCurrencyAmount(opts.from) ? (opts.from as CurrencyAmount).raw.toString() : undefined,
       slippagePercentage: opts.slippagePercentage,
@@ -113,7 +104,12 @@ export class Trade0x {
 
     const [prices, nativeCurrencyPrice] = await Promise.all([fetch0xQuote(chainId, true, query, abort), fetchNativePriceInUsd(chainId, abort)]);
 
-    const networkFee = NativeAmount.native(chainId, Big(prices.gasPrice).times(prices.gas).toString());
+    const networkFee = NativeAmount.native(
+      chainId,
+      Big(prices.gasPrice)
+        .times(prices.gas)
+        .toString(),
+    );
     const protocolFee = NativeAmount.native(chainId, prices.protocolFee);
     const proportions = prices.sources.filter(i => !!Number(i.proportion)).map(i => ({ name: i.name, proportion: Number(i.proportion) * 100 }));
     const inputAmount = toCurrencyAmount(fromCurrency, prices.sellAmount);
@@ -155,9 +151,9 @@ export class Trade0x {
     proportions: Trade0xProportion[],
     allowanceTarget?: string,
     rates?: {
-      inputToNative?: string,
-      outputToNative?: string,
-      nativeToUsd?: string,
+      inputToNative?: string;
+      outputToNative?: string;
+      nativeToUsd?: string;
     },
     slippagePercentage?: string,
     excludedSources?: Trade0xLiquiditySource[],
@@ -195,7 +191,7 @@ export class Trade0x {
           .times(Big(this.outputAmountInUsd).div(Big(this.inputAmountInUsd)))
           .minus(100)
           .times(denominator)
-          .toFixed(0)
+          .toFixed(0);
         this.priceImpact = new Percent(numerator, denominator);
       }
 
@@ -247,11 +243,11 @@ export class Trade0x {
   /**
    * Returns transaction data
    */
-  public async transactionRequest(account?: string): Promise<TransactionRequest> {
+  public async getTransactionData(account?: string): Promise<TransactionRequest> {
     const chainId = this.inputAmount.currency.chainId;
     const query: FetchQuoteQuery = {
-      buyToken: this.outputAmount.currency instanceof Token ? this.outputAmount.currency.address : this.outputAmount.currency.symbol as string,
-      sellToken: this.inputAmount.currency instanceof Token ? this.inputAmount.currency.address : this.inputAmount.currency.symbol as string,
+      buyToken: this.outputAmount.currency instanceof Token ? this.outputAmount.currency.address : (this.outputAmount.currency.symbol as string),
+      sellToken: this.inputAmount.currency instanceof Token ? this.inputAmount.currency.address : (this.inputAmount.currency.symbol as string),
       buyAmount: this.tradeType === TradeType.EXACT_INPUT ? undefined : this.outputAmount.raw.toString(10),
       sellAmount: this.tradeType === TradeType.EXACT_INPUT ? this.inputAmount.raw.toString(10) : undefined,
       slippagePercentage: this._optsSlippagePercentage,
@@ -261,11 +257,15 @@ export class Trade0x {
     return fetch0xQuote(chainId, false, query).then(quote => {
       return {
         to: quote.to,
+        from: account,
+        nonce: undefined,
+
+        gasLimit: BigNumber.from(quote.gas),
+        gasPrice: BigNumber.from(quote.gasPrice),
+
         data: quote.data,
         value: BigNumber.from(quote.value),
         chainId: quote.chainId,
-        gasLimit: BigNumber.from(quote.gas),
-        gasPrice: BigNumber.from(quote.gasPrice),
       };
     });
   }

@@ -18,7 +18,7 @@ const CURRENCY_COINGECKO_ID_MAP: { [chainId in ChainId]: CoingeckoId } = {
   [ChainId.GÖRLI]: CoingeckoId.ETHEREUM,
   [ChainId.KOVAN]: CoingeckoId.ETHEREUM,
   [ChainId.MATIC]: CoingeckoId.POLYGON,
-}
+};
 
 const URL = 'https://api.coingecko.com/api/v3/simple/price';
 
