@@ -1,4 +1,8 @@
 import JSBI from 'jsbi';
+import Big from 'big.js';
+
+Big.NE = -18;
+Big.PE = 32;
 
 // exports for external consumption
 export type BigintIsh = JSBI | bigint | string;
