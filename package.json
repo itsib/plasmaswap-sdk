@@ -1,7 +1,7 @@
 {
   "name": "@plasma-fi/sdk",
   "description": "🛠 An SDK for building dapp on PlasmaSwap.",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "license": "MIT",
   "author": "itsib.su@gmail.com",
   "main": "dist/index.js",

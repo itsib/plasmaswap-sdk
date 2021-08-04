@@ -1,5 +1,6 @@
 import { _100, Rounding } from '../constants/constants';
 import { Fraction } from './fraction';
+import Big from 'big.js';
 
 const _100_PERCENT = new Fraction(_100);
 
