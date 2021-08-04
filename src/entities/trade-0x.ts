@@ -172,17 +172,19 @@ export class Trade0x {
 
     if (rates && rates.nativeToUsd) {
       if (rates.inputToNative) {
-        this.inputAmountInUsd = Big(this.inputAmount.toExact())
+        const inputAmount = this.inputAmount.toExact();
+        const inputAmountInUsd = Big(inputAmount)
           .div(rates.inputToNative)
-          .times(rates.nativeToUsd)
-          .toString();
+          .times(rates.nativeToUsd);
+        this.inputAmountInUsd = inputAmountInUsd.gt(0) ? inputAmountInUsd.toString() : undefined;
       }
 
       if (rates.outputToNative) {
-        this.outputAmountInUsd = Big(this.outputAmount.toExact())
+        const outputAmount = this.outputAmount.toExact();
+        const outputAmountInUsd = Big(outputAmount)
           .div(rates.outputToNative)
-          .times(rates.nativeToUsd)
-          .toString();
+          .times(rates.nativeToUsd);
+        this.outputAmountInUsd = outputAmountInUsd.gt(0) ? outputAmountInUsd.toString() : undefined;
       }
 
       if (this.inputAmountInUsd && this.outputAmountInUsd) {
