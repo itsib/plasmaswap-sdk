@@ -85,6 +85,10 @@ export interface FetchQuoteResponse {
    */
   guaranteedPrice: string;
   /**
+   * The field will be filled in if you send {@link FetchQuoteQuery.takerAddress}
+   */
+  from?: string;
+  /**
    * The address of the contract to send call data to.
    */
   to: string;

@@ -257,7 +257,7 @@ export class Trade0x {
     return fetch0xQuote(chainId, false, query).then(quote => {
       return {
         to: quote.to,
-        from: account,
+        from: quote.from || account,
         nonce: undefined,
 
         gasLimit: BigNumber.from(quote.gas),
