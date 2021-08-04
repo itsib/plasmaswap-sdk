@@ -11,4 +11,8 @@ export class Percent extends Fraction {
   public toFixed(decimalPlaces: number = 2, format?: object, rounding?: Rounding): string {
     return this.multiply(_100_PERCENT).toFixed(decimalPlaces, format, rounding);
   }
+
+  public toExact(): string {
+    return new Big(this.numerator.toString()).div(this.denominator.toString()).toString();
+  }
 }

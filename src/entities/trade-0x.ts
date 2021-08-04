@@ -158,20 +158,18 @@ export class Trade0x {
 
     // Price impact calculation
     if (rates && rates.inputToNative && rates.outputToNative) {
-      const inputAmountInNative = Big(this.inputAmount.toExact())
-        .div(rates.inputToNative)
-        .toString();
-      const outputAmountInNative = Big(this.outputAmount.toExact())
-        .div(rates.outputToNative)
-        .toString();
+      const inputAmountInNative = Big(this.inputAmount.toExact()).div(rates.inputToNative);
+      const outputAmountInNative = Big(this.outputAmount.toExact()).div(rates.outputToNative);
 
-      const denominator = '100';
-      const numerator = Big(100)
-        .times(Big(outputAmountInNative).div(inputAmountInNative))
-        .minus(100)
-        .times(denominator)
-        .toFixed(0);
-      this.priceImpact = new Percent(numerator, denominator);
+      if (inputAmountInNative.gt(0) && outputAmountInNative.gt(0)) {
+        const denominator = '100';
+        const numerator = Big(100)
+          .times(Big(outputAmountInNative).div(inputAmountInNative))
+          .minus(100)
+          .times(denominator)
+          .toFixed(0);
+        this.priceImpact = new Percent(numerator, denominator);
+      }
     }
   }
 
