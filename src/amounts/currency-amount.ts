@@ -50,7 +50,6 @@ abstract class AbstractCurrencyAmount extends Fraction {
   }
 
   public toExact(format: object = { groupSeparator: '' }): string {
-    Big.DP = this.currency.decimals;
     return new Big(this.numerator.toString()).div(this.denominator.toString()).toFormat(format);
   }
 

@@ -5,7 +5,7 @@ import invariant from 'tiny-invariant';
 import { CurrencyAmount, Fraction, isCurrencyAmount, Percent, Price } from '../amounts';
 import { NativeAmount } from '../amounts/currency-amount';
 import { ChainId, ONE, SUPPORTED_0X_CHAINS, Trade0xLiquiditySource, TradeType, ZERO, ZERO_ADDRESS } from '../constants/constants';
-import { fetch0xQuote, fetchNativePriceInUsd, FetchQuoteQuery, toCurrencyAmount } from '../utils';
+import { fetch0xQuote, FetchQuoteQuery, toCurrencyAmount } from '../utils';
 import { Currency, isCurrency, Token } from './currency';
 
 export interface Trade0xOptions {
@@ -53,21 +53,13 @@ export class Trade0x {
 
   public readonly inputAmount: CurrencyAmount;
 
-  public readonly inputAmountInUsd?: string;
-
   public readonly outputAmount: CurrencyAmount;
-
-  public readonly outputAmountInUsd?: string;
 
   public readonly executionPrice: Price;
 
   public readonly networkFee: CurrencyAmount;
 
-  public readonly networkFeeInUsd?: string;
-
   public readonly tradeFee: CurrencyAmount;
-
-  public readonly tradeFeeInUsd?: string;
 
   public readonly allowanceTarget?: string;
 
@@ -102,7 +94,7 @@ export class Trade0x {
       excludedSources: opts.excludedSources?.join(','),
     };
 
-    const [prices, nativeCurrencyPrice] = await Promise.all([fetch0xQuote(chainId, true, query, abort), fetchNativePriceInUsd(chainId, abort)]);
+    const prices = await fetch0xQuote(chainId, true, query, abort);
 
     const networkFee = NativeAmount.native(
       chainId,
@@ -115,17 +107,12 @@ export class Trade0x {
     const inputAmount = toCurrencyAmount(fromCurrency, prices.sellAmount);
     const outputAmount = toCurrencyAmount(toCurrency, prices.buyAmount);
 
-    let rates: { inputToNative?: string; outputToNative?: string; nativeToUsd?: string } | undefined = undefined;
-    if (nativeCurrencyPrice) {
-      rates = {
-        nativeToUsd: nativeCurrencyPrice.toString(),
-      };
-      if (prices.buyTokenToEthRate) {
-        rates.outputToNative = prices.buyTokenToEthRate;
-      }
-      if (prices.sellTokenToEthRate) {
-        rates.inputToNative = prices.sellTokenToEthRate;
-      }
+    let rates: { inputToNative?: string; outputToNative?: string } = {};
+    if (prices.buyTokenToEthRate) {
+      rates.outputToNative = prices.buyTokenToEthRate;
+    }
+    if (prices.sellTokenToEthRate) {
+      rates.inputToNative = prices.sellTokenToEthRate;
     }
 
     return new Trade0x(
@@ -153,7 +140,6 @@ export class Trade0x {
     rates?: {
       inputToNative?: string;
       outputToNative?: string;
-      nativeToUsd?: string;
     },
     slippagePercentage?: string,
     excludedSources?: Trade0xLiquiditySource[],
@@ -170,41 +156,22 @@ export class Trade0x {
     this._optsSlippagePercentage = slippagePercentage;
     this._optsExcludedSources = excludedSources;
 
-    if (rates && rates.nativeToUsd) {
-      if (rates.inputToNative) {
-        const inputAmount = this.inputAmount.toExact();
-        const inputAmountInUsd = Big(inputAmount)
-          .div(rates.inputToNative)
-          .times(rates.nativeToUsd);
-        this.inputAmountInUsd = inputAmountInUsd.gt(0) ? inputAmountInUsd.toString() : undefined;
-      }
-
-      if (rates.outputToNative) {
-        const outputAmount = this.outputAmount.toExact();
-        const outputAmountInUsd = Big(outputAmount)
-          .div(rates.outputToNative)
-          .times(rates.nativeToUsd);
-        this.outputAmountInUsd = outputAmountInUsd.gt(0) ? outputAmountInUsd.toString() : undefined;
-      }
-
-      if (this.inputAmountInUsd && this.outputAmountInUsd) {
-        const denominator = '100';
-        const numerator = Big(100)
-          .times(Big(this.outputAmountInUsd).div(Big(this.inputAmountInUsd)))
-          .minus(100)
-          .times(denominator)
-          .toFixed(0);
-        this.priceImpact = new Percent(numerator, denominator);
-      }
-
-      this.networkFeeInUsd = Big(this.networkFee.toExact())
-        .times(rates.nativeToUsd)
+    // Price impact calculation
+    if (rates && rates.inputToNative && rates.outputToNative) {
+      const inputAmountInNative = Big(this.inputAmount.toExact())
+        .div(rates.inputToNative)
+        .toString();
+      const outputAmountInNative = Big(this.outputAmount.toExact())
+        .div(rates.outputToNative)
         .toString();
 
-      this.tradeFeeInUsd = Big(this.tradeFee.toExact())
-        .div(Big(10).pow(18))
-        .times(rates.nativeToUsd)
-        .toString();
+      const denominator = '100';
+      const numerator = Big(100)
+        .times(Big(outputAmountInNative).div(inputAmountInNative))
+        .minus(100)
+        .times(denominator)
+        .toFixed(0);
+      this.priceImpact = new Percent(numerator, denominator);
     }
   }
 
