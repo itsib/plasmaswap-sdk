@@ -210,7 +210,7 @@ export const LIQUIDITY_PROVIDER_SYMBOL: { [provider in LiquidityProvider]: strin
 
 export const LIQUIDITY_PROVIDER_NAME: { [provider in LiquidityProvider]: string } = {
   [LiquidityProvider.PLASMA]: 'PlasmaSwap',
-  [LiquidityProvider.UNISWAP]: 'Uniswap',
+  [LiquidityProvider.UNISWAP]: 'Uniswap V2',
   [LiquidityProvider.SUSHISWAP]: 'SushiSwap',
 };
 
