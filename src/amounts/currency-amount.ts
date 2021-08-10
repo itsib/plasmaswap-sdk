@@ -49,8 +49,9 @@ abstract class AbstractCurrencyAmount extends Fraction {
     return super.toFixed(decimalPlaces, format, rounding);
   }
 
-  public toExact(): string {
-    return new Big(this.numerator.toString()).div(this.denominator.toString()).toString();
+  public toExact(format: object = { groupSeparator: '' }): string {
+    Big.DP = this.currency.decimals;
+    return new Big(this.numerator.toString()).div(this.denominator.toString()).toFormat(format);
   }
 
   public get raw(): JSBI {
