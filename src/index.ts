@@ -21,6 +21,7 @@ export {
   LIQUIDITY_TOKEN_NAME,
   LIQUIDITY_PROVIDER_NAME,
   LIQUIDITY_PROVIDER_SYMBOL,
+  TRADE_0X_LIQUIDITY_SOURCE_NAME,
 } from './constants/constants';
 
 export * from './errors';
