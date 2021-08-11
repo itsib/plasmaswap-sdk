@@ -26,7 +26,6 @@ export enum Trade0xLiquiditySource {
   Native = 'Native',
   Uniswap = 'Uniswap',
   UniswapV2 = 'Uniswap_V2',
-  UniswapV3 = 'Uniswap_V3',
   Eth2Dai = 'Eth2Dai',
   Kyber = 'Kyber',
   Curve = 'Curve',
@@ -36,6 +35,7 @@ export enum Trade0xLiquiditySource {
   BalancerV2 = 'Balancer_V2',
   Cream = 'CREAM',
   Bancor = 'Bancor',
+  MakerPsm = 'MakerPsm',
   MStable = 'mStable',
   Mooniswap = 'Mooniswap',
   MultiHop = 'MultiHop',
@@ -44,6 +44,44 @@ export enum Trade0xLiquiditySource {
   SnowSwap = 'SnowSwap',
   SushiSwap = 'SushiSwap',
   Dodo = 'DODO',
+  DodoV2 = 'DODO_V2',
+  CryptoCom = 'CryptoCom',
+  Linkswap = 'Linkswap',
+  KyberDmm = 'KyberDMM',
+  Smoothy = 'Smoothy',
+  Component = 'Component',
+  Saddle = 'Saddle',
+  XSigma = 'xSigma',
+  UniswapV3 = 'Uniswap_V3',
+  CurveV2 = 'Curve_V2',
+  Lido = 'Lido',
+  ShibaSwap = 'ShibaSwap',
+  Clipper = 'Clipper',
+  /**
+   * BSC only
+   */
+  // PancakeSwap = 'PancakeSwap',
+  // PancakeSwapV2 = 'PancakeSwap_V2',
+  // BakerySwap = 'BakerySwap',
+  // Nerve = 'Nerve',
+  // Belt = 'Belt',
+  // Ellipsis = 'Ellipsis',
+  // ApeSwap = 'ApeSwap',
+  // CafeSwap = 'CafeSwap',
+  // CheeseSwap = 'CheeseSwap',
+  // JulSwap = 'JulSwap',
+  // ACryptos = 'ACryptoS',
+  /**
+   * Polygon only
+   */
+  QuickSwap = 'QuickSwap',
+  ComethSwap = 'ComethSwap',
+  Dfyn = 'Dfyn',
+  WaultSwap = 'WaultSwap',
+  Polydex = 'Polydex',
+  FirebirdOneSwap = 'FirebirdOneSwap',
+  JetSwap = 'JetSwap',
+  IronSwap = 'IronSwap',
 }
 
 export enum TradeType {
@@ -215,6 +253,51 @@ export const LIQUIDITY_PROVIDER_NAME: { [provider in LiquidityProvider]: string 
 };
 
 export const SUPPORTED_0X_CHAINS: ChainId[] = [ChainId.MAINNET, ChainId.MATIC, ChainId.ROPSTEN];
+
+export const TRADE_0X_LIQUIDITY_SOURCE_NAME: { [provider in Trade0xLiquiditySource]: string } = {
+  [Trade0xLiquiditySource.Native]: '',
+  [Trade0xLiquiditySource.Uniswap]: 'Uniswap',
+  [Trade0xLiquiditySource.UniswapV2]: 'Uniswap V2',
+  [Trade0xLiquiditySource.UniswapV3]: 'Uniswap V3',
+  [Trade0xLiquiditySource.Eth2Dai]: 'ETH to DAI',
+  [Trade0xLiquiditySource.Kyber]: 'Kyber',
+  [Trade0xLiquiditySource.Curve]: 'Curve',
+  [Trade0xLiquiditySource.CurveV2]: 'Curve V2',
+  [Trade0xLiquiditySource.LiquidityProvider]: '',
+  [Trade0xLiquiditySource.MultiBridge]: '',
+  [Trade0xLiquiditySource.Balancer]: 'Balancer',
+  [Trade0xLiquiditySource.BalancerV2]: 'Balancer V2',
+  [Trade0xLiquiditySource.Cream]: 'CREAM',
+  [Trade0xLiquiditySource.Bancor]: 'Bancor',
+  [Trade0xLiquiditySource.MakerPsm]: 'MakerPSM',
+  [Trade0xLiquiditySource.MStable]: 'mStable',
+  [Trade0xLiquiditySource.Mooniswap]: 'Mooniswap',
+  [Trade0xLiquiditySource.MultiHop]: 'HyperDEX',
+  [Trade0xLiquiditySource.Shell]: 'Shell',
+  [Trade0xLiquiditySource.Swerve]: 'Swerve',
+  [Trade0xLiquiditySource.SnowSwap]: 'SnowSwap',
+  [Trade0xLiquiditySource.SushiSwap]: 'SushiSwap',
+  [Trade0xLiquiditySource.Dodo]: 'DODO',
+  [Trade0xLiquiditySource.DodoV2]: 'DODO V2',
+  [Trade0xLiquiditySource.CryptoCom]: 'CryptoCom',
+  [Trade0xLiquiditySource.Linkswap]: 'Linkswap',
+  [Trade0xLiquiditySource.KyberDmm]: 'KyberDMM',
+  [Trade0xLiquiditySource.Smoothy]: 'Smoothy',
+  [Trade0xLiquiditySource.Component]: 'Component',
+  [Trade0xLiquiditySource.Saddle]: 'Saddle',
+  [Trade0xLiquiditySource.XSigma]: 'xSigma',
+  [Trade0xLiquiditySource.Lido]: 'Lido',
+  [Trade0xLiquiditySource.ShibaSwap]: 'ShibaSwap',
+  [Trade0xLiquiditySource.Clipper]: 'Clipper',
+  [Trade0xLiquiditySource.QuickSwap]: 'QuickSwap',
+  [Trade0xLiquiditySource.ComethSwap]: 'ComethSwap',
+  [Trade0xLiquiditySource.Dfyn]: 'Dfyn',
+  [Trade0xLiquiditySource.WaultSwap]: 'WaultSwap',
+  [Trade0xLiquiditySource.Polydex]: 'Polydex',
+  [Trade0xLiquiditySource.FirebirdOneSwap]: 'FirebirdOneSwap',
+  [Trade0xLiquiditySource.JetSwap]: 'JetSwap',
+  [Trade0xLiquiditySource.IronSwap]: 'IronSwap',
+};
 
 // Exports for internal consumption
 export const ZERO = JSBI.BigInt(0);
