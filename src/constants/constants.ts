@@ -255,7 +255,7 @@ export const LIQUIDITY_PROVIDER_NAME: { [provider in LiquidityProvider]: string 
 export const SUPPORTED_0X_CHAINS: ChainId[] = [ChainId.MAINNET, ChainId.MATIC, ChainId.ROPSTEN];
 
 export const TRADE_0X_LIQUIDITY_SOURCE_NAME: { [provider in Trade0xLiquiditySource]: string } = {
-  [Trade0xLiquiditySource.Native]: '',
+  [Trade0xLiquiditySource.Native]: 'Native',
   [Trade0xLiquiditySource.Uniswap]: 'Uniswap',
   [Trade0xLiquiditySource.UniswapV2]: 'Uniswap V2',
   [Trade0xLiquiditySource.UniswapV3]: 'Uniswap V3',
@@ -263,8 +263,8 @@ export const TRADE_0X_LIQUIDITY_SOURCE_NAME: { [provider in Trade0xLiquiditySour
   [Trade0xLiquiditySource.Kyber]: 'Kyber',
   [Trade0xLiquiditySource.Curve]: 'Curve',
   [Trade0xLiquiditySource.CurveV2]: 'Curve V2',
-  [Trade0xLiquiditySource.LiquidityProvider]: '',
-  [Trade0xLiquiditySource.MultiBridge]: '',
+  [Trade0xLiquiditySource.LiquidityProvider]: 'Liquidity Provider',
+  [Trade0xLiquiditySource.MultiBridge]: 'MultiBridge',
   [Trade0xLiquiditySource.Balancer]: 'Balancer',
   [Trade0xLiquiditySource.BalancerV2]: 'Balancer V2',
   [Trade0xLiquiditySource.Cream]: 'CREAM',
