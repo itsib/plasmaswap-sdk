@@ -66,6 +66,21 @@ export interface FetchQuoteQuery {
    * See also here: https://0x.org/docs/guides/rfqt-in-the-0x-api#quote-validation.
    */
   skipValidation?: boolean;
+  /**
+   * (Optional) The ETH address that should receive affiliate fees specified with {@link buyTokenPercentageFee}.
+   */
+  feeRecipient?: string;
+  /**
+   * (Optional) The percentage (between 0 - 1.0) of the buyAmount that should be attributed to {@link feeRecipient} as
+   * affiliate fees. Note that this requires that the {@link feeRecipient} parameter is also specified in the request.
+   */
+  buyTokenPercentageFee?: number;
+  /**
+   * (Optional) An ETH address for which to attribute the trade for tracking and analytics purposes.
+   * Note {@link affiliateAddress} is only for tracking trades and has no impact on affiliate fees,
+   * for affiliate fees use {@link feeRecipient}.
+   */
+  affiliateAddress?: string;
 }
 
 export interface FetchQuoteResponse {

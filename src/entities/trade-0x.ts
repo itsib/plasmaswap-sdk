@@ -35,6 +35,21 @@ export interface Trade0xOptions {
    * that will not be included in the provided quote.
    */
   excludedSources?: Trade0xLiquiditySource[];
+  /**
+   * (Optional) The ETH address that should receive affiliate fees specified with {@link buyTokenPercentageFee}.
+   */
+  feeRecipient?: string;
+  /**
+   * (Optional) The percentage (between 0 - 1.0) of the buyAmount that should be attributed to {@link feeRecipient} as
+   * affiliate fees. Note that this requires that the {@link feeRecipient} parameter is also specified in the request.
+   */
+  buyTokenPercentageFee?: number;
+  /**
+   * (Optional) An ETH address for which to attribute the trade for tracking and analytics purposes.
+   * Note {@link affiliateAddress} is only for tracking trades and has no impact on affiliate fees,
+   * for affiliate fees use {@link feeRecipient}.
+   */
+  affiliateAddress?: string;
 }
 
 export interface Trade0xProportion {
@@ -73,9 +88,16 @@ export class Trade0x {
    */
   private readonly _optsSlippagePercentage?: string;
   private readonly _optsExcludedSources?: Trade0xLiquiditySource[];
+  private readonly _optsFeeRecipient?: string;
+  private readonly _optsBuyTokenPercentageFee?: number;
+  private readonly _optsAffiliateAddress?: string;
 
   public static async getTrade(opts: Trade0xOptions, abort?: AbortSignal): Promise<Trade0x> {
     invariant((isCurrencyAmount(opts.from) && isCurrency(opts.to)) || (isCurrency(opts.from) && isCurrencyAmount(opts.to)), 'One of from or to amount should be passed');
+
+    if (opts.buyTokenPercentageFee !== undefined) {
+      invariant(opts.buyTokenPercentageFee >= 0 && opts.buyTokenPercentageFee >= 1, 'buyTokenPercentageFee should be number between 0-1.0');
+    }
 
     const chainId: ChainId = isCurrency(opts.from) ? (opts.from as Currency).chainId : (opts.to as Currency).chainId;
     invariant(SUPPORTED_0X_CHAINS.includes(chainId), 'Unsupported chainId');
@@ -92,6 +114,9 @@ export class Trade0x {
       slippagePercentage: opts.slippagePercentage,
       gasPrice: opts.gasPrice,
       excludedSources: opts.excludedSources?.join(','),
+      feeRecipient: opts.feeRecipient,
+      buyTokenPercentageFee: opts.buyTokenPercentageFee,
+      affiliateAddress: opts.affiliateAddress,
     };
 
     const prices = await fetch0xQuote(chainId, true, query, abort);
@@ -126,6 +151,9 @@ export class Trade0x {
       rates,
       opts.slippagePercentage,
       opts.excludedSources,
+      opts.feeRecipient,
+      opts.buyTokenPercentageFee,
+      opts.affiliateAddress,
     );
   }
 
@@ -143,6 +171,9 @@ export class Trade0x {
     },
     slippagePercentage?: string,
     excludedSources?: Trade0xLiquiditySource[],
+    feeRecipient?: string,
+    buyTokenPercentageFee?: number,
+    affiliateAddress?: string,
   ) {
     this.tradeType = tradeType;
     this.inputAmount = inputAmount;
@@ -155,6 +186,9 @@ export class Trade0x {
 
     this._optsSlippagePercentage = slippagePercentage;
     this._optsExcludedSources = excludedSources;
+    this._optsFeeRecipient = feeRecipient;
+    this._optsBuyTokenPercentageFee = buyTokenPercentageFee;
+    this._optsAffiliateAddress = affiliateAddress;
 
     // Price impact calculation
     if (rates && rates.inputToNative && rates.outputToNative) {
@@ -220,6 +254,9 @@ export class Trade0x {
       slippagePercentage: this._optsSlippagePercentage,
       excludedSources: this._optsExcludedSources?.join(','),
       takerAddress: account,
+      feeRecipient: this._optsFeeRecipient,
+      buyTokenPercentageFee: this._optsBuyTokenPercentageFee,
+      affiliateAddress: this._optsAffiliateAddress,
     };
     return fetch0xQuote(chainId, false, query).then(quote => {
       return {
