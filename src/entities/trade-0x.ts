@@ -96,7 +96,7 @@ export class Trade0x {
     invariant((isCurrencyAmount(opts.from) && isCurrency(opts.to)) || (isCurrency(opts.from) && isCurrencyAmount(opts.to)), 'One of from or to amount should be passed');
 
     if (opts.buyTokenPercentageFee !== undefined) {
-      invariant(opts.buyTokenPercentageFee >= 0 && opts.buyTokenPercentageFee >= 1, 'buyTokenPercentageFee should be number between 0-1.0');
+      invariant(opts.buyTokenPercentageFee >= 0 && opts.buyTokenPercentageFee <= 1, 'buyTokenPercentageFee should be number between 0-1.0');
     }
 
     const chainId: ChainId = isCurrency(opts.from) ? (opts.from as Currency).chainId : (opts.to as Currency).chainId;
