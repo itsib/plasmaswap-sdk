@@ -222,7 +222,7 @@ export async function fetch0xQuote(chainId: ChainId, justPrice: boolean, query: 
   });
 
   if (!res.ok) {
-    throw new Error('Fetch 0x quote request error');
+    throw new Error('Fetch quote error, try again later.');
   }
 
   return await res.json();
