@@ -14,6 +14,7 @@ export enum ChainId {
   GÖRLI = 5,
   KOVAN = 42,
   MATIC = 137,
+  BSC = 56,
 }
 
 export enum LiquidityProvider {
@@ -104,6 +105,7 @@ export const NETWORK_LABEL: { [chainId in ChainId]: string } = {
   [ChainId.GÖRLI]: 'Görli',
   [ChainId.KOVAN]: 'Kovan',
   [ChainId.MATIC]: 'Polygon',
+  [ChainId.BSC]: 'BSC',
 };
 
 export const NETWORK_NAME: { [chainId in ChainId]: string } = {
@@ -113,6 +115,7 @@ export const NETWORK_NAME: { [chainId in ChainId]: string } = {
   [ChainId.GÖRLI]: 'Goerli Test Network',
   [ChainId.KOVAN]: 'Kovan Test Network',
   [ChainId.MATIC]: 'Polygon Matic',
+  [ChainId.BSC]: 'Binance Smart Chain',
 };
 
 export interface LpConfiguration {
@@ -219,6 +222,16 @@ export const LP_CONFIGURATIONS: { [chainId in ChainId]: { [lpProvider in Liquidi
       createdTimestamp: 1614311449,
       createdBlockNumber: 11333218,
       graphUrl: 'https://api.thegraph.com/subgraphs/name/sushiswap/matic-exchange',
+    },
+  },
+  [ChainId.BSC]: {
+    [LiquidityProvider.SUSHISWAP]: {
+      factory: '0xc35DADB65012eC5796536bD9864eD8773aBc74C4',
+      router: '0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506',
+      initCodeHash: '0xe18a34eb0e04b04f7a0ac29a6e80748dca96319b42c54d679cb821dca90c6303',
+      createdTimestamp: 1614313236,
+      createdBlockNumber: 5205069,
+      graphUrl: 'https://api.thegraph.com/subgraphs/name/sushiswap/bsc-exchange',
     },
   },
 };
