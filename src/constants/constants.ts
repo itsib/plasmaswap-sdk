@@ -105,7 +105,7 @@ export const NETWORK_LABEL: { [chainId in ChainId]: string } = {
   [ChainId.GÖRLI]: 'Görli',
   [ChainId.KOVAN]: 'Kovan',
   [ChainId.MATIC]: 'Polygon',
-  [ChainId.BSC]: 'BSC',
+  [ChainId.BSC]: 'Binance',
 };
 
 export const NETWORK_NAME: { [chainId in ChainId]: string } = {
