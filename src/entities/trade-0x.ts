@@ -133,10 +133,10 @@ export class Trade0x {
     const outputAmount = toCurrencyAmount(toCurrency, prices.buyAmount);
 
     let rates: { inputToNative?: string; outputToNative?: string } = {};
-    if (prices.buyTokenToEthRate) {
+    if (prices.buyTokenToEthRate && prices.buyTokenToEthRate !== '0') {
       rates.outputToNative = prices.buyTokenToEthRate;
     }
-    if (prices.sellTokenToEthRate) {
+    if (prices.sellTokenToEthRate && prices.sellTokenToEthRate !== '0') {
       rates.inputToNative = prices.sellTokenToEthRate;
     }
 
