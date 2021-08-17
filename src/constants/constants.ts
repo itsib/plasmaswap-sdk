@@ -61,17 +61,17 @@ export enum Trade0xLiquiditySource {
   /**
    * BSC only
    */
-  // PancakeSwap = 'PancakeSwap',
-  // PancakeSwapV2 = 'PancakeSwap_V2',
-  // BakerySwap = 'BakerySwap',
-  // Nerve = 'Nerve',
-  // Belt = 'Belt',
-  // Ellipsis = 'Ellipsis',
-  // ApeSwap = 'ApeSwap',
-  // CafeSwap = 'CafeSwap',
-  // CheeseSwap = 'CheeseSwap',
-  // JulSwap = 'JulSwap',
-  // ACryptos = 'ACryptoS',
+  PancakeSwap = 'PancakeSwap',
+  PancakeSwapV2 = 'PancakeSwap_V2',
+  BakerySwap = 'BakerySwap',
+  Nerve = 'Nerve',
+  Belt = 'Belt',
+  Ellipsis = 'Ellipsis',
+  ApeSwap = 'ApeSwap',
+  CafeSwap = 'CafeSwap',
+  CheeseSwap = 'CheeseSwap',
+  JulSwap = 'JulSwap',
+  ACryptos = 'ACryptoS',
   /**
    * Polygon only
    */
@@ -265,7 +265,7 @@ export const LIQUIDITY_PROVIDER_NAME: { [provider in LiquidityProvider]: string 
   [LiquidityProvider.SUSHISWAP]: 'SushiSwap',
 };
 
-export const SUPPORTED_0X_CHAINS: ChainId[] = [ChainId.MAINNET, ChainId.MATIC, ChainId.ROPSTEN];
+export const SUPPORTED_0X_CHAINS: ChainId[] = [ChainId.MAINNET, ChainId.MATIC, ChainId.BSC, ChainId.ROPSTEN];
 
 export const TRADE_0X_LIQUIDITY_SOURCE_NAME: { [provider in Trade0xLiquiditySource]: string } = {
   [Trade0xLiquiditySource.Native]: 'Native',
@@ -302,6 +302,19 @@ export const TRADE_0X_LIQUIDITY_SOURCE_NAME: { [provider in Trade0xLiquiditySour
   [Trade0xLiquiditySource.Lido]: 'Lido',
   [Trade0xLiquiditySource.ShibaSwap]: 'ShibaSwap',
   [Trade0xLiquiditySource.Clipper]: 'Clipper',
+
+  [Trade0xLiquiditySource.PancakeSwap]: 'PancakeSwap',
+  [Trade0xLiquiditySource.PancakeSwapV2]: 'PancakeSwap V2',
+  [Trade0xLiquiditySource.BakerySwap]: 'BakerySwap',
+  [Trade0xLiquiditySource.Nerve]: 'Nerve',
+  [Trade0xLiquiditySource.Belt]: 'Belt',
+  [Trade0xLiquiditySource.Ellipsis]: 'Ellipsis',
+  [Trade0xLiquiditySource.ApeSwap]: 'ApeSwap',
+  [Trade0xLiquiditySource.CafeSwap]: 'CafeSwap',
+  [Trade0xLiquiditySource.CheeseSwap]: 'CheeseSwap',
+  [Trade0xLiquiditySource.JulSwap]: 'JulSwap',
+  [Trade0xLiquiditySource.ACryptos]: 'ACryptoS',
+
   [Trade0xLiquiditySource.QuickSwap]: 'QuickSwap',
   [Trade0xLiquiditySource.ComethSwap]: 'ComethSwap',
   [Trade0xLiquiditySource.Dfyn]: 'Dfyn',

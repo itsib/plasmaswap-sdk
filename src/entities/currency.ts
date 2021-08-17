@@ -81,6 +81,7 @@ export class Native extends AbstractCurrency {
     [ChainId.RINKEBY]: new Native(ChainId.RINKEBY, 18, 'ETH', 'Ethereum'),
     [ChainId.GÖRLI]: new Native(ChainId.GÖRLI, 18, 'ETH', 'Ethereum'),
     [ChainId.MATIC]: new Native(ChainId.MATIC, 18, 'MATIC', 'Matic'),
+    [ChainId.BSC]: new Native(ChainId.BSC, 18, 'BNB', 'BNB'),
   };
 
   protected constructor(chainId: ChainId, decimals: number, symbol?: string, name?: string) {
@@ -158,13 +159,14 @@ const NATIVE = Native.NATIVE;
 
 export { NATIVE };
 
-export const WNATIVE: { [chainId: number]: Token } = {
+export const WNATIVE: { [chainId in ChainId]: Token } = {
   [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', 18, 'WETH', 'Wrapped Ether'),
   [ChainId.ROPSTEN]: new Token(ChainId.ROPSTEN, '0xc778417E063141139Fce010982780140Aa0cD5Ab', 18, 'WETH', 'Wrapped Ether'),
   [ChainId.RINKEBY]: new Token(ChainId.RINKEBY, '0xc778417E063141139Fce010982780140Aa0cD5Ab', 18, 'WETH', 'Wrapped Ether'),
   [ChainId.GÖRLI]: new Token(ChainId.GÖRLI, '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6', 18, 'WETH', 'Wrapped Ether'),
   [ChainId.KOVAN]: new Token(ChainId.KOVAN, '0xd0A1E359811322d97991E03f863a0C30C2cF029C', 18, 'WETH', 'Wrapped Ether'),
   [ChainId.MATIC]: new Token(ChainId.MATIC, '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270', 18, 'WMATIC', 'Wrapped Matic'),
+  [ChainId.BSC]: new Token(ChainId.BSC, '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', 18, 'WBNB', 'Wrapped BNB'),
 };
 
 export type Currency = Native | Token;
