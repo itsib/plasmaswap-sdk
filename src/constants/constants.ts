@@ -250,16 +250,18 @@ export const MINIMUM_LIQUIDITY = JSBI.BigInt(1000);
 /**
  * The name of the LP token affects the signature, DO NOT CHANGE IT!!!
  */
-export const LIQUIDITY_TOKEN_NAME = {
+export const LIQUIDITY_TOKEN_NAME: { [provider in LiquidityProvider]: string } = {
   [LiquidityProvider.UNISWAP]: 'Uniswap V2',
   [LiquidityProvider.PLASMA]: 'Plasmaswap',
   [LiquidityProvider.SUSHISWAP]: 'SushiSwap LP Token',
+  [LiquidityProvider.PANCAKESWAP]: 'Pancake LPs',
 };
 
-export const LIQUIDITY_TOKEN_SYMBOL = {
+export const LIQUIDITY_TOKEN_SYMBOL: { [provider in LiquidityProvider]: string } = {
   [LiquidityProvider.UNISWAP]: 'UNI-V2',
   [LiquidityProvider.PLASMA]: 'P-LP',
   [LiquidityProvider.SUSHISWAP]: 'SLP',
+  [LiquidityProvider.PANCAKESWAP]: 'Cake-LP',
 };
 
 export const LIQUIDITY_PROVIDER_SYMBOL: { [provider in LiquidityProvider]: string } = {
