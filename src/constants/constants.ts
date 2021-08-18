@@ -21,6 +21,7 @@ export enum LiquidityProvider {
   PLASMA,
   UNISWAP,
   SUSHISWAP,
+  PANCAKESWAP,
 }
 
 export enum Trade0xLiquiditySource {
@@ -233,6 +234,14 @@ export const LP_CONFIGURATIONS: { [chainId in ChainId]: { [lpProvider in Liquidi
       createdBlockNumber: 5205069,
       graphUrl: 'https://api.thegraph.com/subgraphs/name/sushiswap/bsc-exchange',
     },
+    [LiquidityProvider.PANCAKESWAP]: {
+      factory: '0xca143ce32fe78f1f7019d7d551a6402fc5350c73',
+      router: '0x10ed43c718714eb63d5aa57b78b54704e256024e',
+      initCodeHash: '0x00fb7f630766e6a796048ea87d01acd3068e8ff67d078148a3fa3f4a84f69bd5',
+      createdTimestamp: 1619164516,
+      createdBlockNumber: 6809737,
+      graphUrl: 'https://api.thegraph.com/subgraphs/name/vmatskiv/pancakeswap-v2',
+    },
   },
 };
 
@@ -257,12 +266,14 @@ export const LIQUIDITY_PROVIDER_SYMBOL: { [provider in LiquidityProvider]: strin
   [LiquidityProvider.PLASMA]: 'PLASMA',
   [LiquidityProvider.UNISWAP]: 'UNISWAP',
   [LiquidityProvider.SUSHISWAP]: 'SUSHISWAP',
+  [LiquidityProvider.PANCAKESWAP]: 'PANCAKESWAP',
 };
 
 export const LIQUIDITY_PROVIDER_NAME: { [provider in LiquidityProvider]: string } = {
   [LiquidityProvider.PLASMA]: 'PlasmaSwap',
   [LiquidityProvider.UNISWAP]: 'Uniswap V2',
   [LiquidityProvider.SUSHISWAP]: 'SushiSwap',
+  [LiquidityProvider.PANCAKESWAP]: 'PancakeSwap',
 };
 
 export const SUPPORTED_0X_CHAINS: ChainId[] = [ChainId.MAINNET, ChainId.MATIC, ChainId.BSC, ChainId.ROPSTEN];
