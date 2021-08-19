@@ -243,7 +243,7 @@ export const LP_CONFIGURATIONS: { [chainId in ChainId]: { [lpProvider in Liquidi
       initCodeHash: '0x00fb7f630766e6a796048ea87d01acd3068e8ff67d078148a3fa3f4a84f69bd5',
       createdTimestamp: 1619164516,
       createdBlockNumber: 6809737,
-      graphUrl: 'https://api.thegraph.com/subgraphs/name/vmatskiv/pancakeswap-v2',
+      graphUrl: 'https://api.thegraph.com/subgraphs/name/itsib/pancakeswap-v2',
     },
   },
   [ChainId.BSC_TEST]: {
