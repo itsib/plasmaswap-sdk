@@ -255,11 +255,11 @@ export const LP_CONFIGURATIONS: { [chainId in ChainId]: { [lpProvider in Liquidi
       createdBlockNumber: 11588793,
     },
     [LiquidityProvider.PANCAKESWAP]: {
-      factory: '0x6725F303b657a9451d8BA641348b6761A6CC7a17',
-      router: '0xD99D1c33F9fC3444f8101754aBC46c52416550D1',
-      initCodeHash: '0xd0d4c4cd0848c93cb4fd1f498d7013ee6bfb25783ea21593d5834f5d250ece66',
-      createdTimestamp: 1618815670,
-      createdBlockNumber: 8108499,
+      factory: '0xb7926c0430afb07aa7defde6da862ae0bde767bc',
+      router: '0x9ac64cc6e4415144c455bd8e4837fea55603e5c3',
+      initCodeHash: '0xecba335299a6693cb2ebc4782e74669b84290b6378ea3a3873c7231a8d7d1074',
+      createdTimestamp: 1621968819,
+      createdBlockNumber: 9158270,
     },
   },
 };
