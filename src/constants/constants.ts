@@ -15,6 +15,7 @@ export enum ChainId {
   KOVAN = 42,
   MATIC = 137,
   BSC = 56,
+  BSC_TEST = 97,
 }
 
 export enum LiquidityProvider {
@@ -107,6 +108,7 @@ export const NETWORK_LABEL: { [chainId in ChainId]: string } = {
   [ChainId.KOVAN]: 'Kovan',
   [ChainId.MATIC]: 'Polygon',
   [ChainId.BSC]: 'Binance',
+  [ChainId.BSC_TEST]: 'Binance Test',
 };
 
 export const NETWORK_NAME: { [chainId in ChainId]: string } = {
@@ -117,6 +119,7 @@ export const NETWORK_NAME: { [chainId in ChainId]: string } = {
   [ChainId.KOVAN]: 'Kovan Test Network',
   [ChainId.MATIC]: 'Polygon Matic',
   [ChainId.BSC]: 'Binance Smart Chain',
+  [ChainId.BSC_TEST]: 'Binance Smart Chain Test',
 };
 
 export interface LpConfiguration {
@@ -241,6 +244,22 @@ export const LP_CONFIGURATIONS: { [chainId in ChainId]: { [lpProvider in Liquidi
       createdTimestamp: 1619164516,
       createdBlockNumber: 6809737,
       graphUrl: 'https://api.thegraph.com/subgraphs/name/vmatskiv/pancakeswap-v2',
+    },
+  },
+  [ChainId.BSC_TEST]: {
+    [LiquidityProvider.PLASMA]: {
+      factory: '0xEC12386e2318378335102eBE5c0743c85EdEc6C4',
+      router: '0x6CEDf1de4A53Bc2542F28195C7549117bd93fA28',
+      initCodeHash: '0x3881dfd3256e5d121350fe797cb9f3e28704ee8656f3522205fac47519f3a9f4',
+      createdTimestamp: 1629295879,
+      createdBlockNumber: 11588793,
+    },
+    [LiquidityProvider.PANCAKESWAP]: {
+      factory: '0x6725F303b657a9451d8BA641348b6761A6CC7a17',
+      router: '0xD99D1c33F9fC3444f8101754aBC46c52416550D1',
+      initCodeHash: '0xd0d4c4cd0848c93cb4fd1f498d7013ee6bfb25783ea21593d5834f5d250ece66',
+      createdTimestamp: 1618815670,
+      createdBlockNumber: 8108499,
     },
   },
 };
