@@ -229,6 +229,14 @@ export const LP_CONFIGURATIONS: { [chainId in ChainId]: { [lpProvider in Liquidi
     },
   },
   [ChainId.BSC]: {
+    [LiquidityProvider.PLASMA]: {
+      factory: '0x0A0f1abd7eC4c2AbF92F8e33382fA77863154628',
+      router: '0xBFBc891E6C707243Bb1949A92A1DcBc9ba160DE7',
+      initCodeHash: '0x8614648fda2cedabe024f773fb6929fd773c7db2d1bfc6dc92f716b47c2b7047',
+      createdTimestamp: 1629711966,
+      createdBlockNumber: 10276490,
+      graphUrl: 'https://api.thegraph.com/subgraphs/name/itsib/plasmaswap-bsc',
+    },
     [LiquidityProvider.SUSHISWAP]: {
       factory: '0xc35DADB65012eC5796536bD9864eD8773aBc74C4',
       router: '0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506',
