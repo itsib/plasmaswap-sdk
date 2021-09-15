@@ -30,6 +30,7 @@
     "prepublishOnly": "./pre-publish.sh"
   },
   "dependencies": {
+    "@0x/contract-addresses": "^6.7.0",
     "big.js": "^5.2.2",
     "decimal.js-light": "^2.5.0",
     "jsbi": "^3.1.1",
@@ -50,7 +51,7 @@
     "@ethersproject/bignumber": "^5.0.2",
     "@ethersproject/contracts": "^5.0.2",
     "@ethersproject/networks": "^5.0.2",
-    "@ethersproject/providers": "^5.0.5",
+    "@ethersproject/providers": "^5.4.5",
     "@ethersproject/solidity": "^5.0.2",
     "@types/big.js": "^4.0.5",
     "@types/jest": "^24.0.25",
