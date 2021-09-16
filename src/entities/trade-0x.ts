@@ -270,7 +270,7 @@ export class Trade0x {
         data: quote.data,
         value: BigNumber.from(quote.value),
         chainId: quote.chainId,
-      };
+      } as TransactionRequest;
     });
   }
 }
