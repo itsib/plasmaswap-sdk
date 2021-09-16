@@ -11,3 +11,4 @@ export * from './fetch-pair-data';
 export * from './fetch-0x-quote';
 export * from './to-currency-amount';
 export * from './to-query-string';
+export * from './eip712';
