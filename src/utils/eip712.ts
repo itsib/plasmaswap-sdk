@@ -14,9 +14,13 @@ export interface EIP712Object {
 }
 
 export interface EIP712Domain {
+  // Give a user friendly name to the specific contract you are signing for.
   name: string;
+  // Just let's you know the latest version. Definitely make sure the field name is correct.
   version: string;
+  // Defining the chain aka Rinkeby testnet or Ethereum Main Net
   chainId: number;
+  // If name isn't enough add verifying contract to make sure you are establishing contracts with the proper entity
   verifyingContract: string;
 }
 
@@ -65,8 +69,23 @@ export interface EIP712MessageForPermit extends EIP712Object {
   nonce: string;
 }
 
+export interface EIP712MessageForLimitOrder extends EIP712Object {
+  makerToken: string;
+  takerToken: string;
+  makerAmount: string;
+  takerAmount: string;
+  takerTokenFeeAmount: string;
+  maker: string;
+  taker: string;
+  sender: string;
+  feeRecipient: string;
+  pool: string;
+  expiry: string;
+  salt: string;
+}
+
 /**
- * Returns typed data for the issuing permission for the transfer of tokens (eth_signTypedData_v3, eth_signTypedData_v4)
+ * Returns typed data for the issuing permission for the transfer of tokens (eth_signTypedData_v4)
  */
 export function getEIP712TypedDataForPermit(domain: EIP712Domain, message: EIP712MessageForPermit): EIP712TypedData {
   return {
@@ -80,6 +99,21 @@ export function getEIP712TypedDataForPermit(domain: EIP712Domain, message: EIP71
   };
 }
 
-// export function getLimitOrderEIP712TypedData(): EIP712TypedData {
-//
-// }
+/**
+ * Returns typed data for the create limit order (eth_signTypedData_v3)
+ * @param domain
+ * @param domain.name - Should by 'ZeroEx'
+ * @param domain.version - Should by '1.0.0'
+ * @param message
+ */
+export function getLimitOrderEIP712TypedData(domain: EIP712Domain, message: EIP712MessageForLimitOrder): EIP712TypedData {
+  return {
+    types: {
+      EIP712Domain: EIP712_DOMAIN_PARAMETERS,
+      LimitOrder: EIP712_LIMIT_ORDER_PARAMETERS,
+    },
+    domain,
+    primaryType: 'LimitOrder',
+    message,
+  };
+}

@@ -12,3 +12,5 @@ export * from './fetch-0x-quote';
 export * from './to-currency-amount';
 export * from './to-query-string';
 export * from './eip712';
+export * from './get-salt';
+export * from './send-signed-0x-order';
