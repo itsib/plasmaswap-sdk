@@ -2,11 +2,11 @@ export interface Api0xPaginationRequest {
   /**
    * (Optional, defaults to "1") The page index (1-indexed) requested in the collection.
    */
-  page: number;
+  page?: number;
   /**
    * (Optional, defaults to "20") The amount of records to return per page. The maximum is "1000".
    */
-  perPage: number;
+  perPage?: number;
 }
 
 export interface Api0xPaginationResponse<T> {
