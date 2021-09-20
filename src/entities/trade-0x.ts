@@ -5,7 +5,8 @@ import invariant from 'tiny-invariant';
 import { CurrencyAmount, Fraction, isCurrencyAmount, Percent, Price } from '../amounts';
 import { NativeAmount } from '../amounts/currency-amount';
 import { ChainId, ONE, SUPPORTED_0X_CHAINS, Trade0xLiquiditySource, TradeType, ZERO, ZERO_ADDRESS } from '../constants/constants';
-import { fetch0xQuote, FetchQuoteQuery, toCurrencyAmount } from '../utils';
+import { toCurrencyAmount } from '../utils';
+import { fetch0xQuote, Fetch0xQuoteQuery } from '../api';
 import { Currency, isCurrency, Token } from './currency';
 
 export interface Trade0xOptions {
@@ -106,7 +107,7 @@ export class Trade0x {
     const toCurrency = isCurrency(opts.to) ? (opts.to as Currency) : (opts.to as CurrencyAmount).currency;
     const fromCurrency = isCurrency(opts.from) ? (opts.from as Currency) : (opts.from as CurrencyAmount).currency;
 
-    const query: FetchQuoteQuery = {
+    const query: Fetch0xQuoteQuery = {
       buyToken: toCurrency instanceof Token ? toCurrency.address : (toCurrency.symbol as string),
       sellToken: fromCurrency instanceof Token ? fromCurrency.address : (fromCurrency.symbol as string),
       buyAmount: isCurrencyAmount(opts.to) ? (opts.to as CurrencyAmount).raw.toString() : undefined,
@@ -246,7 +247,7 @@ export class Trade0x {
    */
   public async getTransactionData(account?: string): Promise<TransactionRequest> {
     const chainId = this.inputAmount.currency.chainId;
-    const query: FetchQuoteQuery = {
+    const query: Fetch0xQuoteQuery = {
       buyToken: this.outputAmount.currency instanceof Token ? this.outputAmount.currency.address : (this.outputAmount.currency.symbol as string),
       sellToken: this.inputAmount.currency instanceof Token ? this.inputAmount.currency.address : (this.inputAmount.currency.symbol as string),
       buyAmount: this.tradeType === TradeType.EXACT_INPUT ? undefined : this.outputAmount.raw.toString(10),

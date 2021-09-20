@@ -29,5 +29,7 @@ export * from './amounts';
 export * from './entities';
 export * from './router';
 export * from './utils';
+export * from './api';
+export * from './types';
 
 export { IERC20, ISwapPair, ISwapRouter };

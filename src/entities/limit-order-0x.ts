@@ -3,7 +3,9 @@ import { Signature } from '@ethersproject/bytes';
 import invariant from 'tiny-invariant';
 import { TokenAmount } from '../amounts';
 import { ChainId, SUPPORTED_0X_CHAINS, ZERO_ADDRESS, ZERO_WORD } from '../constants/constants';
-import { EIP712Domain, EIP712MessageForLimitOrder, EIP712TypedData, getLimitOrderEIP712TypedData, getSalt, sendSigned0xOrder, Signed0xOrder, toCurrencyAmount } from '../utils';
+import { Signed0xOrder } from '../types';
+import { EIP712Domain, EIP712MessageForLimitOrder, EIP712TypedData, getLimitOrderEIP712TypedData, getSalt, toCurrencyAmount } from '../utils';
+import { send0xSignedOrder } from '../api';
 
 export class LimitOrder0x {
   // The address of the maker, and signer, of this order.
@@ -92,6 +94,6 @@ export class LimitOrder0x {
       },
     };
 
-    return sendSigned0xOrder(order);
+    return send0xSignedOrder(order);
   }
 }

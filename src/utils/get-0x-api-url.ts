@@ -8,7 +8,12 @@ const OX_URL_PREFIXES: { [chainId in ChainId]?: string } = {
   [ChainId.ROPSTEN]: 'ropsten.',
 };
 
-export function get0xApiUrl(chainId: ChainId): string {
+/**
+ * Returns API url by chain id
+ * @param chainId
+ * @param isWss - add wss://
+ */
+export function get0xApiUrl(chainId: ChainId, isWss: boolean = false): string {
   invariant(SUPPORTED_0X_CHAINS.includes(chainId), 'Unsupported chainId');
-  return `https://${OX_URL_PREFIXES[chainId] || ''}api.0x.org`;
+  return `${isWss ? 'wss' : 'https'}://${OX_URL_PREFIXES[chainId] || ''}api.0x.org`;
 }

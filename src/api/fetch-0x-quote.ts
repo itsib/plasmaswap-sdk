@@ -1,8 +1,8 @@
 import { ChainId, Trade0xLiquiditySource } from '../constants/constants';
-import { get0xApiUrl } from './get-0x-api-url';
-import { toQueryString } from './to-query-string';
+import { get0xApiUrl } from '../utils/get-0x-api-url';
+import { toQueryString } from '../utils/to-query-string';
 
-export interface FetchQuoteOrder {
+export interface Fetch0xQuoteOrder {
   type: number;
   makerToken: string;
   makerAmount: string;
@@ -16,7 +16,7 @@ export interface FetchQuoteOrder {
   };
 }
 
-export interface FetchQuoteQuery {
+export interface Fetch0xQuoteQuery {
   /**
    * The ERC20 token address or symbol of the token you want to send. "ETH" can be provided as a valid sellToken.
    */
@@ -83,7 +83,7 @@ export interface FetchQuoteQuery {
   affiliateAddress?: string;
 }
 
-export interface FetchQuoteResponse {
+export interface Fetch0xQuoteResponse {
   chainId: ChainId;
   /**
    * If buyAmount was specified in the request it provides
@@ -100,7 +100,7 @@ export interface FetchQuoteResponse {
    */
   guaranteedPrice: string;
   /**
-   * The field will be filled in if you send {@link FetchQuoteQuery.takerAddress}
+   * The field will be filled in if you send {@link Fetch0xQuoteQuery.takerAddress}
    */
   from?: string;
   /**
@@ -204,10 +204,10 @@ export interface FetchQuoteResponse {
    */
   allowanceTarget: string;
 
-  orders?: FetchQuoteOrder[];
+  orders?: Fetch0xQuoteOrder[];
 }
 
-export async function fetch0xQuote(chainId: ChainId, justPrice: boolean, query: FetchQuoteQuery, abort?: AbortSignal): Promise<FetchQuoteResponse> {
+export async function fetch0xQuote(chainId: ChainId, justPrice: boolean, query: Fetch0xQuoteQuery, abort?: AbortSignal): Promise<Fetch0xQuoteResponse> {
   const host = get0xApiUrl(chainId);
   const queryString = toQueryString(query);
   const url = `${host}/swap/v1/${justPrice ? 'price' : 'quote'}?${queryString}`;
