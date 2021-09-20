@@ -1,8 +1,8 @@
-import { Signed0xOrderWidthMeta } from './signed-0x-order-width-meta';
+import { Signed0xOrderWithMeta } from './signed-0x-order-with-meta';
 
 export interface Wss0xMessage {
   type: 'update';
   channel: 'orders';
   requestId: string;
-  payload: Signed0xOrderWidthMeta[];
+  payload: Signed0xOrderWithMeta[];
 }

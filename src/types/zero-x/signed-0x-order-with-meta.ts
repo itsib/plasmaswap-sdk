@@ -1,6 +1,6 @@
 import { Signed0xOrder } from './signed-0x-order';
 
-export interface Signed0xOrderWidthMeta {
+export interface Signed0xOrderWithMeta {
   order: Signed0xOrder;
   metaData: {
     orderHash: string;

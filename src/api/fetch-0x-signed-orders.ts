@@ -1,5 +1,5 @@
 import { ChainId } from '../constants/constants';
-import { Api0xPaginationRequest, Api0xPaginationResponse, Signed0xOrderWidthMeta } from '../types';
+import { Api0xPaginationRequest, Api0xPaginationResponse, Signed0xOrderWithMeta } from '../types';
 import { get0xApiUrl, toQueryString } from '../utils';
 
 export interface Fetch0xSignedOrdersQuery extends Api0xPaginationRequest {
@@ -19,7 +19,7 @@ export interface Fetch0xSignedOrdersQuery extends Api0xPaginationRequest {
   takerToken?: string;
 }
 
-export type Fetch0xSignedOrdersResponse = Api0xPaginationResponse<Signed0xOrderWidthMeta>;
+export type Fetch0xSignedOrdersResponse = Api0xPaginationResponse<Signed0xOrderWithMeta>;
 
 export async function fetch0xSignedOrders(chainId: ChainId, query: Fetch0xSignedOrdersQuery, abort?: AbortSignal): Promise<Fetch0xSignedOrdersResponse> {
   const host = get0xApiUrl(chainId);
