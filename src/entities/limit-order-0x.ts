@@ -91,6 +91,7 @@ export class LimitOrder0x {
         r: signature.r,
         s: signature.s,
         v: signature.v,
+        recoveryParam: signature.recoveryParam,
       },
     };
 
