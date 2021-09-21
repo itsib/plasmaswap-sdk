@@ -48,7 +48,7 @@ export class LimitOrder0x {
       chainId,
       verifyingContract,
       name: 'ZeroEx',
-      version: '1.0.0',
+      version: '1',
     };
     const message: EIP712MessageForLimitOrder = {
       makerToken: this.sell.token.address,
