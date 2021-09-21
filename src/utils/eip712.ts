@@ -27,8 +27,8 @@ export interface EIP712Domain {
 export interface EIP712TypedData {
   types: EIP712Types;
   domain: EIP712Domain;
-  message: EIP712Object;
   primaryType: string;
+  message: EIP712Object;
 }
 
 export const EIP712_DOMAIN_PARAMETERS: EIP712Parameter[] = [

@@ -48,7 +48,7 @@ export class LimitOrder0x {
       chainId,
       verifyingContract,
       name: 'ZeroEx',
-      version: '1',
+      version: '1.0.0',
     };
     const message: EIP712MessageForLimitOrder = {
       makerToken: this.sell.token.address,
@@ -58,7 +58,7 @@ export class LimitOrder0x {
       takerTokenFeeAmount: this.takerTokenFeeAmount.raw.toString(10),
       maker: this.account,
       taker: ZERO_ADDRESS,
-      sender: this.account,
+      sender: ZERO_ADDRESS,
       feeRecipient: this.feeRecipient,
       pool: ZERO_WORD,
       expiry: this.expiry.toString(10),
@@ -79,7 +79,7 @@ export class LimitOrder0x {
       takerTokenFeeAmount: this.takerTokenFeeAmount.raw.toString(10),
       maker: this.account,
       taker: ZERO_ADDRESS,
-      sender: this.account,
+      sender: ZERO_ADDRESS,
       feeRecipient: this.feeRecipient,
       pool: ZERO_WORD,
       expiry: this.expiry.toString(10),
