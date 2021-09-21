@@ -72,18 +72,19 @@ export class LimitOrder0x {
     invariant(this.chainId && this.verifyingContract && this.salt, 'The signature does not fit this order');
 
     const order: Signed0xOrder = {
-      maker: this.account,
-      taker: ZERO_ADDRESS,
       makerToken: this.sell.token.address,
       takerToken: this.buy.token.address,
       makerAmount: this.sell.raw.toString(10),
       takerAmount: this.buy.raw.toString(10),
-      expiry: this.expiry.toString(10),
-      salt: this.salt,
+      takerTokenFeeAmount: this.takerTokenFeeAmount.raw.toString(10),
+      maker: this.account,
+      taker: ZERO_ADDRESS,
+      sender: this.account,
       feeRecipient: this.feeRecipient,
       pool: ZERO_WORD,
-      takerTokenFeeAmount: this.takerTokenFeeAmount.raw.toString(10),
-      sender: this.account,
+      expiry: this.expiry.toString(10),
+      salt: this.salt,
+
       verifyingContract: this.verifyingContract,
       chainId: this.chainId,
       signature: {
