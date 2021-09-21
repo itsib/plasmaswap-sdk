@@ -18,6 +18,5 @@ export interface Signed0xOrder {
     r: string;
     s: string;
     v: number;
-    recoveryParam: number;
   };
 }
