@@ -3,9 +3,5 @@ export function getSalt(): string {
     Math.random()
       .toString()
       .split('.')[1]
-  }${
-    Math.random()
-      .toString()
-      .split('.')[1]
   }`;
 }
