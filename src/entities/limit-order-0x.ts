@@ -8,8 +8,8 @@ import { EIP712Domain, EIP712MessageForLimitOrder, EIP712TypedData, getLimitOrde
 import { send0xSignedOrder } from '../api';
 
 export class LimitOrder0x {
-  // The address of the maker, and signer, of this order.
-  public address: string;
+  // The account of the maker, and signer, of this order.
+  public account: string;
 
   public sell: TokenAmount;
 
@@ -25,11 +25,11 @@ export class LimitOrder0x {
   protected verifyingContract?: string;
   protected salt?: string;
 
-  constructor(address: string, sell: TokenAmount, buy: TokenAmount, expiry: number, takerTokenFeeAmount?: TokenAmount, feeRecipient?: string) {
+  constructor(account: string, sell: TokenAmount, buy: TokenAmount, expiry: number, takerTokenFeeAmount?: TokenAmount, feeRecipient?: string) {
     invariant(!sell.token.equals(buy.token), 'Sell and buy tokens is same.');
     invariant(!takerTokenFeeAmount || buy.token.equals(takerTokenFeeAmount.token), 'Taker token fee amount should be same token');
 
-    this.address = address;
+    this.account = account;
     this.sell = sell;
     this.buy = buy;
     this.expiry = expiry;
@@ -51,14 +51,14 @@ export class LimitOrder0x {
       version: '1.0.0',
     };
     const message: EIP712MessageForLimitOrder = {
-      makerToken: this.sell.token.address.toLowerCase(),
-      takerToken: this.buy.token.address.toLowerCase(),
+      makerToken: this.sell.token.address,
+      takerToken: this.buy.token.address,
       makerAmount: this.sell.raw.toString(10),
       takerAmount: this.buy.raw.toString(10),
       takerTokenFeeAmount: this.takerTokenFeeAmount.raw.toString(10),
-      maker: this.address,
+      maker: this.account,
       taker: ZERO_ADDRESS,
-      sender: this.address,
+      sender: this.account,
       feeRecipient: this.feeRecipient,
       pool: ZERO_WORD,
       expiry: this.expiry.toString(10),
@@ -72,10 +72,10 @@ export class LimitOrder0x {
     invariant(this.chainId && this.verifyingContract && this.salt, 'The signature does not fit this order');
 
     const order: Signed0xOrder = {
-      maker: this.address,
+      maker: this.account,
       taker: ZERO_ADDRESS,
-      makerToken: this.sell.token.address.toLowerCase(),
-      takerToken: this.buy.token.address.toLowerCase(),
+      makerToken: this.sell.token.address,
+      takerToken: this.buy.token.address,
       makerAmount: this.sell.raw.toString(10),
       takerAmount: this.buy.raw.toString(10),
       expiry: this.expiry.toString(10),
@@ -83,7 +83,7 @@ export class LimitOrder0x {
       feeRecipient: this.feeRecipient,
       pool: ZERO_WORD,
       takerTokenFeeAmount: this.takerTokenFeeAmount.raw.toString(10),
-      sender: this.address,
+      sender: this.account,
       verifyingContract: this.verifyingContract,
       chainId: this.chainId,
       signature: {

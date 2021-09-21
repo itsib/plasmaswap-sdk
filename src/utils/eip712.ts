@@ -32,10 +32,10 @@ export interface EIP712TypedData {
 }
 
 export const EIP712_DOMAIN_PARAMETERS: EIP712Parameter[] = [
-  { name: 'name', type: 'string' },
-  { name: 'version', type: 'string' },
-  { name: 'chainId', type: 'uint256' },
-  { name: 'verifyingContract', type: 'address' },
+  { type: 'string', name: 'name' },
+  { type: 'string', name: 'version' },
+  { type: 'uint256', name: 'chainId' },
+  { type: 'address', name: 'verifyingContract' },
 ];
 
 export const EIP712_PERMIT_PARAMETERS: EIP712Parameter[] = [

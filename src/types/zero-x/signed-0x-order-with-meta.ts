@@ -6,6 +6,6 @@ export interface Signed0xOrderWithMeta {
     orderHash: string;
     remainingFillableTakerAmount: string;
     createdAt?: string;
-    state?: 'EXPIRED' | 'ADDED';
+    state?: 'EXPIRED' | 'ADDED' | 'FILLABLE';
   };
 }
