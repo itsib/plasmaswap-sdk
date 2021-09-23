@@ -100,7 +100,7 @@ export function getEIP712TypedDataForPermit(domain: EIP712Domain, message: EIP71
 }
 
 /**
- * Returns typed data for the create limit order (eth_signTypedData_v3)
+ * Returns typed data for the create limit order (eth_signTypedData_v3, eth_signTypedData_v4)
  * @param domain
  * @param domain.name - Should by 'ZeroEx'
  * @param domain.version - Should by '1.0.0'

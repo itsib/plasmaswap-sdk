@@ -2,6 +2,7 @@ import JSBI from 'jsbi';
 import IERC20 from './abis/erc20.json';
 import ISwapPair from './abis/swap-pair.json';
 import ISwapRouter from './abis/swap-router.json';
+import IExchange0x from './abis/exchange-0x.json';
 
 export { JSBI };
 
@@ -32,4 +33,4 @@ export * from './utils';
 export * from './api';
 export * from './types';
 
-export { IERC20, ISwapPair, ISwapRouter };
+export { IERC20, ISwapPair, ISwapRouter, IExchange0x };
