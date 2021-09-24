@@ -1,4 +1,4 @@
-export enum OrderStatus {
+export enum Signed0xOrderStatus {
   Invalid,
   InvalidMakerAssetAmount,
   InvalidTakerAssetAmount,
