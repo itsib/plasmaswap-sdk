@@ -37,12 +37,12 @@ export class LimitOrder0x {
     invariant(!sell.token.equals(buy.token), 'Sell and buy tokens is same.');
     invariant(!takerTokenFeeAmount || buy.token.equals(takerTokenFeeAmount.token), 'Taker token fee amount should be same token');
 
-    this.account = account;
+    this.account = account.toLowerCase();
     this.sell = sell;
     this.buy = buy;
     this.expiry = expiry;
     this.takerTokenFeeAmount = takerTokenFeeAmount || (toCurrencyAmount(buy.token, '0') as TokenAmount);
-    this.feeRecipient = feeRecipient || ZERO_ADDRESS;
+    this.feeRecipient = feeRecipient?.toLowerCase() || ZERO_ADDRESS;
   }
 
   public getEIP712TypedData(chainId: ChainId): EIP712TypedData {
@@ -61,8 +61,8 @@ export class LimitOrder0x {
       version: '1.0.0',
     };
     const message: EIP712MessageForLimitOrder = {
-      makerToken: this.sell.token.address,
-      takerToken: this.buy.token.address,
+      makerToken: this.sell.token.address.toLowerCase(),
+      takerToken: this.buy.token.address.toLowerCase(),
       makerAmount: this.sell.raw.toString(10),
       takerAmount: this.buy.raw.toString(10),
       takerTokenFeeAmount: this.takerTokenFeeAmount.raw.toString(10),
@@ -82,8 +82,8 @@ export class LimitOrder0x {
     invariant(this.chainId && this.verifyingContract && this.salt, 'The signature does not fit this order');
 
     const order: Signed0xOrder = {
-      makerToken: this.sell.token.address,
-      takerToken: this.buy.token.address,
+      makerToken: this.sell.token.address.toLowerCase(),
+      takerToken: this.buy.token.address.toLowerCase(),
       makerAmount: this.sell.raw.toString(10),
       takerAmount: this.buy.raw.toString(10),
       takerTokenFeeAmount: this.takerTokenFeeAmount.raw.toString(10),
