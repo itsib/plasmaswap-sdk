@@ -124,6 +124,14 @@ export const NETWORK_NAME: { [chainId in ChainId]: string } = {
   [ChainId.BSC_TEST]: 'Binance Smart Chain Test',
 };
 
+export const ZERO_EX_PROXY_ADDRESS: { [chainId in ChainId]?: string } = {
+  [ChainId.MAINNET]: '0xdef1c0ded9bec7f1a1670819833240f027b25eff',
+  [ChainId.RINKEBY]: '0xdef1c0ded9bec7f1a1670819833240f027b25eff',
+  [ChainId.KOVAN]: '0xdef1c0ded9bec7f1a1670819833240f027b25eff',
+  [ChainId.MATIC]: '0xdef1c0ded9bec7f1a1670819833240f027b25eff',
+  [ChainId.BSC]: '0xdef1c0ded9bec7f1a1670819833240f027b25eff',
+};
+
 export interface LpConfiguration {
   factory: string;
   router: string;

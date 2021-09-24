@@ -2,8 +2,7 @@ import JSBI from 'jsbi';
 import IERC20 from './abis/erc20.json';
 import ISwapPair from './abis/swap-pair.json';
 import ISwapRouter from './abis/swap-router.json';
-import IExchange from './abis/exchange.json';
-import IExchangeProxy from './abis/exchange-proxy.json';
+import IZeroExProxy from './abis/zero-ex-proxy.json';
 
 export { JSBI };
 
@@ -24,6 +23,7 @@ export {
   LIQUIDITY_PROVIDER_NAME,
   LIQUIDITY_PROVIDER_SYMBOL,
   TRADE_0X_LIQUIDITY_SOURCE_NAME,
+  ZERO_EX_PROXY_ADDRESS,
 } from './constants/constants';
 
 export * from './errors';
@@ -34,4 +34,4 @@ export * from './utils';
 export * from './api';
 export * from './types';
 
-export { IERC20, ISwapPair, ISwapRouter, IExchange, IExchangeProxy };
+export { IERC20, ISwapPair, ISwapRouter, IZeroExProxy };
