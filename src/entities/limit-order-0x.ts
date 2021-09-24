@@ -78,11 +78,10 @@ export class LimitOrder0x {
     return getLimitOrderEIP712TypedData(domain, message);
   }
 
-  public async send(signature: Signature, skipConfirmation = false) {
+  public async send(signature: Signature) {
     invariant(this.chainId && this.verifyingContract && this.salt, 'The signature does not fit this order');
 
-    const order: Signed0xOrder & { skipConfirmation?: boolean } = {
-      skipConfirmation,
+    const order: Signed0xOrder = {
       makerToken: this.sell.token.address.toLowerCase(),
       takerToken: this.buy.token.address.toLowerCase(),
       makerAmount: this.sell.raw.toString(10),
