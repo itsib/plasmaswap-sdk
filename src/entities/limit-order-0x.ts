@@ -25,6 +25,42 @@ export class LimitOrder0x {
   protected verifyingContract?: string;
   protected salt?: string;
 
+  public static toTuple(order: Signed0xOrder): string[] {
+    const orderValues = {
+      makerAddress: order.maker, // address
+      takerAddress: order.taker, // address
+      feeRecipientAddress: order.feeRecipient, // address
+      senderAddress: order.sender, // address
+      makerAssetAmount: order.makerAmount, // uint256
+      takerAssetAmount: order.takerAmount, // uint256
+      makerFee: '0x0', // uint256
+      takerFee: order.takerTokenFeeAmount, // uint256
+      expirationTimeSeconds: order.expiry, // uint256
+      salt: order.salt, // uint256
+      makerAssetData: '0x', // bytes
+      takerAssetData: '0x', // bytes
+      makerFeeAssetData: '0x', // bytes
+      takerFeeAssetData: '0x', // bytes
+    };
+
+    return [
+      orderValues.makerAddress,
+      orderValues.takerAddress,
+      orderValues.feeRecipientAddress,
+      orderValues.senderAddress,
+      orderValues.makerAssetAmount,
+      orderValues.takerAssetAmount,
+      orderValues.makerFee,
+      orderValues.takerFee,
+      orderValues.expirationTimeSeconds,
+      orderValues.salt,
+      orderValues.makerAssetData,
+      orderValues.takerAssetData,
+      orderValues.makerFeeAssetData,
+      orderValues.takerFeeAssetData,
+    ];
+  }
+
   constructor(account: string, sell: TokenAmount, buy: TokenAmount, expiry: number, takerTokenFeeAmount?: TokenAmount, feeRecipient?: string) {
     invariant(!sell.token.equals(buy.token), 'Sell and buy tokens is same.');
     invariant(!takerTokenFeeAmount || buy.token.equals(takerTokenFeeAmount.token), 'Taker token fee amount should be same token');
