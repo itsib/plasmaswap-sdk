@@ -31,14 +31,14 @@ export interface EIP712TypedData {
   message: EIP712Object;
 }
 
-export const EIP712_DOMAIN_PARAMETERS: EIP712Parameter[] = [
+export const EIP712_DOMAIN_ABI: EIP712Parameter[] = [
   { type: 'string', name: 'name' },
   { type: 'string', name: 'version' },
   { type: 'uint256', name: 'chainId' },
   { type: 'address', name: 'verifyingContract' },
 ];
 
-export const EIP712_PERMIT_PARAMETERS: EIP712Parameter[] = [
+export const EIP712_PERMIT_ABI: EIP712Parameter[] = [
   { name: 'owner', type: 'address' },
   { name: 'spender', type: 'address' },
   { name: 'value', type: 'uint256' },
@@ -46,7 +46,7 @@ export const EIP712_PERMIT_PARAMETERS: EIP712Parameter[] = [
   { name: 'deadline', type: 'uint256' },
 ];
 
-export const EIP712_LIMIT_ORDER_PARAMETERS: EIP712Parameter[] = [
+export const EIP712_LIMIT_ORDER_ABI: EIP712Parameter[] = [
   { type: 'address', name: 'makerToken' },
   { type: 'address', name: 'takerToken' },
   { type: 'uint128', name: 'makerAmount' },
@@ -90,8 +90,8 @@ export interface EIP712MessageForLimitOrder extends EIP712Object {
 export function getEIP712TypedDataForPermit(domain: EIP712Domain, message: EIP712MessageForPermit): EIP712TypedData {
   return {
     types: {
-      EIP712Domain: EIP712_DOMAIN_PARAMETERS,
-      Permit: EIP712_PERMIT_PARAMETERS,
+      EIP712Domain: EIP712_DOMAIN_ABI,
+      Permit: EIP712_PERMIT_ABI,
     },
     domain,
     primaryType: 'Permit',
@@ -109,8 +109,8 @@ export function getEIP712TypedDataForPermit(domain: EIP712Domain, message: EIP71
 export function getLimitOrderEIP712TypedData(domain: EIP712Domain, message: EIP712MessageForLimitOrder): EIP712TypedData {
   return {
     types: {
-      EIP712Domain: EIP712_DOMAIN_PARAMETERS,
-      LimitOrder: EIP712_LIMIT_ORDER_PARAMETERS,
+      EIP712Domain: EIP712_DOMAIN_ABI,
+      LimitOrder: EIP712_LIMIT_ORDER_ABI,
     },
     domain,
     primaryType: 'LimitOrder',

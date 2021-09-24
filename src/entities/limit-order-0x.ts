@@ -4,7 +4,7 @@ import { TokenAmount } from '../amounts';
 import { send0xSignedOrder } from '../api';
 import { ChainId, SUPPORTED_0X_CHAINS, ZERO_ADDRESS, ZERO_EX_PROXY_ADDRESS, ZERO_WORD } from '../constants/constants';
 import { Signed0xOrder } from '../types';
-import { EIP712Domain, EIP712MessageForLimitOrder, EIP712TypedData, getLimitOrderEIP712TypedData, getSalt, toCurrencyAmount } from '../utils';
+import { EIP712_LIMIT_ORDER_ABI, EIP712Domain, EIP712MessageForLimitOrder, EIP712TypedData, getLimitOrderEIP712TypedData, getSalt, toCurrencyAmount } from '../utils';
 
 export class LimitOrder0x {
   // The account of the maker, and signer, of this order.
@@ -24,40 +24,13 @@ export class LimitOrder0x {
   protected verifyingContract?: string;
   protected salt?: string;
 
-  public static toTuple(order: Signed0xOrder): string[] {
-    const orderValues = {
-      makerAddress: order.maker, // address
-      takerAddress: order.taker, // address
-      feeRecipientAddress: order.feeRecipient, // address
-      senderAddress: order.sender, // address
-      makerAssetAmount: order.makerAmount, // uint256
-      takerAssetAmount: order.takerAmount, // uint256
-      makerFee: '0x0', // uint256
-      takerFee: order.takerTokenFeeAmount, // uint256
-      expirationTimeSeconds: order.expiry, // uint256
-      salt: order.salt, // uint256
-      makerAssetData: '0x', // bytes
-      takerAssetData: '0x', // bytes
-      makerFeeAssetData: '0x', // bytes
-      takerFeeAssetData: '0x', // bytes
-    };
-
-    return [
-      orderValues.makerAddress,
-      orderValues.takerAddress,
-      orderValues.feeRecipientAddress,
-      orderValues.senderAddress,
-      orderValues.makerAssetAmount,
-      orderValues.takerAssetAmount,
-      orderValues.makerFee,
-      orderValues.takerFee,
-      orderValues.expirationTimeSeconds,
-      orderValues.salt,
-      orderValues.makerAssetData,
-      orderValues.takerAssetData,
-      orderValues.makerFeeAssetData,
-      orderValues.takerFeeAssetData,
-    ];
+  public static toArray(order: Signed0xOrder): string[] {
+    return EIP712_LIMIT_ORDER_ABI.reduce<string[]>((tuple, { name }) => {
+      if (name in order) {
+        tuple.push(`${order[name as keyof Signed0xOrder]}`);
+      }
+      return tuple;
+    }, []);
   }
 
   constructor(account: string, sell: TokenAmount, buy: TokenAmount, expiry: number, takerTokenFeeAmount?: TokenAmount, feeRecipient?: string) {
