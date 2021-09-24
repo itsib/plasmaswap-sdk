@@ -3,10 +3,10 @@ import { get0xApiUrl } from '../utils';
 
 export async function send0xSignedOrder(order: Signed0xOrder, abort?: AbortSignal): Promise<any> {
   const host = get0xApiUrl(order.chainId);
-  const res: Response = await fetch(`${host}/sra/v4/order`, {
+  const res: Response = await fetch(`${host}/sra/v4/orders`, {
     method: 'POST',
     mode: 'cors',
-    body: JSON.stringify(order),
+    body: JSON.stringify([order]),
     signal: abort,
     headers: {
       'Content-Type': 'application/json',
