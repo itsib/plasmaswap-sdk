@@ -9,4 +9,3 @@ export * from './timestamp';
 export * from './to-currency-amount';
 export * from './to-query-string';
 export * from './eip712';
-export * from './get-salt';

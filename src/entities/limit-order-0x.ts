@@ -4,7 +4,7 @@ import { TokenAmount } from '../amounts';
 import { send0xSignedOrder } from '../api';
 import { ChainId, SUPPORTED_0X_CHAINS, ZERO_ADDRESS, ZERO_EX_PROXY_ADDRESS, ZERO_WORD } from '../constants/constants';
 import { Signed0xOrder } from '../types';
-import { EIP712_LIMIT_ORDER_ABI, EIP712Domain, EIP712MessageForLimitOrder, EIP712TypedData, getLimitOrderEIP712TypedData, getSalt, toCurrencyAmount } from '../utils';
+import { EIP712_LIMIT_ORDER_ABI, EIP712Domain, EIP712MessageForLimitOrder, EIP712TypedData, getLimitOrderEIP712TypedData, toCurrencyAmount } from '../utils';
 
 export class LimitOrder0x {
   // The account of the maker, and signer, of this order.
@@ -52,7 +52,7 @@ export class LimitOrder0x {
 
     this.chainId = chainId;
     this.verifyingContract = verifyingContract;
-    this.salt = getSalt();
+    this.salt = Date.now().toString();
 
     const domain: EIP712Domain = {
       chainId,
