@@ -23,6 +23,7 @@ export enum LiquidityProvider {
   UNISWAP,
   SUSHISWAP,
   PANCAKESWAP,
+  QUICKSWAP,
 }
 
 export enum Trade0xLiquiditySource {
@@ -227,7 +228,7 @@ export const LP_CONFIGURATIONS: { [chainId in ChainId]: { [lpProvider in Liquidi
       initCodeHash: '0xb19b1e3807140bf48c498cb50370e129d9bd9e5e333bf0e67d9ce7507e634b72',
       createdTimestamp: 1623075489,
       createdBlockNumber: 15441546,
-      graphUrl: 'https://api.thegraph.com/subgraphs/name/itsib/plasmaswap-poligon',
+      graphUrl: 'https://sg.plasma.finance/subgraphs/name/plasmaswap/matic',
     },
     [LiquidityProvider.SUSHISWAP]: {
       factory: '0xc35DADB65012eC5796536bD9864eD8773aBc74C4',
@@ -236,6 +237,14 @@ export const LP_CONFIGURATIONS: { [chainId in ChainId]: { [lpProvider in Liquidi
       createdTimestamp: 1614311449,
       createdBlockNumber: 11333218,
       graphUrl: 'https://api.thegraph.com/subgraphs/name/sushiswap/matic-exchange',
+    },
+    [LiquidityProvider.QUICKSWAP]: {
+      factory: '0x5757371414417b8c6caad45baef941abc7d3ab32',
+      router: '0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff',
+      initCodeHash: '0x96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f',
+      createdTimestamp: 1615266493,
+      createdBlockNumber: 11799756,
+      graphUrl: 'https://sg.plasma.finance/subgraphs/name/quickswap/matic',
     },
   },
   [ChainId.BSC]: {
@@ -292,6 +301,7 @@ export const LIQUIDITY_TOKEN_NAME: { [provider in LiquidityProvider]: string } =
   [LiquidityProvider.PLASMA]: 'Plasmaswap',
   [LiquidityProvider.SUSHISWAP]: 'SushiSwap LP Token',
   [LiquidityProvider.PANCAKESWAP]: 'Pancake LPs',
+  [LiquidityProvider.QUICKSWAP]: 'Uniswap V2',
 };
 
 export const LIQUIDITY_TOKEN_SYMBOL: { [provider in LiquidityProvider]: string } = {
@@ -299,6 +309,7 @@ export const LIQUIDITY_TOKEN_SYMBOL: { [provider in LiquidityProvider]: string }
   [LiquidityProvider.PLASMA]: 'P-LP',
   [LiquidityProvider.SUSHISWAP]: 'SLP',
   [LiquidityProvider.PANCAKESWAP]: 'Cake-LP',
+  [LiquidityProvider.QUICKSWAP]: 'UNI-V2',
 };
 
 export const LIQUIDITY_PROVIDER_SYMBOL: { [provider in LiquidityProvider]: string } = {
@@ -306,6 +317,7 @@ export const LIQUIDITY_PROVIDER_SYMBOL: { [provider in LiquidityProvider]: strin
   [LiquidityProvider.UNISWAP]: 'UNISWAP',
   [LiquidityProvider.SUSHISWAP]: 'SUSHISWAP',
   [LiquidityProvider.PANCAKESWAP]: 'PANCAKESWAP',
+  [LiquidityProvider.QUICKSWAP]: 'QUICKSWAP',
 };
 
 export const LIQUIDITY_PROVIDER_NAME: { [provider in LiquidityProvider]: string } = {
@@ -313,6 +325,7 @@ export const LIQUIDITY_PROVIDER_NAME: { [provider in LiquidityProvider]: string 
   [LiquidityProvider.UNISWAP]: 'Uniswap V2',
   [LiquidityProvider.SUSHISWAP]: 'SushiSwap',
   [LiquidityProvider.PANCAKESWAP]: 'PancakeSwap',
+  [LiquidityProvider.QUICKSWAP]: 'Quickswap',
 };
 
 export const SUPPORTED_0X_CHAINS: ChainId[] = [ChainId.MAINNET, ChainId.MATIC, ChainId.BSC, ChainId.ROPSTEN];
