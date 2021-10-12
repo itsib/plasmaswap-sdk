@@ -140,6 +140,7 @@ export interface LpConfiguration {
   createdTimestamp: number;
   createdBlockNumber: number;
   graphUrl?: string;
+  graphWs?: string;
 }
 
 export const LP_CONFIGURATIONS: { [chainId in ChainId]: { [lpProvider in LiquidityProvider]?: LpConfiguration } } = {
@@ -151,6 +152,7 @@ export const LP_CONFIGURATIONS: { [chainId in ChainId]: { [lpProvider in Liquidi
       createdTimestamp: 1588610042,
       createdBlockNumber: 10000835,
       graphUrl: 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2',
+      graphWs: 'wss://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2',
     },
     [LiquidityProvider.PLASMA]: {
       factory: '0xd87Ad19db2c4cCbf897106dE034D52e3DD90ea60',
@@ -159,6 +161,7 @@ export const LP_CONFIGURATIONS: { [chainId in ChainId]: { [lpProvider in Liquidi
       createdTimestamp: 1611490369,
       createdBlockNumber: 11718234,
       graphUrl: 'https://api.thegraph.com/subgraphs/name/itsib/plasmaswap-v2',
+      graphWs: 'https://sg.plasma.finance/subgraphs/name/plasmaswap/mainnet',
     },
     [LiquidityProvider.SUSHISWAP]: {
       factory: '0xc0aee478e3658e2610c5f7a4a2e1777ce9e4f2ac',
@@ -167,6 +170,7 @@ export const LP_CONFIGURATIONS: { [chainId in ChainId]: { [lpProvider in Liquidi
       createdTimestamp: 1599214239,
       createdBlockNumber: 10794229,
       graphUrl: 'https://api.thegraph.com/subgraphs/name/sushiswap/exchange',
+      graphWs: 'wss://api.thegraph.com/subgraphs/name/sushiswap/exchange',
     },
   },
   [ChainId.ROPSTEN]: {
@@ -204,6 +208,7 @@ export const LP_CONFIGURATIONS: { [chainId in ChainId]: { [lpProvider in Liquidi
       createdTimestamp: 1588609788,
       createdBlockNumber: 18344859,
       graphUrl: 'https://api.thegraph.com/subgraphs/name/maurodelazeri/uniswapv2-kovan',
+      graphWs: 'wss://api.thegraph.com/subgraphs/name/maurodelazeri/uniswapv2-kovan',
     },
     [LiquidityProvider.PLASMA]: {
       factory: '0x7A6521ba7Ba45C908be726D719ACd547D4a8E246',
@@ -211,7 +216,8 @@ export const LP_CONFIGURATIONS: { [chainId in ChainId]: { [lpProvider in Liquidi
       initCodeHash: '0xe60eb03e61b5fbeba179f6defb71bb00c5db9dab3b10d39c3985d66081de6d3d',
       createdTimestamp: 1606861200,
       createdBlockNumber: 22379351,
-      graphUrl: 'https://api.thegraph.com/subgraphs/name/itsib/plasmaswap',
+      graphUrl: 'https://sg.plasma.finance/subgraphs/name/plasmaswap/kovan',
+      graphWs: 'wss://sg.plasma.finance/ws/subgraphs/name/plasmaswap/kovan',
     },
     [LiquidityProvider.SUSHISWAP]: {
       factory: '0x8D4FD620CB7Ed677870b8b62f22c166cC76fb519',
@@ -229,6 +235,7 @@ export const LP_CONFIGURATIONS: { [chainId in ChainId]: { [lpProvider in Liquidi
       createdTimestamp: 1623075489,
       createdBlockNumber: 15441546,
       graphUrl: 'https://sg.plasma.finance/subgraphs/name/plasmaswap/matic',
+      graphWs: 'wss://sg.plasma.finance/ws/subgraphs/name/plasmaswap/matic',
     },
     [LiquidityProvider.SUSHISWAP]: {
       factory: '0xc35DADB65012eC5796536bD9864eD8773aBc74C4',
@@ -237,6 +244,7 @@ export const LP_CONFIGURATIONS: { [chainId in ChainId]: { [lpProvider in Liquidi
       createdTimestamp: 1614311449,
       createdBlockNumber: 11333218,
       graphUrl: 'https://api.thegraph.com/subgraphs/name/sushiswap/matic-exchange',
+      graphWs: 'wss://api.thegraph.com/subgraphs/name/sushiswap/matic-exchange',
     },
     [LiquidityProvider.QUICKSWAP]: {
       factory: '0x5757371414417b8c6caad45baef941abc7d3ab32',
@@ -245,6 +253,7 @@ export const LP_CONFIGURATIONS: { [chainId in ChainId]: { [lpProvider in Liquidi
       createdTimestamp: 1615266493,
       createdBlockNumber: 11799756,
       graphUrl: 'https://sg.plasma.finance/subgraphs/name/quickswap/matic',
+      graphWs: 'wss://sg.plasma.finance/ws/subgraphs/name/quickswap/matic',
     },
   },
   [ChainId.BSC]: {
@@ -254,7 +263,8 @@ export const LP_CONFIGURATIONS: { [chainId in ChainId]: { [lpProvider in Liquidi
       initCodeHash: '0x8614648fda2cedabe024f773fb6929fd773c7db2d1bfc6dc92f716b47c2b7047',
       createdTimestamp: 1629711966,
       createdBlockNumber: 10276490,
-      graphUrl: 'https://api.thegraph.com/subgraphs/name/itsib/plasmaswap-bsc',
+      graphUrl: 'https://sg.plasma.finance/subgraphs/name/plasmaswap/bsc',
+      graphWs: 'wss://sg.plasma.finance/ws/subgraphs/name/plasmaswap/bsc',
     },
     [LiquidityProvider.SUSHISWAP]: {
       factory: '0xc35DADB65012eC5796536bD9864eD8773aBc74C4',
@@ -263,6 +273,7 @@ export const LP_CONFIGURATIONS: { [chainId in ChainId]: { [lpProvider in Liquidi
       createdTimestamp: 1614313236,
       createdBlockNumber: 5205069,
       graphUrl: 'https://api.thegraph.com/subgraphs/name/sushiswap/bsc-exchange',
+      graphWs: 'wss://api.thegraph.com/subgraphs/name/sushiswap/bsc-exchange',
     },
     [LiquidityProvider.PANCAKESWAP]: {
       factory: '0xca143ce32fe78f1f7019d7d551a6402fc5350c73',
@@ -271,6 +282,7 @@ export const LP_CONFIGURATIONS: { [chainId in ChainId]: { [lpProvider in Liquidi
       createdTimestamp: 1619164516,
       createdBlockNumber: 6809737,
       graphUrl: 'https://api.thegraph.com/subgraphs/name/itsib/pancakeswap-v2',
+      graphWs: 'wss://api.thegraph.com/subgraphs/name/itsib/pancakeswap-v2',
     },
   },
   [ChainId.BSC_TEST]: {
