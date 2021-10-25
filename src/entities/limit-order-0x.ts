@@ -1,4 +1,5 @@
 import { Signature } from '@ethersproject/bytes';
+import { keccak256 } from '@ethersproject/keccak256';
 import invariant from 'tiny-invariant';
 import { TokenAmount } from '../amounts';
 import { send0xSignedOrder } from '../api';
@@ -22,7 +23,9 @@ export class LimitOrder0x {
 
   protected chainId?: ChainId;
   protected verifyingContract?: string;
-  protected salt?: string;
+  protected salt: string;
+
+  public static TYPE_HASH = keccak256(Buffer.from([`LimitOrder(`, EIP712_LIMIT_ORDER_ABI.map(a => `${a.type} ${a.name}`).join(','), ')'].join(''), 'utf8'));
 
   public static toArray(order: Signed0xOrder): string[] {
     return EIP712_LIMIT_ORDER_ABI.reduce<string[]>((tuple, { name }) => {
@@ -43,8 +46,33 @@ export class LimitOrder0x {
     this.expiry = expiry;
     this.takerTokenFeeAmount = takerTokenFeeAmount || (toCurrencyAmount(buy.token, '0') as TokenAmount);
     this.feeRecipient = feeRecipient?.toLowerCase() || ZERO_ADDRESS;
+    this.salt = Date.now().toString();
   }
 
+  /**
+   * Returns RAW order fields
+   */
+  public raw(): { [key: string]: string } {
+    return {
+      makerToken: this.sell.token.address.toLowerCase(),
+      takerToken: this.buy.token.address.toLowerCase(),
+      makerAmount: this.sell.raw.toString(10),
+      takerAmount: this.buy.raw.toString(10),
+      takerTokenFeeAmount: this.takerTokenFeeAmount.raw.toString(10),
+      maker: this.account,
+      taker: ZERO_ADDRESS,
+      sender: ZERO_ADDRESS,
+      feeRecipient: this.feeRecipient,
+      pool: ZERO_WORD,
+      expiry: this.expiry.toString(10),
+      salt: this.salt,
+    };
+  }
+
+  /**
+   * Returns order TypedData for sign
+   * @param chainId
+   */
   public getEIP712TypedData(chainId: ChainId): EIP712TypedData {
     invariant(SUPPORTED_0X_CHAINS.includes(chainId), 'Unsupported chainId');
     const verifyingContract = ZERO_EX_PROXY_ADDRESS[chainId];
@@ -52,7 +80,6 @@ export class LimitOrder0x {
 
     this.chainId = chainId;
     this.verifyingContract = verifyingContract;
-    this.salt = Date.now().toString();
 
     const domain: EIP712Domain = {
       chainId,
@@ -60,20 +87,7 @@ export class LimitOrder0x {
       name: 'ZeroEx',
       version: '1.0.0',
     };
-    const message: EIP712MessageForLimitOrder = {
-      makerToken: this.sell.token.address.toLowerCase(),
-      takerToken: this.buy.token.address.toLowerCase(),
-      makerAmount: this.sell.raw.toString(10),
-      takerAmount: this.buy.raw.toString(10),
-      takerTokenFeeAmount: this.takerTokenFeeAmount.raw.toString(10),
-      maker: this.account,
-      taker: ZERO_ADDRESS,
-      sender: ZERO_ADDRESS,
-      feeRecipient: this.feeRecipient,
-      pool: ZERO_WORD,
-      expiry: this.expiry.toString(10),
-      salt: this.salt,
-    };
+    const message: EIP712MessageForLimitOrder = this.raw() as EIP712MessageForLimitOrder;
 
     return getLimitOrderEIP712TypedData(domain, message);
   }
@@ -81,20 +95,7 @@ export class LimitOrder0x {
   public async send(signature: Signature) {
     invariant(this.chainId && this.verifyingContract && this.salt, 'The signature does not fit this order');
 
-    const order: Signed0xOrder = {
-      makerToken: this.sell.token.address.toLowerCase(),
-      takerToken: this.buy.token.address.toLowerCase(),
-      makerAmount: this.sell.raw.toString(10),
-      takerAmount: this.buy.raw.toString(10),
-      takerTokenFeeAmount: this.takerTokenFeeAmount.raw.toString(10),
-      maker: this.account,
-      taker: ZERO_ADDRESS,
-      sender: ZERO_ADDRESS,
-      feeRecipient: this.feeRecipient,
-      pool: ZERO_WORD,
-      expiry: this.expiry.toString(10),
-      salt: this.salt,
-
+    const order: Signed0xOrder = Object.assign<Signed0xOrder, Partial<Signed0xOrder>, Partial<Signed0xOrder>>({} as Signed0xOrder, this.raw(), {
       verifyingContract: this.verifyingContract,
       chainId: this.chainId,
       signature: {
@@ -103,7 +104,7 @@ export class LimitOrder0x {
         s: signature.s,
         v: signature.v,
       },
-    };
+    });
 
     return send0xSignedOrder(order);
   }
