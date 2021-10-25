@@ -148,7 +148,8 @@ export class LimitOrder0x {
    * Send signed order to exchange
    * @param signature
    */
-  public async send(signature: Signature) {
+  public async send(signature: Signature): Promise<string> {
+    const hash = this.getHash();
     const order: Signed0xOrder = Object.assign<Signed0xOrder, Partial<Signed0xOrder>, Partial<Signed0xOrder>>({} as Signed0xOrder, this.raw(), {
       verifyingContract: this.verifyingContract,
       chainId: this.chainId,
@@ -160,6 +161,6 @@ export class LimitOrder0x {
       },
     });
 
-    return send0xSignedOrder(order);
+    return send0xSignedOrder(order).then(() => hash);
   }
 }
