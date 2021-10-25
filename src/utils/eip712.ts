@@ -1,3 +1,5 @@
+import { keccak256 } from '@ethersproject/keccak256';
+
 export interface EIP712Parameter {
   name: string;
   type: string;
@@ -38,6 +40,8 @@ export const EIP712_DOMAIN_ABI: EIP712Parameter[] = [
   { type: 'address', name: 'verifyingContract' },
 ];
 
+export const EIP712_DOMAIN_ABI_HASH = keccak256(Buffer.from([`EIP712Domain(`, EIP712_DOMAIN_ABI.map(a => `${a.type} ${a.name}`).join(','), ')'].join(''), 'utf8'));
+
 export const EIP712_PERMIT_ABI: EIP712Parameter[] = [
   { name: 'owner', type: 'address' },
   { name: 'spender', type: 'address' },
@@ -60,6 +64,8 @@ export const EIP712_LIMIT_ORDER_ABI: EIP712Parameter[] = [
   { type: 'uint64', name: 'expiry' },
   { type: 'uint256', name: 'salt' },
 ];
+
+export const EIP712_LIMIT_ORDER_ABI_HASH = keccak256(Buffer.from([`LimitOrder(`, EIP712_LIMIT_ORDER_ABI.map(a => `${a.type} ${a.name}`).join(','), ')'].join(''), 'utf8'));
 
 export interface EIP712MessageForPermit extends EIP712Object {
   owner: string;

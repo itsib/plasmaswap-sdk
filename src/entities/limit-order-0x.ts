@@ -5,7 +5,17 @@ import { TokenAmount } from '../amounts';
 import { send0xSignedOrder } from '../api';
 import { ChainId, SUPPORTED_0X_CHAINS, ZERO_ADDRESS, ZERO_EX_PROXY_ADDRESS, ZERO_WORD } from '../constants/constants';
 import { Signed0xOrder } from '../types';
-import { EIP712_LIMIT_ORDER_ABI, EIP712Domain, EIP712MessageForLimitOrder, EIP712TypedData, formatHexString, getLimitOrderEIP712TypedData, toCurrencyAmount } from '../utils';
+import {
+  EIP712_DOMAIN_ABI_HASH,
+  EIP712_LIMIT_ORDER_ABI,
+  EIP712_LIMIT_ORDER_ABI_HASH,
+  EIP712Domain,
+  EIP712MessageForLimitOrder,
+  EIP712TypedData,
+  formatHexString,
+  getLimitOrderEIP712TypedData,
+  toCurrencyAmount,
+} from '../utils';
 
 export class LimitOrder0x {
   // The account of the maker, and signer, of this order.
@@ -25,7 +35,11 @@ export class LimitOrder0x {
   protected verifyingContract: string;
   protected salt: string;
 
-  public static TYPE_HASH = keccak256(Buffer.from([`LimitOrder(`, EIP712_LIMIT_ORDER_ABI.map(a => `${a.type} ${a.name}`).join(','), ')'].join(''), 'utf8'));
+  public static TYPE_HASH = EIP712_LIMIT_ORDER_ABI_HASH;
+
+  public static PROXY_DOMAIN_NAME = 'ZeroEx';
+
+  public static PROXY_DOMAIN_VERSION = '1.0.0';
 
   public static toArray(order: Signed0xOrder): string[] {
     return EIP712_LIMIT_ORDER_ABI.reduce<string[]>((tuple, { name }) => {
@@ -75,9 +89,9 @@ export class LimitOrder0x {
   }
 
   /**
-   * Calculates and returns order hash
+   * Calculates and returns order struct hash
    */
-  public getHash(): string {
+  public getStructHash(): string {
     const rawOrder = this.raw();
     return keccak256(
       concat([
@@ -99,14 +113,31 @@ export class LimitOrder0x {
   }
 
   /**
+   * Calculates and returns order hash
+   */
+  public getHash(): string {
+    const domainHash = keccak256(
+      concat([
+        EIP712_DOMAIN_ABI_HASH,
+        keccak256(Buffer.from(LimitOrder0x.PROXY_DOMAIN_NAME, 'utf8')),
+        keccak256(Buffer.from(LimitOrder0x.PROXY_DOMAIN_VERSION, 'utf8')),
+        formatHexString(`${this.chainId}`),
+        formatHexString(`${this.verifyingContract}`),
+      ]),
+    );
+
+    return keccak256(concat(['0x1901', domainHash, this.getStructHash()]));
+  }
+
+  /**
    * Returns order TypedData for sign
    */
   public getEIP712TypedData(): EIP712TypedData {
     const domain: EIP712Domain = {
       chainId: this.chainId,
       verifyingContract: this.verifyingContract,
-      name: 'ZeroEx',
-      version: '1.0.0',
+      name: LimitOrder0x.PROXY_DOMAIN_NAME,
+      version: LimitOrder0x.PROXY_DOMAIN_VERSION,
     };
     const message: EIP712MessageForLimitOrder = this.raw() as EIP712MessageForLimitOrder;
 
