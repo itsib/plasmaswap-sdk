@@ -1,11 +1,11 @@
-import { Signature } from '@ethersproject/bytes';
+import { concat, Signature } from '@ethersproject/bytes';
 import { keccak256 } from '@ethersproject/keccak256';
 import invariant from 'tiny-invariant';
 import { TokenAmount } from '../amounts';
 import { send0xSignedOrder } from '../api';
 import { ChainId, SUPPORTED_0X_CHAINS, ZERO_ADDRESS, ZERO_EX_PROXY_ADDRESS, ZERO_WORD } from '../constants/constants';
 import { Signed0xOrder } from '../types';
-import { EIP712_LIMIT_ORDER_ABI, EIP712Domain, EIP712MessageForLimitOrder, EIP712TypedData, getLimitOrderEIP712TypedData, toCurrencyAmount } from '../utils';
+import { EIP712_LIMIT_ORDER_ABI, EIP712Domain, EIP712MessageForLimitOrder, EIP712TypedData, formatHexString, getLimitOrderEIP712TypedData, toCurrencyAmount } from '../utils';
 
 export class LimitOrder0x {
   // The account of the maker, and signer, of this order.
@@ -21,8 +21,8 @@ export class LimitOrder0x {
 
   public feeRecipient: string;
 
-  protected chainId?: ChainId;
-  protected verifyingContract?: string;
+  protected chainId: ChainId;
+  protected verifyingContract: string;
   protected salt: string;
 
   public static TYPE_HASH = keccak256(Buffer.from([`LimitOrder(`, EIP712_LIMIT_ORDER_ABI.map(a => `${a.type} ${a.name}`).join(','), ')'].join(''), 'utf8'));
@@ -36,10 +36,15 @@ export class LimitOrder0x {
     }, []);
   }
 
-  constructor(account: string, sell: TokenAmount, buy: TokenAmount, expiry: number, takerTokenFeeAmount?: TokenAmount, feeRecipient?: string) {
+  constructor(chainId: ChainId, account: string, sell: TokenAmount, buy: TokenAmount, expiry: number, takerTokenFeeAmount?: TokenAmount, feeRecipient?: string) {
     invariant(!sell.token.equals(buy.token), 'Sell and buy tokens is same.');
     invariant(!takerTokenFeeAmount || buy.token.equals(takerTokenFeeAmount.token), 'Taker token fee amount should be same token');
+    invariant(SUPPORTED_0X_CHAINS.includes(chainId), 'Unsupported chainId');
+    const verifyingContract = ZERO_EX_PROXY_ADDRESS[chainId];
+    invariant(verifyingContract, 'Proxy contract not find');
 
+    this.chainId = chainId;
+    this.verifyingContract = verifyingContract;
     this.account = account.toLowerCase();
     this.sell = sell;
     this.buy = buy;
@@ -70,20 +75,36 @@ export class LimitOrder0x {
   }
 
   /**
-   * Returns order TypedData for sign
-   * @param chainId
+   * Calculates and returns order hash
    */
-  public getEIP712TypedData(chainId: ChainId): EIP712TypedData {
-    invariant(SUPPORTED_0X_CHAINS.includes(chainId), 'Unsupported chainId');
-    const verifyingContract = ZERO_EX_PROXY_ADDRESS[chainId];
-    invariant(verifyingContract, 'Proxy contract not find');
+  public getHash(): string {
+    const rawOrder = this.raw();
+    return keccak256(
+      concat([
+        formatHexString(LimitOrder0x.TYPE_HASH),
+        formatHexString(rawOrder.makerToken),
+        formatHexString(rawOrder.takerToken),
+        formatHexString(rawOrder.makerAmount),
+        formatHexString(rawOrder.takerAmount),
+        formatHexString(rawOrder.takerTokenFeeAmount),
+        formatHexString(rawOrder.maker),
+        formatHexString(rawOrder.taker),
+        formatHexString(rawOrder.sender),
+        formatHexString(rawOrder.feeRecipient),
+        formatHexString(rawOrder.pool),
+        formatHexString(rawOrder.expiry),
+        formatHexString(rawOrder.salt),
+      ]),
+    );
+  }
 
-    this.chainId = chainId;
-    this.verifyingContract = verifyingContract;
-
+  /**
+   * Returns order TypedData for sign
+   */
+  public getEIP712TypedData(): EIP712TypedData {
     const domain: EIP712Domain = {
-      chainId,
-      verifyingContract,
+      chainId: this.chainId,
+      verifyingContract: this.verifyingContract,
       name: 'ZeroEx',
       version: '1.0.0',
     };
@@ -92,9 +113,11 @@ export class LimitOrder0x {
     return getLimitOrderEIP712TypedData(domain, message);
   }
 
+  /**
+   * Send signed order to exchange
+   * @param signature
+   */
   public async send(signature: Signature) {
-    invariant(this.chainId && this.verifyingContract && this.salt, 'The signature does not fit this order');
-
     const order: Signed0xOrder = Object.assign<Signed0xOrder, Partial<Signed0xOrder>, Partial<Signed0xOrder>>({} as Signed0xOrder, this.raw(), {
       verifyingContract: this.verifyingContract,
       chainId: this.chainId,
