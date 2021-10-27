@@ -27,7 +27,7 @@ export class Trade0xLimit extends BaseTrade {
   private readonly _feeRecipient?: string;
 
   public static getTrade(opts: Trade0xLimitOptions): Trade0xLimit {
-    invariant(opts.inputAmount.currency.equals(opts.outputAmount.currency), "AMOUNT'S TOKENS IS EQUAL");
+    invariant(!opts.inputAmount.currency.equals(opts.outputAmount.currency), "AMOUNT'S TOKENS IS EQUAL");
     invariant(opts.inputAmount.currency.isToken, 'Only tokens amount is supported (inputAmount).');
     invariant(opts.outputAmount.currency.isToken, 'Only tokens amount is supported (outputAmount).');
 
