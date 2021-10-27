@@ -47,13 +47,33 @@ export class Trade0xLimit extends BaseTrade {
   }
 
   /**
+   * Returns limit order lifetime in seconds
+   */
+  public getOrderDuration(): number {
+    return this._duration;
+  }
+
+  /**
+   * Returns order finish timestamp (From current moment)
+   */
+  public getOrderEstimate(): number {
+    return Math.floor(Date.now() / 1000) + this._duration;
+  }
+
+  /**
    * Construct new limit order
    * @param account
    */
   public getOrder(account: string): LimitOrder0x {
     const chainId: ChainId = this.inputAmount.currency.chainId;
-    const timestamp = Math.floor(Date.now() / 1000) + this._duration;
-
-    return new LimitOrder0x(chainId, account, this.inputAmount as TokenAmount, this.outputAmount as TokenAmount, timestamp, this._takerTokenFeeAmount, this._feeRecipient);
+    return new LimitOrder0x(
+      chainId,
+      account,
+      this.inputAmount as TokenAmount,
+      this.outputAmount as TokenAmount,
+      this.getOrderEstimate(),
+      this._takerTokenFeeAmount,
+      this._feeRecipient,
+    );
   }
 }
