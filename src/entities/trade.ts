@@ -1,13 +1,11 @@
 import invariant from 'tiny-invariant';
-import { Fraction } from '../amounts/fraction';
 import { CurrencyAmount, NativeAmount, TokenAmount } from '../amounts/currency-amount';
 import { Percent } from '../amounts/percent';
 import { Price } from '../amounts/price';
-import { ONE, TradeType, ZERO } from '../constants/constants';
+import { TradeType, ZERO } from '../constants/constants';
 import { Currency } from '../entities/currency';
 import { BaseTrade } from '../types';
 import { sortedInsert } from '../utils/sorted-insert';
-import { toCurrencyAmount } from '../utils/to-currency-amount';
 import { Pair } from './pair';
 import { Route } from './route';
 
@@ -91,22 +89,6 @@ export class Trade extends BaseTrade {
    */
   public readonly route: Route;
   /**
-   * The type of the trade, either exact in or exact out.
-   */
-  public readonly tradeType: TradeType;
-  /**
-   * The input amount for the trade assuming no slippage.
-   */
-  public readonly inputAmount: CurrencyAmount;
-  /**
-   * The output amount for the trade assuming no slippage.
-   */
-  public readonly outputAmount: CurrencyAmount;
-  /**
-   * The price expressed in terms of output amount/input amount.
-   */
-  public readonly executionPrice: Price;
-  /**
    * The mid price after the trade executes assuming no slippage.
    */
   public readonly nextMidPrice: Price;
@@ -131,74 +113,6 @@ export class Trade extends BaseTrade {
    */
   public static exactOut(route: Route, amountOut: CurrencyAmount): Trade {
     return new Trade(route, amountOut, TradeType.EXACT_OUTPUT);
-  }
-
-  public constructor(route: Route, amount: CurrencyAmount, tradeType: TradeType) {
-    super();
-    const amounts: TokenAmount[] = new Array(route.path.length);
-    const nextPairs: Pair[] = new Array(route.pairs.length);
-    if (tradeType === TradeType.EXACT_INPUT) {
-      invariant(amount.currency.equals(route.input), 'INPUT');
-      amounts[0] = amount.wrapped();
-      for (let i = 0; i < route.path.length - 1; i++) {
-        const pair = route.pairs[i];
-        const [outputAmount, nextPair] = pair.getOutputAmount(amounts[i]);
-        amounts[i + 1] = outputAmount;
-        nextPairs[i] = nextPair;
-      }
-    } else {
-      invariant(amount.currency.equals(route.output), 'OUTPUT');
-      amounts[amounts.length - 1] = amount.wrapped();
-      for (let i = route.path.length - 1; i > 0; i--) {
-        const pair = route.pairs[i - 1];
-        const [inputAmount, nextPair] = pair.getInputAmount(amounts[i]);
-        amounts[i - 1] = inputAmount;
-        nextPairs[i - 1] = nextPair;
-      }
-    }
-
-    this.route = route;
-    this.tradeType = tradeType;
-    this.inputAmount = tradeType === TradeType.EXACT_INPUT ? amount : route.input.isNative ? NativeAmount.native(route.chainId, amounts[0].raw) : amounts[0];
-    this.outputAmount =
-      tradeType === TradeType.EXACT_OUTPUT ? amount : route.output.isNative ? NativeAmount.native(route.chainId, amounts[amounts.length - 1].raw) : amounts[amounts.length - 1];
-    this.executionPrice = new Price(this.inputAmount.currency, this.outputAmount.currency, this.inputAmount.raw, this.outputAmount.raw);
-    this.nextMidPrice = Price.fromRoute(new Route(nextPairs, route.input));
-    this.priceImpact = computePriceImpact(route.midPrice, this.inputAmount, this.outputAmount);
-  }
-
-  /**
-   * Get the minimum amount that must be received from this trade for the given slippage tolerance
-   * @param slippageTolerance tolerance of unfavorable slippage from the execution price of this trade
-   */
-  public minimumAmountOut(slippageTolerance: Percent): CurrencyAmount {
-    invariant(!slippageTolerance.lessThan(ZERO), 'SLIPPAGE_TOLERANCE');
-
-    if (this.tradeType === TradeType.EXACT_OUTPUT) {
-      return this.outputAmount;
-    } else {
-      const slippageAdjustedAmountOut = new Fraction(ONE)
-        .add(slippageTolerance)
-        .invert()
-        .multiply(this.outputAmount.raw).quotient;
-
-      return toCurrencyAmount(this.outputAmount.currency, slippageAdjustedAmountOut);
-    }
-  }
-
-  /**
-   * Get the maximum amount in that can be spent via this trade for the given slippage tolerance
-   * @param slippageTolerance tolerance of unfavorable slippage from the execution price of this trade
-   */
-  public maximumAmountIn(slippageTolerance: Percent): CurrencyAmount {
-    invariant(!slippageTolerance.lessThan(ZERO), 'SLIPPAGE_TOLERANCE');
-    if (this.tradeType === TradeType.EXACT_INPUT) {
-      return this.inputAmount;
-    } else {
-      const slippageAdjustedAmountIn = new Fraction(ONE).add(slippageTolerance).multiply(this.inputAmount.raw).quotient;
-
-      return toCurrencyAmount(this.inputAmount.currency, slippageAdjustedAmountIn);
-    }
   }
 
   /**
@@ -360,5 +274,40 @@ export class Trade extends BaseTrade {
     }
 
     return bestTrades;
+  }
+
+  public constructor(route: Route, amount: CurrencyAmount, tradeType: TradeType) {
+    invariant(tradeType === TradeType.EXACT_INPUT || tradeType === TradeType.EXACT_OUTPUT, 'Unsupported trade type');
+    const amounts: TokenAmount[] = new Array(route.path.length);
+    const nextPairs: Pair[] = new Array(route.pairs.length);
+    if (tradeType === TradeType.EXACT_INPUT) {
+      invariant(amount.currency.equals(route.input), 'INPUT');
+      amounts[0] = amount.wrapped();
+      for (let i = 0; i < route.path.length - 1; i++) {
+        const pair = route.pairs[i];
+        const [outputAmount, nextPair] = pair.getOutputAmount(amounts[i]);
+        amounts[i + 1] = outputAmount;
+        nextPairs[i] = nextPair;
+      }
+    } else {
+      invariant(amount.currency.equals(route.output), 'OUTPUT');
+      amounts[amounts.length - 1] = amount.wrapped();
+      for (let i = route.path.length - 1; i > 0; i--) {
+        const pair = route.pairs[i - 1];
+        const [inputAmount, nextPair] = pair.getInputAmount(amounts[i]);
+        amounts[i - 1] = inputAmount;
+        nextPairs[i - 1] = nextPair;
+      }
+    }
+
+    const inputAmount = tradeType === TradeType.EXACT_INPUT ? amount : route.input.isNative ? NativeAmount.native(route.chainId, amounts[0].raw) : amounts[0];
+    const outputAmount =
+      tradeType === TradeType.EXACT_OUTPUT ? amount : route.output.isNative ? NativeAmount.native(route.chainId, amounts[amounts.length - 1].raw) : amounts[amounts.length - 1];
+
+    super(tradeType, inputAmount, outputAmount);
+
+    this.route = route;
+    this.nextMidPrice = Price.fromRoute(new Route(nextPairs, route.input));
+    this.priceImpact = computePriceImpact(route.midPrice, this.inputAmount, this.outputAmount);
   }
 }

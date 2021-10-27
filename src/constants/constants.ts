@@ -89,6 +89,7 @@ export enum Trade0xLiquiditySource {
 }
 
 export enum TradeType {
+  LIMIT,
   EXACT_INPUT,
   EXACT_OUTPUT,
 }

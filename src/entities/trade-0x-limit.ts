@@ -1,8 +1,7 @@
 import invariant from 'tiny-invariant';
-import { CurrencyAmount, Percent, Price, TokenAmount } from '../amounts';
-import { ChainId, SUPPORTED_0X_CHAINS, ZERO } from '../constants/constants';
+import { TokenAmount } from '../amounts';
+import { ChainId, SUPPORTED_0X_CHAINS, TradeType } from '../constants/constants';
 import { BaseTrade } from '../types';
-import { toCurrencyAmount } from '../utils';
 import { LimitOrder0x } from './limit-order-0x';
 
 export interface Trade0xLimitOptions {
@@ -23,18 +22,14 @@ export interface Trade0xLimitOptions {
 }
 
 export class Trade0xLimit extends BaseTrade {
-  public readonly inputAmount: TokenAmount;
-
-  public readonly outputAmount: TokenAmount;
-
-  public readonly executionPrice: Price;
-
   private readonly _duration: number;
   private readonly _takerTokenFeeAmount?: TokenAmount;
   private readonly _feeRecipient?: string;
 
   public static getTrade(opts: Trade0xLimitOptions): Trade0xLimit {
     invariant(opts.inputAmount.currency.equals(opts.outputAmount.currency), "AMOUNT'S TOKENS IS EQUAL");
+    invariant(opts.inputAmount.currency.isToken, 'Only tokens amount is supported (inputAmount).');
+    invariant(opts.outputAmount.currency.isToken, 'Only tokens amount is supported (outputAmount).');
 
     const chainId: ChainId = opts.inputAmount.currency.chainId;
     invariant(SUPPORTED_0X_CHAINS.includes(chainId), 'Unsupported chainId');
@@ -45,31 +40,10 @@ export class Trade0xLimit extends BaseTrade {
   }
 
   constructor(inputAmount: TokenAmount, outputAmount: TokenAmount, duration: number, takerTokenFeeAmount?: TokenAmount, feeRecipient?: string) {
-    super();
-    this.inputAmount = inputAmount;
-    this.outputAmount = outputAmount;
-    this.executionPrice = new Price(this.inputAmount.currency, this.outputAmount.currency, this.inputAmount.raw, this.outputAmount.raw);
+    super(TradeType.LIMIT, inputAmount, outputAmount);
     this._duration = duration;
     this._takerTokenFeeAmount = takerTokenFeeAmount;
     this._feeRecipient = feeRecipient;
-  }
-
-  /**
-   * Get the minimum amount that must be received from this trade for the given slippage tolerance
-   * @param slippageTolerance tolerance of unfavorable slippage from the execution price of this trade
-   */
-  public minimumAmountOut(slippageTolerance: Percent): CurrencyAmount {
-    invariant(!slippageTolerance.lessThan(ZERO), 'SLIPPAGE_TOLERANCE');
-    return toCurrencyAmount(this.outputAmount.currency, this.outputAmount.raw.toString());
-  }
-
-  /**
-   * Get the maximum amount in that can be spent via this trade for the given slippage tolerance
-   * @param slippageTolerance tolerance of unfavorable slippage from the execution price of this trade
-   */
-  public maximumAmountIn(slippageTolerance: Percent): CurrencyAmount {
-    invariant(!slippageTolerance.lessThan(ZERO), 'SLIPPAGE_TOLERANCE');
-    return toCurrencyAmount(this.inputAmount.currency, this.inputAmount.raw.toString());
   }
 
   /**
@@ -80,6 +54,6 @@ export class Trade0xLimit extends BaseTrade {
     const chainId: ChainId = this.inputAmount.currency.chainId;
     const timestamp = Math.floor(Date.now() / 1000) + this._duration;
 
-    return new LimitOrder0x(chainId, account, this.inputAmount, this.outputAmount, timestamp, this._takerTokenFeeAmount, this._feeRecipient);
+    return new LimitOrder0x(chainId, account, this.inputAmount as TokenAmount, this.outputAmount as TokenAmount, timestamp, this._takerTokenFeeAmount, this._feeRecipient);
   }
 }

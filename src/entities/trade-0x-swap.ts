@@ -2,12 +2,12 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { TransactionRequest } from '@ethersproject/providers';
 import Big from 'big.js';
 import invariant from 'tiny-invariant';
-import { CurrencyAmount, Fraction, isCurrencyAmount, Percent, Price } from '../amounts';
+import { CurrencyAmount, isCurrencyAmount, Percent } from '../amounts';
 import { NativeAmount } from '../amounts/currency-amount';
-import { ChainId, ONE, SUPPORTED_0X_CHAINS, Trade0xLiquiditySource, TradeType, ZERO, ZERO_ADDRESS } from '../constants/constants';
+import { fetch0xQuote, Fetch0xQuoteQuery } from '../api';
+import { ChainId, SUPPORTED_0X_CHAINS, Trade0xLiquiditySource, TradeType, ZERO_ADDRESS } from '../constants/constants';
 import { BaseTrade } from '../types';
 import { toCurrencyAmount } from '../utils';
-import { fetch0xQuote, Fetch0xQuoteQuery } from '../api';
 import { Currency, isCurrency, Token } from './currency';
 
 export interface Trade0xSwapOptions {
@@ -66,14 +66,6 @@ export interface Trade0xSwapProportion {
 }
 
 export class Trade0xSwap extends BaseTrade {
-  public readonly tradeType: TradeType;
-
-  public readonly inputAmount: CurrencyAmount;
-
-  public readonly outputAmount: CurrencyAmount;
-
-  public readonly executionPrice: Price;
-
   public readonly networkFee: CurrencyAmount;
 
   public readonly tradeFee: CurrencyAmount;
@@ -177,15 +169,14 @@ export class Trade0xSwap extends BaseTrade {
     buyTokenPercentageFee?: number,
     affiliateAddress?: string,
   ) {
-    super();
-    this.tradeType = tradeType;
-    this.inputAmount = inputAmount;
-    this.outputAmount = outputAmount;
+    invariant(tradeType === TradeType.EXACT_INPUT || tradeType === TradeType.EXACT_OUTPUT, 'Unsupported trade type');
+
+    super(tradeType, inputAmount, outputAmount);
+
     this.networkFee = networkFee;
     this.tradeFee = tradeFee;
     this.proportions = proportions;
     this.allowanceTarget = allowanceTarget;
-    this.executionPrice = new Price(this.inputAmount.currency, this.outputAmount.currency, this.inputAmount.raw, this.outputAmount.raw);
 
     this._optsSlippagePercentage = slippagePercentage;
     this._optsExcludedSources = excludedSources;
@@ -207,40 +198,6 @@ export class Trade0xSwap extends BaseTrade {
           .toFixed(0);
         this.priceImpact = new Percent(numerator, denominator);
       }
-    }
-  }
-
-  /**
-   * Get the minimum amount that must be received from this trade for the given slippage tolerance
-   * @param slippageTolerance tolerance of unfavorable slippage from the execution price of this trade
-   */
-  public minimumAmountOut(slippageTolerance: Percent): CurrencyAmount {
-    invariant(!slippageTolerance.lessThan(ZERO), 'SLIPPAGE_TOLERANCE');
-
-    if (this.tradeType === TradeType.EXACT_OUTPUT) {
-      return this.outputAmount;
-    } else {
-      const slippageAdjustedAmountOut = new Fraction(ONE)
-        .add(slippageTolerance)
-        .invert()
-        .multiply(this.outputAmount.raw).quotient;
-
-      return toCurrencyAmount(this.outputAmount.currency, slippageAdjustedAmountOut);
-    }
-  }
-
-  /**
-   * Get the maximum amount in that can be spent via this trade for the given slippage tolerance
-   * @param slippageTolerance tolerance of unfavorable slippage from the execution price of this trade
-   */
-  public maximumAmountIn(slippageTolerance: Percent): CurrencyAmount {
-    invariant(!slippageTolerance.lessThan(ZERO), 'SLIPPAGE_TOLERANCE');
-    if (this.tradeType === TradeType.EXACT_INPUT) {
-      return this.inputAmount;
-    } else {
-      const slippageAdjustedAmountIn = new Fraction(ONE).add(slippageTolerance).multiply(this.inputAmount.raw).quotient;
-
-      return toCurrencyAmount(this.inputAmount.currency, slippageAdjustedAmountIn);
     }
   }
 
