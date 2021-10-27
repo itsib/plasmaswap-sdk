@@ -5,6 +5,7 @@ import { Percent } from '../amounts/percent';
 import { Price } from '../amounts/price';
 import { ONE, TradeType, ZERO } from '../constants/constants';
 import { Currency } from '../entities/currency';
+import { BaseTrade } from '../types';
 import { sortedInsert } from '../utils/sorted-insert';
 import { toCurrencyAmount } from '../utils/to-currency-amount';
 import { Pair } from './pair';
@@ -84,7 +85,7 @@ export interface BestTradeOptions {
  * Represents a trade executed against a list of pairs.
  * Does not account for slippage, i.e. trades that front run this trade and move the price.
  */
-export class Trade {
+export class Trade extends BaseTrade {
   /**
    * The route of the trade, i.e. which pairs the trade goes through.
    */
@@ -133,6 +134,7 @@ export class Trade {
   }
 
   public constructor(route: Route, amount: CurrencyAmount, tradeType: TradeType) {
+    super();
     const amounts: TokenAmount[] = new Array(route.path.length);
     const nextPairs: Pair[] = new Array(route.pairs.length);
     if (tradeType === TradeType.EXACT_INPUT) {

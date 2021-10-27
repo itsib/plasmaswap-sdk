@@ -5,11 +5,12 @@ import invariant from 'tiny-invariant';
 import { CurrencyAmount, Fraction, isCurrencyAmount, Percent, Price } from '../amounts';
 import { NativeAmount } from '../amounts/currency-amount';
 import { ChainId, ONE, SUPPORTED_0X_CHAINS, Trade0xLiquiditySource, TradeType, ZERO, ZERO_ADDRESS } from '../constants/constants';
+import { BaseTrade } from '../types';
 import { toCurrencyAmount } from '../utils';
 import { fetch0xQuote, Fetch0xQuoteQuery } from '../api';
 import { Currency, isCurrency, Token } from './currency';
 
-export interface Trade0xOptions {
+export interface Trade0xSwapOptions {
   /**
    * From (Sell, Input) currency
    */
@@ -53,7 +54,7 @@ export interface Trade0xOptions {
   affiliateAddress?: string;
 }
 
-export interface Trade0xProportion {
+export interface Trade0xSwapProportion {
   /**
    * Liquidity source provider info
    */
@@ -64,7 +65,7 @@ export interface Trade0xProportion {
   proportion: number;
 }
 
-export class Trade0x {
+export class Trade0xSwap extends BaseTrade {
   public readonly tradeType: TradeType;
 
   public readonly inputAmount: CurrencyAmount;
@@ -79,7 +80,7 @@ export class Trade0x {
 
   public readonly allowanceTarget?: string;
 
-  public readonly proportions: Trade0xProportion[];
+  public readonly proportions: Trade0xSwapProportion[];
 
   public readonly priceImpact?: Percent;
 
@@ -93,7 +94,7 @@ export class Trade0x {
   private readonly _optsBuyTokenPercentageFee?: number;
   private readonly _optsAffiliateAddress?: string;
 
-  public static async getTrade(opts: Trade0xOptions, abort?: AbortSignal): Promise<Trade0x> {
+  public static async getTrade(opts: Trade0xSwapOptions, abort?: AbortSignal): Promise<Trade0xSwap> {
     invariant((isCurrencyAmount(opts.from) && isCurrency(opts.to)) || (isCurrency(opts.from) && isCurrencyAmount(opts.to)), 'One of from or to amount should be passed');
 
     if (opts.buyTokenPercentageFee !== undefined) {
@@ -141,7 +142,7 @@ export class Trade0x {
       rates.inputToNative = prices.sellTokenToEthRate;
     }
 
-    return new Trade0x(
+    return new Trade0xSwap(
       tradeType,
       inputAmount,
       outputAmount,
@@ -164,7 +165,7 @@ export class Trade0x {
     outputAmount: CurrencyAmount,
     networkFee: CurrencyAmount,
     tradeFee: CurrencyAmount,
-    proportions: Trade0xProportion[],
+    proportions: Trade0xSwapProportion[],
     allowanceTarget?: string,
     rates?: {
       inputToNative?: string;
@@ -176,6 +177,7 @@ export class Trade0x {
     buyTokenPercentageFee?: number,
     affiliateAddress?: string,
   ) {
+    super();
     this.tradeType = tradeType;
     this.inputAmount = inputAmount;
     this.outputAmount = outputAmount;
