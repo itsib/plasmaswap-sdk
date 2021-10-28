@@ -5,6 +5,7 @@ const OX_URL_PREFIXES: { [chainId in ChainId]?: string } = {
   [ChainId.MAINNET]: '',
   [ChainId.BSC]: 'bsc.',
   [ChainId.MATIC]: 'polygon.',
+  [ChainId.KOVAN]: 'kovan.',
   [ChainId.ROPSTEN]: 'ropsten.',
 };
 

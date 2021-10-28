@@ -342,7 +342,7 @@ export const LIQUIDITY_PROVIDER_NAME: { [provider in LiquidityProvider]: string 
   [LiquidityProvider.QUICKSWAP]: 'Quickswap',
 };
 
-export const SUPPORTED_0X_CHAINS: ChainId[] = [ChainId.MAINNET, ChainId.MATIC, ChainId.BSC, ChainId.ROPSTEN];
+export const SUPPORTED_0X_CHAINS: ChainId[] = [ChainId.MAINNET, ChainId.MATIC, ChainId.BSC, ChainId.ROPSTEN, ChainId.KOVAN];
 
 export const TRADE_0X_LIQUIDITY_SOURCE_NAME: { [provider in Trade0xLiquiditySource]: string } = {
   [Trade0xLiquiditySource.Native]: 'Native',

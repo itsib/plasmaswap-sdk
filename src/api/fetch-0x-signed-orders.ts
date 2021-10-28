@@ -24,7 +24,7 @@ export type Fetch0xSignedOrdersResponse = Api0xPaginationResponse<Signed0xOrderW
 export async function fetch0xSignedOrders(chainId: ChainId, query: Fetch0xSignedOrdersQuery, abort?: AbortSignal): Promise<Fetch0xSignedOrdersResponse> {
   const host = get0xApiUrl(chainId);
   const queryString = toQueryString(query);
-  const url = `${host}/orderbook/v1/orders?${queryString}`;
+  const url = `${host}/sra/v4/orders?${queryString}`;
 
   const res: Response = await fetch(url, {
     method: 'GET',
