@@ -21,7 +21,7 @@ export interface Fetch0xOrderbookResponse {
 export async function fetch0xOrderbook(chainId: ChainId, query: Fetch0xOrderbookQuery, abort?: AbortSignal): Promise<Fetch0xOrderbookResponse> {
   const host = get0xApiUrl(chainId);
   const queryString = toQueryString(query);
-  const url = `${host}/sra/v4?${queryString}`;
+  const url = `${host}/sra/v4/orderbook?${queryString}`;
 
   const res: Response = await fetch(url, {
     method: 'GET',
