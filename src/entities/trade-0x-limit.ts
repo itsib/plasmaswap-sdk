@@ -30,6 +30,7 @@ export class Trade0xLimit extends BaseTrade {
     invariant(!opts.inputAmount.currency.equals(opts.outputAmount.currency), "AMOUNT'S TOKENS IS EQUAL");
     invariant(opts.inputAmount.currency.isToken, 'Only tokens amount is supported (inputAmount).');
     invariant(opts.outputAmount.currency.isToken, 'Only tokens amount is supported (outputAmount).');
+    invariant(opts.inputAmount.greaterThan('0') && opts.outputAmount.greaterThan('0'), 'Both amounts should by greater than zero.');
 
     const chainId: ChainId = opts.inputAmount.currency.chainId;
     invariant(SUPPORTED_0X_CHAINS.includes(chainId), 'Unsupported chainId');
