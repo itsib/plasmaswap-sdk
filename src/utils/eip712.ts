@@ -1,5 +1,7 @@
 import { keccak256 } from '@ethersproject/keccak256';
 
+export type SignMethod = 'eth_signTypedData_v4' | 'eth_signTypedData_v3' | 'eth_signTypedData';
+
 export interface EIP712Parameter {
   name: string;
   type: string;
