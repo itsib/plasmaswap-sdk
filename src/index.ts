@@ -13,6 +13,7 @@ export {
   Trade0xLiquiditySource,
   TradeType,
   Rounding,
+  NATIVE_ADDRESSES,
   NETWORK_LABEL,
   NETWORK_NAME,
   SUPPORTED_0X_CHAINS,

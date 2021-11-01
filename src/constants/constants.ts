@@ -104,6 +104,11 @@ export const NULL_BYTES = '0x';
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 export const ZERO_WORD = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
+export const NATIVE_ADDRESSES: string[] = [
+  '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE', // ETH, BSC
+  '0x0000000000000000000000000000000000001010', // Polygon Matic
+];
+
 export const NETWORK_LABEL: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: 'Ethereum',
   [ChainId.RINKEBY]: 'Rinkeby',
