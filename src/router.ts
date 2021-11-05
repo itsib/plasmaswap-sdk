@@ -133,6 +133,8 @@ export abstract class Router {
           value = ZERO_HEX;
         }
         break;
+      case TradeType.LIMIT:
+        throw new Error('Unsupported call for limit trade');
     }
     return {
       methodName,
