@@ -274,15 +274,33 @@ export class Trade0xSwap extends BaseTrade {
         const outputCurrency = this.outputAmount.currency instanceof Token ? this.outputAmount.currency.address : NATIVE_ADDRESSES[0];
         const feeCurrency = inputCurrency;
 
-        const sellAmount = Trade0xSwap._changeAmountByPercent(quote.sellAmount, this._optSellTokenPercentageFee);
-        const feeAmount = Big(sellAmount).minus(quote.sellAmount).toFixed(0);
+        let value: BigNumber;
+        let sellAmount: string;
+        let feeAmount: string;
+        if (this.tradeType === TradeType.EXACT_INPUT) {
+          sellAmount = Trade0xSwap._changeAmountByPercent(quote.sellAmount, this._optSellTokenPercentageFee);
+          feeAmount = Big(sellAmount).minus(quote.sellAmount).toFixed(0);
 
-        let value = BigNumber.from(quote.value);
-        if (inputCurrency === NATIVE_ADDRESSES[0]) {
-          value = value.add(feeAmount);
+          value = BigNumber.from(quote.value);
+          if (inputCurrency === NATIVE_ADDRESSES[0]) {
+            value = value.add(feeAmount);
+          }
+        } else {
+          const sellAmountMultiplier = Math.pow(10, this.inputAmount.currency.decimals);
+          const buyAmountMultiplier = Math.pow(10, this.outputAmount.currency.decimals);
+
+          const sellAmountMax = Big(quote.buyAmount).div(buyAmountMultiplier).times(quote.guaranteedPrice).times(sellAmountMultiplier).toFixed(0);
+          sellAmount = Trade0xSwap._changeAmountByPercent(sellAmountMax, this._optSellTokenPercentageFee);
+          feeAmount = Big(sellAmount).minus(sellAmountMax).toFixed(0);
+
+          if (inputCurrency === NATIVE_ADDRESSES[0]) {
+            value = BigNumber.from(sellAmount);
+          } else {
+            value = BigNumber.from(quote.value);
+          }
         }
 
-        const callParams = [quote.data, feeCurrency, inputCurrency, quote.sellAmount, outputCurrency, feeAmount];
+        const callParams = [quote.data, feeCurrency, inputCurrency, sellAmount, outputCurrency, feeAmount];
         const data = HYPER_DEX_ROUTER_INTERFACE.encodeFunctionData(HYPER_DEX_ROUTER_METHOD_NAME, callParams);
 
         return {

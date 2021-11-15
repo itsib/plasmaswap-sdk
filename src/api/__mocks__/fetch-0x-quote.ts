@@ -44,9 +44,9 @@ export const fetch0xQuote = jest.fn<Promise<Fetch0xPriceResponse | Fetch0xQuoteR
     const pricePercent = Big(FAKE_DATA.pricePercent).div(100);
     const guaranteedPricePercent = Big(FAKE_DATA.guaranteedPricePercent).div(100);
 
-    const rate: Big = Big(buyToken.toEthRate).div(sellToken.toEthRate);
-    const price: string = rate.minus(rate.times(pricePercent)).toString(); // Rate minus 10%
-    const guaranteedPrice: string = rate.minus(rate.times(guaranteedPricePercent)).toString(); // Rate minus 13%
+    const rate: Big = query.sellAmount ? Big(buyToken.toEthRate).div(sellToken.toEthRate) : Big(sellToken.toEthRate).div(buyToken.toEthRate);
+    const price: string = rate[query.sellAmount ? 'minus' : 'add'](rate.times(pricePercent)).toString(); // Rate minus 10%
+    const guaranteedPrice: string = rate[query.sellAmount ? 'minus' : 'add'](rate.times(guaranteedPricePercent)).toString(); // Rate minus 13%
 
     const excludedSources = query.excludedSources ? query.excludedSources.split(',') : [];
     const sources = FAKE_DATA.defaultQuoteFields.sources.filter(source => !excludedSources.includes(source.name));
@@ -59,7 +59,7 @@ export const fetch0xQuote = jest.fn<Promise<Fetch0xPriceResponse | Fetch0xQuoteR
       ? query.sellAmount
       : Big(query.buyAmount as string)
           .div(Math.pow(10, buyToken.decimals))
-          .div(price)
+          .times(price)
           .times(Math.pow(10, sellToken.decimals))
           .toFixed(0);
 

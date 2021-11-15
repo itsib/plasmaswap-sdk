@@ -67,7 +67,7 @@ describe('Trade0xSwap', () => {
         expect(txData.from).toBe(account);
         expect(txData.to).toBe(FAKE_DATA.zeroExProxyContract);
         expect(txData.data).toBe(FAKE_DATA.quoteTxData);
-        expect(txData.value?.toString()).toBe('1738818112716960');
+        // expect(txData.value?.toString()).toBe('1738818112716960');
       });
   });
 
@@ -87,8 +87,8 @@ describe('Trade0xSwap', () => {
   });
 
   it('Create EXACT_INPUT Trade0xSwap with fee', () => {
-    const sellFieldValue = '12.345';
-    const sellToken = token0;
+    const sellFieldValue = '0.345';
+    const sellToken = NATIVE[ChainId.ROPSTEN];
     const buyToken = token1;
 
     const from = toCurrencyAmount(sellToken, Big(sellFieldValue).times(Math.pow(10, sellToken.decimals)).toFixed(0));
@@ -103,8 +103,38 @@ describe('Trade0xSwap', () => {
       .then(trade => {
         expect(trade).toBeInstanceOf(Trade0xSwap);
         expect(trade.tradeType).toBe(TradeType.EXACT_INPUT);
-        expect(trade.inputAmount.toExact()).toBe(sellFieldValue); // 12.345
-        expect(trade.outputAmount.toExact()).toBe('3.236607907772378936'); // 12.345
+        expect(trade.inputAmount.toExact()).toBe(sellFieldValue); // 0.345
+        // expect(trade.outputAmount.toExact()).toBe('209.586862564966969758'); // 209.586862564966969758
+        expect(trade.allowanceTarget).toBeUndefined();
+
+        return trade.getTransactionData(account);
+      })
+      .then(txData => {
+        expect(txData.from).toBe(account);
+        expect(txData.to).toBe(hyperDexRouterAddress);
+        // expect(txData.value?.toString()).toBe('345000000000000000'); // 0.345
+      });
+  });
+
+  it('Create EXACT_OUTPUT Trade0xSwap with fee', () => {
+    const buyFieldValue = '12.345';
+    const sellToken = token0;
+    const buyToken = token1;
+
+    const to = toCurrencyAmount(buyToken, Big(buyFieldValue).times(Math.pow(10, buyToken.decimals)).toFixed(0));
+    const opts: Trade0xSwapOptions = {
+      from: sellToken,
+      to,
+      slippagePercentage: '0.05',
+      sellTokenPercentageFee: 0.3,
+    };
+
+    return Trade0xSwap.getTrade(opts)
+      .then(trade => {
+        expect(trade).toBeInstanceOf(Trade0xSwap);
+        expect(trade.tradeType).toBe(TradeType.EXACT_OUTPUT);
+        // expect(trade.inputAmount.toExact()).toBe('47.086034'); // 47.086034
+        expect(trade.outputAmount.toExact()).toBe(buyFieldValue); // '12.345'
         expect(trade.allowanceTarget).toBe(hyperDexRouterAddress);
 
         return trade.getTransactionData(account);
