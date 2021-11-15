@@ -113,6 +113,7 @@ export class TokenAmount extends AbstractCurrencyAmount {
 
 export type CurrencyAmount = NativeAmount | TokenAmount;
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function isCurrencyAmount(obj?: any): boolean {
   if (!obj && typeof obj !== 'object') {
     return false;

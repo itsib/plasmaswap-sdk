@@ -55,7 +55,7 @@ export function inputOutputComparator(a: InputOutput, b: InputOutput): number {
 }
 
 // extension of the input output comparator that also considers other dimensions of the trade in ranking them
-export function tradeComparator(a: Trade, b: Trade) {
+export function tradeComparator(a: Trade, b: Trade): number {
   const ioComp = inputOutputComparator(a, b);
   if (ioComp !== 0) {
     return ioComp;

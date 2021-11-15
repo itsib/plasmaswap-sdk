@@ -173,6 +173,7 @@ export const WNATIVE: { [chainId in ChainId]: Token } = {
 
 export type Currency = Native | Token;
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function isCurrency(obj?: any): boolean {
   if (!obj && typeof obj !== 'object') {
     return false;

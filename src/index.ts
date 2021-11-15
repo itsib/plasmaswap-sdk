@@ -25,6 +25,7 @@ export {
   LIQUIDITY_PROVIDER_SYMBOL,
   TRADE_0X_LIQUIDITY_SOURCE_NAME,
   ZERO_EX_PROXY_ADDRESS,
+  HYPER_DEX_ROUTER_ADDRESS,
 } from './constants/constants';
 
 export * from './errors';

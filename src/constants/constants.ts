@@ -140,6 +140,12 @@ export const ZERO_EX_PROXY_ADDRESS: { [chainId in ChainId]?: string } = {
   [ChainId.BSC]: '0xdef1c0ded9bec7f1a1670819833240f027b25eff',
 };
 
+export const HYPER_DEX_ROUTER_ADDRESS: { [chainId in ChainId]?: string } = {
+  [ChainId.ROPSTEN]: '0x36fc68cd9d7fbd5d1c8fb2c5920696108ee870e9',
+  [ChainId.KOVAN]: '0x92551AA390154C7C7AE0A23a77960a2Cd23Ab62D',
+  [ChainId.MATIC]: '0xedaadaac42eb112a9a1ead39de8576cccf52c6b3',
+};
+
 export interface LpConfiguration {
   factory: string;
   router: string;

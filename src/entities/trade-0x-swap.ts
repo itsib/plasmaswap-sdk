@@ -4,11 +4,14 @@ import Big from 'big.js';
 import invariant from 'tiny-invariant';
 import { CurrencyAmount, isCurrencyAmount, Percent } from '../amounts';
 import { NativeAmount } from '../amounts/currency-amount';
-import { fetch0xQuote, Fetch0xQuoteQuery } from '../api';
-import { ChainId, SUPPORTED_0X_CHAINS, Trade0xLiquiditySource, TradeType, ZERO_ADDRESS } from '../constants/constants';
+import { fetch0xQuote, Fetch0xQuoteQuery, Fetch0xQuoteResponse } from '../api';
+import { ChainId, HYPER_DEX_ROUTER_ADDRESS, SUPPORTED_0X_CHAINS, Trade0xLiquiditySource, TradeType, ZERO_ADDRESS } from '../constants/constants';
 import { BaseTrade } from '../types';
 import { toCurrencyAmount } from '../utils';
 import { Currency, isCurrency, Token } from './currency';
+
+const ADDITIONAL_PRICE_ESTIMATE_GAS = 200000;
+const ADDITIONAL_GAS_FOR_ROUTER_CONTRACT = 60000;
 
 export interface Trade0xSwapOptions {
   /**
@@ -38,20 +41,9 @@ export interface Trade0xSwapOptions {
    */
   excludedSources?: Trade0xLiquiditySource[];
   /**
-   * (Optional) The ETH address that should receive affiliate fees specified with {@link buyTokenPercentageFee}.
+   * (Optional) The percentage (between 0 - 100) of the {@link from}
    */
-  feeRecipient?: string;
-  /**
-   * (Optional) The percentage (between 0 - 1.0) of the buyAmount that should be attributed to {@link feeRecipient} as
-   * affiliate fees. Note that this requires that the {@link feeRecipient} parameter is also specified in the request.
-   */
-  buyTokenPercentageFee?: number;
-  /**
-   * (Optional) An ETH address for which to attribute the trade for tracking and analytics purposes.
-   * Note {@link affiliateAddress} is only for tracking trades and has no impact on affiliate fees,
-   * for affiliate fees use {@link feeRecipient}.
-   */
-  affiliateAddress?: string;
+  sellTokenPercentageFee?: number;
 }
 
 export interface Trade0xSwapProportion {
@@ -82,57 +74,70 @@ export class Trade0xSwap extends BaseTrade {
    */
   private readonly _optsSlippagePercentage?: string;
   private readonly _optsExcludedSources?: Trade0xLiquiditySource[];
-  private readonly _optsFeeRecipient?: string;
-  private readonly _optsBuyTokenPercentageFee?: number;
-  private readonly _optsAffiliateAddress?: string;
+  private readonly _optSellTokenPercentageFee?: number;
 
   public static async getTrade(opts: Trade0xSwapOptions, abort?: AbortSignal): Promise<Trade0xSwap> {
     invariant((isCurrencyAmount(opts.from) && isCurrency(opts.to)) || (isCurrency(opts.from) && isCurrencyAmount(opts.to)), 'One of from or to amount should be passed');
 
-    if (opts.buyTokenPercentageFee !== undefined) {
-      invariant(opts.buyTokenPercentageFee >= 0 && opts.buyTokenPercentageFee <= 1, 'buyTokenPercentageFee should be number between 0-1.0');
-    }
-
     const chainId: ChainId = isCurrency(opts.from) ? (opts.from as Currency).chainId : (opts.to as Currency).chainId;
     invariant(SUPPORTED_0X_CHAINS.includes(chainId), 'Unsupported chainId');
+
+    // To check sellTokenPercentageFee
+    if (opts.sellTokenPercentageFee !== undefined) {
+      invariant(opts.sellTokenPercentageFee >= 0 && opts.sellTokenPercentageFee <= 100, 'sellTokenPercentageFee should be number between 0-100');
+      if (!HYPER_DEX_ROUTER_ADDRESS[chainId]) {
+        console.warn(`Hyper Dex Router address not defined, Setting the "sellTokenPercentageFee" variable will have no effect`);
+      }
+    }
 
     const tradeType = isCurrencyAmount(opts.from) ? TradeType.EXACT_INPUT : TradeType.EXACT_OUTPUT;
     const toCurrency = isCurrency(opts.to) ? (opts.to as Currency) : (opts.to as CurrencyAmount).currency;
     const fromCurrency = isCurrency(opts.from) ? (opts.from as Currency) : (opts.from as CurrencyAmount).currency;
+    const feePercent: Big | undefined = opts.sellTokenPercentageFee ? Big(opts.sellTokenPercentageFee).div(100) : undefined;
+
+    let sellAmount: string | undefined = undefined;
+    if (isCurrencyAmount(opts.from)) {
+      sellAmount = (opts.from as CurrencyAmount).raw.toString();
+
+      if (feePercent) {
+        sellAmount = Big(sellAmount).div(feePercent.add(1)).toFixed(0);
+      }
+    }
 
     const query: Fetch0xQuoteQuery = {
-      buyToken: toCurrency instanceof Token ? toCurrency.address : (toCurrency.symbol as string),
       sellToken: fromCurrency instanceof Token ? fromCurrency.address : (fromCurrency.symbol as string),
+      buyToken: toCurrency instanceof Token ? toCurrency.address : (toCurrency.symbol as string),
+      sellAmount,
       buyAmount: isCurrencyAmount(opts.to) ? (opts.to as CurrencyAmount).raw.toString() : undefined,
-      sellAmount: isCurrencyAmount(opts.from) ? (opts.from as CurrencyAmount).raw.toString() : undefined,
       slippagePercentage: opts.slippagePercentage,
       gasPrice: opts.gasPrice,
       excludedSources: opts.excludedSources?.join(','),
-      feeRecipient: opts.feeRecipient,
-      buyTokenPercentageFee: opts.buyTokenPercentageFee,
-      affiliateAddress: opts.affiliateAddress,
     };
 
-    const prices = await fetch0xQuote(chainId, true, query, abort);
+    const quote = await fetch0xQuote(chainId, true, query, abort);
 
-    const networkFee = NativeAmount.native(
-      chainId,
-      Big(prices.gasPrice)
-        .times(prices.gas)
-        .toString(),
-    );
-    const protocolFee = NativeAmount.native(chainId, prices.protocolFee);
-    const proportions = prices.sources.filter(i => !!Number(i.proportion)).map(i => ({ name: i.name, proportion: Number(i.proportion) * 100 }));
-    const inputAmount = toCurrencyAmount(fromCurrency, prices.sellAmount);
-    const outputAmount = toCurrencyAmount(toCurrency, prices.buyAmount);
+    // Liquidity sources proportions
+    const proportions = quote.sources
+      .filter(i => !!Number(i.proportion))
+      .map(i => ({
+        name: i.name,
+        proportion: Number(i.proportion) * 100,
+      }));
 
-    let rates: { inputToNative?: string; outputToNative?: string } = {};
-    if (prices.buyTokenToEthRate && prices.buyTokenToEthRate !== '0') {
-      rates.outputToNative = prices.buyTokenToEthRate;
+    // Fees calculation
+    const networkFee = NativeAmount.native(chainId, Big(quote.gasPrice).times(Trade0xSwap._getEstimateGas(quote)).toString());
+    const protocolFee = NativeAmount.native(chainId, quote.protocolFee);
+
+    // Amounts fields (Preliminary calculation)
+    let quoteSellAmount: string;
+    if (feePercent) {
+      const bQuoteSellAmount = Big(quote.sellAmount);
+      quoteSellAmount = bQuoteSellAmount.add(bQuoteSellAmount.times(feePercent)).toFixed(0);
+    } else {
+      quoteSellAmount = quote.sellAmount;
     }
-    if (prices.sellTokenToEthRate && prices.sellTokenToEthRate !== '0') {
-      rates.inputToNative = prices.sellTokenToEthRate;
-    }
+    const inputAmount = toCurrencyAmount(fromCurrency, quoteSellAmount);
+    const outputAmount = toCurrencyAmount(toCurrency, quote.buyAmount);
 
     return new Trade0xSwap(
       tradeType,
@@ -141,14 +146,61 @@ export class Trade0xSwap extends BaseTrade {
       networkFee,
       protocolFee,
       proportions,
-      prices.allowanceTarget && prices.allowanceTarget !== ZERO_ADDRESS ? prices.allowanceTarget : undefined,
-      rates,
+      Trade0xSwap._getAllowanceTarget(quote),
+      Trade0xSwap._getPriceImpact(inputAmount, outputAmount, quote),
       opts.slippagePercentage,
       opts.excludedSources,
-      opts.feeRecipient,
-      opts.buyTokenPercentageFee,
-      opts.affiliateAddress,
+      opts.sellTokenPercentageFee,
     );
+  }
+
+  /**
+   * Calculate the approximate amount of gas required
+   * @param quote
+   * @private
+   */
+  private static _getEstimateGas(quote: Fetch0xQuoteResponse): string {
+    const hyperDexRouterAddress = HYPER_DEX_ROUTER_ADDRESS[quote.chainId];
+    return Big(quote.gas)
+      .add(ADDITIONAL_PRICE_ESTIMATE_GAS)
+      .add(hyperDexRouterAddress ? ADDITIONAL_GAS_FOR_ROUTER_CONTRACT : 0)
+      .toString();
+  }
+
+  /**
+   * Allowance target should be hyper dex router if defined, else to get from quote
+   * @param quote
+   * @private
+   */
+  private static _getAllowanceTarget(quote: Fetch0xQuoteResponse): string | undefined {
+    const hyperDexRouterAddress = HYPER_DEX_ROUTER_ADDRESS[quote.chainId];
+    if (quote.allowanceTarget && quote.allowanceTarget !== ZERO_ADDRESS) {
+      return hyperDexRouterAddress || quote.allowanceTarget;
+    }
+    return undefined;
+  }
+
+  /**
+   * Price impact in percent calculation
+   * @param inputAmount
+   * @param outputAmount
+   * @param quote
+   * @private
+   */
+  private static _getPriceImpact(inputAmount: CurrencyAmount, outputAmount: CurrencyAmount, quote: Fetch0xQuoteResponse): Percent | undefined {
+    if (!quote.sellTokenToEthRate || quote.sellTokenToEthRate === '0' || !quote.buyTokenToEthRate || quote.buyTokenToEthRate === '0') {
+      return undefined;
+    }
+
+    const inputAmountInNative = Big(inputAmount.toExact()).div(quote.sellTokenToEthRate);
+    const outputAmountInNative = Big(outputAmount.toExact()).div(quote.buyTokenToEthRate);
+
+    if (inputAmountInNative.gt(0) && outputAmountInNative.gt(0)) {
+      const denominator = '100';
+      const numerator = Big(100).times(Big(outputAmountInNative).div(inputAmountInNative)).minus(100).times(denominator).toFixed(0);
+      return new Percent(numerator, denominator);
+    }
+    return undefined;
   }
 
   constructor(
@@ -159,15 +211,10 @@ export class Trade0xSwap extends BaseTrade {
     tradeFee: CurrencyAmount,
     proportions: Trade0xSwapProportion[],
     allowanceTarget?: string,
-    rates?: {
-      inputToNative?: string;
-      outputToNative?: string;
-    },
+    priceImpact?: Percent,
     slippagePercentage?: string,
     excludedSources?: Trade0xLiquiditySource[],
-    feeRecipient?: string,
-    buyTokenPercentageFee?: number,
-    affiliateAddress?: string,
+    sellTokenPercentageFee?: number,
   ) {
     invariant(tradeType === TradeType.EXACT_INPUT || tradeType === TradeType.EXACT_OUTPUT, 'Unsupported trade type');
 
@@ -177,47 +224,31 @@ export class Trade0xSwap extends BaseTrade {
     this.tradeFee = tradeFee;
     this.proportions = proportions;
     this.allowanceTarget = allowanceTarget;
+    this.priceImpact = priceImpact;
 
     this._optsSlippagePercentage = slippagePercentage;
     this._optsExcludedSources = excludedSources;
-    this._optsFeeRecipient = feeRecipient;
-    this._optsBuyTokenPercentageFee = buyTokenPercentageFee;
-    this._optsAffiliateAddress = affiliateAddress;
-
-    // Price impact calculation
-    if (rates && rates.inputToNative && rates.outputToNative) {
-      const inputAmountInNative = Big(this.inputAmount.toExact()).div(rates.inputToNative);
-      const outputAmountInNative = Big(this.outputAmount.toExact()).div(rates.outputToNative);
-
-      if (inputAmountInNative.gt(0) && outputAmountInNative.gt(0)) {
-        const denominator = '100';
-        const numerator = Big(100)
-          .times(Big(outputAmountInNative).div(inputAmountInNative))
-          .minus(100)
-          .times(denominator)
-          .toFixed(0);
-        this.priceImpact = new Percent(numerator, denominator);
-      }
-    }
+    this._optSellTokenPercentageFee = sellTokenPercentageFee;
   }
 
   /**
    * Returns transaction data
    */
-  public async getTransactionData(account?: string, skipValidation?: boolean): Promise<TransactionRequest> {
+  public async getTransactionData(account?: string): Promise<TransactionRequest> {
     const chainId = this.inputAmount.currency.chainId;
+    const hyperDexRouterAddress = HYPER_DEX_ROUTER_ADDRESS[chainId];
+
+    console.debug(this._optSellTokenPercentageFee);
+
     const query: Fetch0xQuoteQuery = {
-      buyToken: this.outputAmount.currency instanceof Token ? this.outputAmount.currency.address : (this.outputAmount.currency.symbol as string),
       sellToken: this.inputAmount.currency instanceof Token ? this.inputAmount.currency.address : (this.inputAmount.currency.symbol as string),
-      buyAmount: this.tradeType === TradeType.EXACT_INPUT ? undefined : this.outputAmount.raw.toString(10),
+      buyToken: this.outputAmount.currency instanceof Token ? this.outputAmount.currency.address : (this.outputAmount.currency.symbol as string),
       sellAmount: this.tradeType === TradeType.EXACT_INPUT ? this.inputAmount.raw.toString(10) : undefined,
+      buyAmount: this.tradeType === TradeType.EXACT_INPUT ? undefined : this.outputAmount.raw.toString(10),
       slippagePercentage: this._optsSlippagePercentage,
       excludedSources: this._optsExcludedSources?.join(','),
       takerAddress: account,
-      feeRecipient: this._optsFeeRecipient,
-      buyTokenPercentageFee: this._optsBuyTokenPercentageFee,
-      affiliateAddress: this._optsAffiliateAddress,
-      skipValidation,
+      skipValidation: !!hyperDexRouterAddress,
     };
     return fetch0xQuote(chainId, false, query).then(quote => {
       return {
