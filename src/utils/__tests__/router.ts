@@ -1,5 +1,5 @@
 import invariant from 'tiny-invariant';
-import { ChainId, NativeAmount, NATIVE, LiquidityProvider, Pair, Percent, Route, Router, Token, TokenAmount, Trade, WNATIVE } from '../src';
+import { ChainId, NativeAmount, NATIVE, LiquidityProvider, Pair, Percent, Route, Router, Token, TokenAmount, Trade, WNATIVE } from '../../index';
 import JSBI from 'jsbi';
 
 function checkDeadline(deadline: string[] | string): void {

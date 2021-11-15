@@ -1,4 +1,4 @@
-import { Token, WNATIVE, ChainId, Pair, TokenAmount, Route, NATIVE, LiquidityProvider } from '../src';
+import { Token, WNATIVE, ChainId, Pair, TokenAmount, Route, NATIVE, LiquidityProvider } from '../../index';
 
 describe('Route', () => {
   const token0 = new Token(ChainId.MAINNET, '0x0000000000000000000000000000000000000001', 18, 't0');

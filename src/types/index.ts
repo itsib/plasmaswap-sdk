@@ -1,6 +1,7 @@
 export * from './common/base-trade';
 
 export * from './zero-x/api-0x-pagination';
+export * from './zero-x/api-0x-error-response';
 export * from './zero-x/signed-0x-order';
 export * from './zero-x/signed-0x-order-status';
 export * from './zero-x/signed-0x-order-with-meta';

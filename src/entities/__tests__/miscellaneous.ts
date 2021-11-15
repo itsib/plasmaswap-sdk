@@ -1,4 +1,4 @@
-import { ChainId, Token, TokenAmount, Pair, InsufficientInputAmountError, LiquidityProvider, sortedInsert } from '../src';
+import { ChainId, Token, TokenAmount, Pair, InsufficientInputAmountError, LiquidityProvider, sortedInsert } from '../../index';
 
 describe('miscellaneous', () => {
   it('getLiquidityMinted:0', async () => {

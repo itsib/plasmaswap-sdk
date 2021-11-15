@@ -1,4 +1,4 @@
-import { formatHexString } from '../src';
+import { formatHexString } from '../../index';
 
 describe('format-hex-string', () => {
   it('String number value to hex', () => {

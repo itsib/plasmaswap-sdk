@@ -6,7 +6,7 @@ import invariant from 'tiny-invariant';
 import hyperDexRouterAbi from '../abis/hyper-dex-router.json';
 import { CurrencyAmount, isCurrencyAmount, Percent } from '../amounts';
 import { NativeAmount } from '../amounts/currency-amount';
-import { fetch0xQuote, Fetch0xQuoteQuery, Fetch0xQuoteResponse } from '../api';
+import { Fetch0xPriceResponse, fetch0xQuote, Fetch0xQuoteQuery, Fetch0xQuoteResponse } from '../api';
 import { ChainId, HYPER_DEX_ROUTER_ADDRESS, NATIVE_ADDRESSES, SUPPORTED_0X_CHAINS, Trade0xLiquiditySource, TradeType, ZERO_ADDRESS } from '../constants/constants';
 import { BaseTrade } from '../types';
 import { toCurrencyAmount } from '../utils';
@@ -116,7 +116,7 @@ export class Trade0xSwap extends BaseTrade {
       networkFee,
       protocolFee,
       proportions,
-      Trade0xSwap._getAllowanceTarget(quote),
+      Trade0xSwap._getAllowanceTarget(quote, opts.sellTokenPercentageFee),
       Trade0xSwap._getPriceImpact(inputAmount, outputAmount, quote),
       opts.slippagePercentage,
       opts.excludedSources,
@@ -129,7 +129,7 @@ export class Trade0xSwap extends BaseTrade {
    * @param quote
    * @private
    */
-  private static _getEstimateGas(quote: Fetch0xQuoteResponse): string {
+  private static _getEstimateGas(quote: Fetch0xPriceResponse): string {
     const hyperDexRouterAddress = HYPER_DEX_ROUTER_ADDRESS[quote.chainId];
     return Big(quote.gas)
       .add(ADDITIONAL_PRICE_ESTIMATE_GAS)
@@ -140,12 +140,13 @@ export class Trade0xSwap extends BaseTrade {
   /**
    * Allowance target should be hyper dex router if defined, else to get from quote
    * @param quote
+   * @param sellTokenPercentageFee
    * @private
    */
-  private static _getAllowanceTarget(quote: Fetch0xQuoteResponse): string | undefined {
+  private static _getAllowanceTarget(quote: Fetch0xPriceResponse, sellTokenPercentageFee?: number): string | undefined {
     const hyperDexRouterAddress = HYPER_DEX_ROUTER_ADDRESS[quote.chainId];
     if (quote.allowanceTarget && quote.allowanceTarget !== ZERO_ADDRESS) {
-      return hyperDexRouterAddress || quote.allowanceTarget;
+      return sellTokenPercentageFee ? hyperDexRouterAddress || quote.allowanceTarget : quote.allowanceTarget;
     }
     return undefined;
   }
@@ -157,7 +158,7 @@ export class Trade0xSwap extends BaseTrade {
    * @param quote
    * @private
    */
-  private static _getPriceImpact(inputAmount: CurrencyAmount, outputAmount: CurrencyAmount, quote: Fetch0xQuoteResponse): Percent | undefined {
+  private static _getPriceImpact(inputAmount: CurrencyAmount, outputAmount: CurrencyAmount, quote: Fetch0xPriceResponse): Percent | undefined {
     if (!quote.sellTokenToEthRate || quote.sellTokenToEthRate === '0' || !quote.buyTokenToEthRate || quote.buyTokenToEthRate === '0') {
       return undefined;
     }
@@ -199,7 +200,7 @@ export class Trade0xSwap extends BaseTrade {
    * @param abort
    * @private
    */
-  private static async _fetchQuoteByTradeOpts(opts: Trade0xSwapOptions, abort?: AbortSignal): Promise<Fetch0xQuoteResponse> {
+  private static async _fetchQuoteByTradeOpts(opts: Trade0xSwapOptions, abort?: AbortSignal): Promise<Fetch0xPriceResponse> {
     const chainId = (opts.from as Currency)?.chainId || (opts.to as Currency)?.chainId;
     const sellCurrency = isCurrency(opts.from) ? (opts.from as Currency) : (opts.from as CurrencyAmount).currency;
     const buyCurrency = isCurrency(opts.to) ? (opts.to as Currency) : (opts.to as CurrencyAmount).currency;
@@ -266,7 +267,7 @@ export class Trade0xSwap extends BaseTrade {
       takerAddress: account,
       skipValidation: isHyperDexRouterUsed,
     };
-    return fetch0xQuote(chainId, false, query).then(quote => {
+    return fetch0xQuote(chainId, false, query).then((quote: Fetch0xQuoteResponse) => {
       // Use Hyper Dex Router contract
       if (isHyperDexRouterUsed) {
         const inputCurrency = this.inputAmount.currency instanceof Token ? this.inputAmount.currency.address : NATIVE_ADDRESSES[0];
@@ -285,7 +286,7 @@ export class Trade0xSwap extends BaseTrade {
         const data = HYPER_DEX_ROUTER_INTERFACE.encodeFunctionData(HYPER_DEX_ROUTER_METHOD_NAME, callParams);
 
         return {
-          to: quote.to,
+          to: hyperDexRouterAddress,
           from: quote.from || account,
           nonce: undefined,
 

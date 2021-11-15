@@ -1,4 +1,6 @@
 import { ChainId, Trade0xLiquiditySource } from '../constants/constants';
+import { InsufficientReservesError, ValidationError } from '../errors';
+import { Api0xErrorResponse } from '../types';
 import { get0xApiUrl } from '../utils/get-0x-api-url';
 import { toQueryString } from '../utils/to-query-string';
 
@@ -83,8 +85,17 @@ export interface Fetch0xQuoteQuery {
   affiliateAddress?: string;
 }
 
-export interface Fetch0xQuoteResponse {
+export interface Fetch0xPriceResponse {
   chainId: ChainId;
+  /**
+   * The target contract address for which the user needs
+   * to have an allowance in order to be able to complete
+   * the swap. For swaps with "ETH" as sellToken,
+   * wrapping "ETH" to "WETH" or unwrapping "WETH" to "ETH" no
+   * allowance is needed, a null address of
+   * 0x0000000000000000000000000000000000000000 is then returned instead.
+   */
+  allowanceTarget: string;
   /**
    * If buyAmount was specified in the request it provides
    * the price of buyToken in sellToken and vice versa.
@@ -93,24 +104,6 @@ export interface Fetch0xQuoteResponse {
    * the best possible price.
    */
   price: string;
-  /**
-   * The price which must be met or else the entire transaction will revert.
-   * This price is influenced by the slippagePercentage parameter.
-   * On-chain sources may encounter price movements from quote to settlement.
-   */
-  guaranteedPrice: string;
-  /**
-   * The field will be filled in if you send {@link Fetch0xQuoteQuery.takerAddress}
-   */
-  from?: string;
-  /**
-   * The address of the contract to send call data to.
-   */
-  to: string;
-  /**
-   * The call data required to be sent to the to contract address.
-   */
-  data: string;
   /**
    * The amount of ether (in wei) that should be sent
    * with the transaction. (Assuming protocolFee is paid in ether).
@@ -187,6 +180,27 @@ export interface Fetch0xQuoteResponse {
      */
     proportion: string;
   }[];
+}
+
+export interface Fetch0xQuoteResponse extends Fetch0xPriceResponse {
+  /**
+   * The price which must be met or else the entire transaction will revert.
+   * This price is influenced by the slippagePercentage parameter.
+   * On-chain sources may encounter price movements from quote to settlement.
+   */
+  guaranteedPrice: string;
+  /**
+   * The field will be filled in if you send {@link Fetch0xQuoteQuery.takerAddress}
+   */
+  from?: string;
+  /**
+   * The address of the contract to send call data to.
+   */
+  to: string;
+  /**
+   * The call data required to be sent to the to contract address.
+   */
+  data: string;
   /**
    * When possible, the 0x smart contracts will burn GST2 Gas
    * Tokens during the transaction, resulting in a (max 50%)
@@ -194,20 +208,13 @@ export interface Fetch0xQuoteResponse {
    * This field estimates the refund in wei.
    */
   estimatedGasTokenRefund?: string;
-  /**
-   * The target contract address for which the user needs
-   * to have an allowance in order to be able to complete
-   * the swap. For swaps with "ETH" as sellToken,
-   * wrapping "ETH" to "WETH" or unwrapping "WETH" to "ETH" no
-   * allowance is needed, a null address of
-   * 0x0000000000000000000000000000000000000000 is then returned instead.
-   */
-  allowanceTarget: string;
 
   orders?: Fetch0xQuoteOrder[];
 }
 
-export async function fetch0xQuote(chainId: ChainId, justPrice: boolean, query: Fetch0xQuoteQuery, abort?: AbortSignal): Promise<Fetch0xQuoteResponse> {
+export async function fetch0xQuote(chainId: ChainId, justPrice: true, query: Fetch0xQuoteQuery, abort?: AbortSignal): Promise<Fetch0xPriceResponse>;
+export async function fetch0xQuote(chainId: ChainId, justPrice: false, query: Fetch0xQuoteQuery, abort?: AbortSignal): Promise<Fetch0xQuoteResponse>;
+export async function fetch0xQuote(chainId: ChainId, justPrice: boolean, query: Fetch0xQuoteQuery, abort?: AbortSignal): Promise<Fetch0xQuoteResponse | Fetch0xPriceResponse> {
   const host = get0xApiUrl(chainId);
   const queryString = toQueryString(query);
   const url = `${host}/swap/v1/${justPrice ? 'price' : 'quote'}?${queryString}`;
@@ -222,6 +229,17 @@ export async function fetch0xQuote(chainId: ChainId, justPrice: boolean, query: 
   });
 
   if (!res.ok) {
+    if (res.status === 400) {
+      const errorResponse: Api0xErrorResponse = await res.json();
+      if (errorResponse.validationErrors?.some(e => e.reason === 'INSUFFICIENT_ASSET_LIQUIDITY')) {
+        throw new InsufficientReservesError();
+      } else {
+        throw new ValidationError(
+          errorResponse.reason,
+          errorResponse.validationErrors?.map(e => ({ name: e.field, message: e.reason, code: e.code })),
+        );
+      }
+    }
     throw new Error('Fetch quote error, try again later.');
   }
 

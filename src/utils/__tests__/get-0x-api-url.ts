@@ -1,4 +1,4 @@
-import { ChainId, get0xApiUrl } from '../src';
+import { ChainId, get0xApiUrl } from '../../';
 
 describe('get-0x-api-url', () => {
   it('Try to get mainnet API URL', () => {

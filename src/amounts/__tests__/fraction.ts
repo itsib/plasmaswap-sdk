@@ -1,4 +1,4 @@
-import { Fraction } from '../src';
+import { Fraction } from '../../index';
 import JSBI from 'jsbi';
 
 describe.only('Fraction', () => {

@@ -32,3 +32,26 @@ export class InsufficientInputAmountError extends Error {
     }
   }
 }
+
+export interface ValidationErrorField {
+  name: string;
+  message: string;
+  code?: string | number;
+}
+
+/**
+ * Form (or query) validation error. Includes info about infalid fields
+ */
+export class ValidationError extends Error {
+  public readonly fields: ValidationErrorField[];
+
+  public constructor(message: string = 'Validation Error', fields: ValidationErrorField[] = []) {
+    super(message);
+    this.name = this.constructor.name;
+    this.fields = fields;
+
+    if (CAN_SET_PROTOTYPE) {
+      Object.setPrototypeOf(this, new.target.prototype);
+    }
+  }
+}

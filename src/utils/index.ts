@@ -10,3 +10,4 @@ export * from './to-currency-amount';
 export * from './to-query-string';
 export * from './eip712';
 export * from './format-hex-string';
+export * from './router';
