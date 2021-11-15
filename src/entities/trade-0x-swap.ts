@@ -1,17 +1,21 @@
+import { Interface } from '@ethersproject/abi';
 import { BigNumber } from '@ethersproject/bignumber';
 import { TransactionRequest } from '@ethersproject/providers';
 import Big from 'big.js';
 import invariant from 'tiny-invariant';
+import hyperDexRouterAbi from '../abis/hyper-dex-router.json';
 import { CurrencyAmount, isCurrencyAmount, Percent } from '../amounts';
 import { NativeAmount } from '../amounts/currency-amount';
 import { fetch0xQuote, Fetch0xQuoteQuery, Fetch0xQuoteResponse } from '../api';
-import { ChainId, HYPER_DEX_ROUTER_ADDRESS, SUPPORTED_0X_CHAINS, Trade0xLiquiditySource, TradeType, ZERO_ADDRESS } from '../constants/constants';
+import { ChainId, HYPER_DEX_ROUTER_ADDRESS, NATIVE_ADDRESSES, SUPPORTED_0X_CHAINS, Trade0xLiquiditySource, TradeType, ZERO_ADDRESS } from '../constants/constants';
 import { BaseTrade } from '../types';
 import { toCurrencyAmount } from '../utils';
 import { Currency, isCurrency, Token } from './currency';
 
 const ADDITIONAL_PRICE_ESTIMATE_GAS = 200000;
 const ADDITIONAL_GAS_FOR_ROUTER_CONTRACT = 60000;
+
+const HYPER_DEX_ROUTER_INTERFACE = new Interface(hyperDexRouterAbi);
 
 export interface Trade0xSwapOptions {
   /**
@@ -29,12 +33,6 @@ export interface Trade0xSwapOptions {
    * This parameter will change over time with market conditions.
    */
   slippagePercentage?: string;
-  /**
-   * (Optional, defaults to ethgasstation "fast") The target gas price (in wei)
-   * for the swap transaction. If the price is too low to achieve
-   * the quote, an error will be returned.
-   */
-  gasPrice?: string;
   /**
    * (Optional) Liquidity sources (Eth2Dai, Uniswap, Kyber, 0x, LiquidityProvider etc)
    * that will not be included in the provided quote.
@@ -90,31 +88,7 @@ export class Trade0xSwap extends BaseTrade {
       }
     }
 
-    const tradeType = isCurrencyAmount(opts.from) ? TradeType.EXACT_INPUT : TradeType.EXACT_OUTPUT;
-    const toCurrency = isCurrency(opts.to) ? (opts.to as Currency) : (opts.to as CurrencyAmount).currency;
-    const fromCurrency = isCurrency(opts.from) ? (opts.from as Currency) : (opts.from as CurrencyAmount).currency;
-    const feePercent: Big | undefined = opts.sellTokenPercentageFee ? Big(opts.sellTokenPercentageFee).div(100) : undefined;
-
-    let sellAmount: string | undefined = undefined;
-    if (isCurrencyAmount(opts.from)) {
-      sellAmount = (opts.from as CurrencyAmount).raw.toString();
-
-      if (feePercent) {
-        sellAmount = Big(sellAmount).div(feePercent.add(1)).toFixed(0);
-      }
-    }
-
-    const query: Fetch0xQuoteQuery = {
-      sellToken: fromCurrency instanceof Token ? fromCurrency.address : (fromCurrency.symbol as string),
-      buyToken: toCurrency instanceof Token ? toCurrency.address : (toCurrency.symbol as string),
-      sellAmount,
-      buyAmount: isCurrencyAmount(opts.to) ? (opts.to as CurrencyAmount).raw.toString() : undefined,
-      slippagePercentage: opts.slippagePercentage,
-      gasPrice: opts.gasPrice,
-      excludedSources: opts.excludedSources?.join(','),
-    };
-
-    const quote = await fetch0xQuote(chainId, true, query, abort);
+    const quote = await Trade0xSwap._fetchQuoteByTradeOpts(opts, abort);
 
     // Liquidity sources proportions
     const proportions = quote.sources
@@ -129,18 +103,13 @@ export class Trade0xSwap extends BaseTrade {
     const protocolFee = NativeAmount.native(chainId, quote.protocolFee);
 
     // Amounts fields (Preliminary calculation)
-    let quoteSellAmount: string;
-    if (feePercent) {
-      const bQuoteSellAmount = Big(quote.sellAmount);
-      quoteSellAmount = bQuoteSellAmount.add(bQuoteSellAmount.times(feePercent)).toFixed(0);
-    } else {
-      quoteSellAmount = quote.sellAmount;
-    }
-    const inputAmount = toCurrencyAmount(fromCurrency, quoteSellAmount);
-    const outputAmount = toCurrencyAmount(toCurrency, quote.buyAmount);
+    const inputCurrency = isCurrency(opts.from) ? (opts.from as Currency) : (opts.from as CurrencyAmount).currency;
+    const outputCurrency = isCurrency(opts.to) ? (opts.to as Currency) : (opts.to as CurrencyAmount).currency;
+    const inputAmount = toCurrencyAmount(inputCurrency, Trade0xSwap._changeAmountByPercent(quote.sellAmount, opts.sellTokenPercentageFee));
+    const outputAmount = toCurrencyAmount(outputCurrency, quote.buyAmount);
 
     return new Trade0xSwap(
-      tradeType,
+      isCurrencyAmount(opts.from) ? TradeType.EXACT_INPUT : TradeType.EXACT_OUTPUT,
       inputAmount,
       outputAmount,
       networkFee,
@@ -203,6 +172,52 @@ export class Trade0xSwap extends BaseTrade {
     return undefined;
   }
 
+  /**
+   * Change the amount by a percentage
+   * @param amount
+   * @param percent
+   * @private
+   */
+  private static _changeAmountByPercent(amount: string, percent?: number): string {
+    if (!percent) {
+      return amount;
+    }
+
+    const bPercent = Big(percent).div(100);
+    const bAmount = Big(amount);
+    if (percent > 0) {
+      return bAmount.add(bAmount.times(bPercent)).toFixed(0);
+    } else {
+      return Big(bAmount).div(bPercent.abs().add(1)).toFixed(0);
+    }
+  }
+
+  /**
+   * Fetch quote by the get price mode
+   * @param opts
+   * @param abort
+   * @private
+   */
+  private static async _fetchQuoteByTradeOpts(opts: Trade0xSwapOptions, abort?: AbortSignal): Promise<Fetch0xQuoteResponse> {
+    const chainId = (opts.from as Currency)?.chainId || (opts.to as Currency)?.chainId;
+    const sellCurrency = isCurrency(opts.from) ? (opts.from as Currency) : (opts.from as CurrencyAmount).currency;
+    const buyCurrency = isCurrency(opts.to) ? (opts.to as Currency) : (opts.to as CurrencyAmount).currency;
+    const feePercent = opts.sellTokenPercentageFee ? -opts.sellTokenPercentageFee : undefined;
+    const sellAmount = isCurrencyAmount(opts.from) ? Trade0xSwap._changeAmountByPercent((opts.from as CurrencyAmount).raw.toString(), feePercent) : undefined;
+    const buyAmount = isCurrencyAmount(opts.to) ? (opts.to as CurrencyAmount).raw.toString() : undefined;
+
+    const query: Fetch0xQuoteQuery = {
+      sellToken: sellCurrency instanceof Token ? sellCurrency.address : (sellCurrency.symbol as string),
+      buyToken: buyCurrency instanceof Token ? buyCurrency.address : (buyCurrency.symbol as string),
+      sellAmount,
+      buyAmount,
+      slippagePercentage: opts.slippagePercentage,
+      excludedSources: opts.excludedSources?.join(','),
+    };
+
+    return fetch0xQuote(chainId, true, query, abort);
+  }
+
   constructor(
     tradeType: TradeType,
     inputAmount: CurrencyAmount,
@@ -236,33 +251,64 @@ export class Trade0xSwap extends BaseTrade {
    */
   public async getTransactionData(account?: string): Promise<TransactionRequest> {
     const chainId = this.inputAmount.currency.chainId;
+    const feePercent = this._optSellTokenPercentageFee ? -this._optSellTokenPercentageFee : undefined;
     const hyperDexRouterAddress = HYPER_DEX_ROUTER_ADDRESS[chainId];
-
-    console.debug(this._optSellTokenPercentageFee);
+    const isHyperDexRouterUsed = !!(hyperDexRouterAddress && feePercent);
 
     const query: Fetch0xQuoteQuery = {
       sellToken: this.inputAmount.currency instanceof Token ? this.inputAmount.currency.address : (this.inputAmount.currency.symbol as string),
       buyToken: this.outputAmount.currency instanceof Token ? this.outputAmount.currency.address : (this.outputAmount.currency.symbol as string),
-      sellAmount: this.tradeType === TradeType.EXACT_INPUT ? this.inputAmount.raw.toString(10) : undefined,
+      sellAmount: this.tradeType === TradeType.EXACT_INPUT ? Trade0xSwap._changeAmountByPercent(this.inputAmount.raw.toString(10), feePercent) : undefined,
       buyAmount: this.tradeType === TradeType.EXACT_INPUT ? undefined : this.outputAmount.raw.toString(10),
       slippagePercentage: this._optsSlippagePercentage,
       excludedSources: this._optsExcludedSources?.join(','),
       takerAddress: account,
-      skipValidation: !!hyperDexRouterAddress,
+      skipValidation: isHyperDexRouterUsed,
     };
     return fetch0xQuote(chainId, false, query).then(quote => {
-      return {
-        to: quote.to,
-        from: quote.from || account,
-        nonce: undefined,
+      // Use Hyper Dex Router contract
+      if (isHyperDexRouterUsed) {
+        const inputCurrency = this.inputAmount.currency instanceof Token ? this.inputAmount.currency.address : NATIVE_ADDRESSES[0];
+        const outputCurrency = this.outputAmount.currency instanceof Token ? this.outputAmount.currency.address : NATIVE_ADDRESSES[0];
+        const feeCurrency = inputCurrency;
 
-        gasLimit: BigNumber.from(quote.gas),
-        gasPrice: BigNumber.from(quote.gasPrice),
+        const sellAmount = Trade0xSwap._changeAmountByPercent(quote.sellAmount, this._optSellTokenPercentageFee);
+        const feeAmount = Big(sellAmount).minus(quote.sellAmount).toFixed(0);
 
-        data: quote.data,
-        value: BigNumber.from(quote.value),
-        chainId: quote.chainId,
-      } as TransactionRequest;
+        let value = BigNumber.from(quote.value);
+        if (inputCurrency === NATIVE_ADDRESSES[0]) {
+          value = value.add(feeAmount);
+        }
+
+        const callParams = [quote.data, feeCurrency, inputCurrency, quote.sellAmount, outputCurrency, feeAmount];
+        const data = HYPER_DEX_ROUTER_INTERFACE.encodeFunctionData('MultiRoute', callParams);
+
+        return {
+          to: quote.to,
+          from: quote.from || account,
+          nonce: undefined,
+
+          gasLimit: BigNumber.from(Trade0xSwap._getEstimateGas(quote)),
+
+          data: data,
+          value: value,
+          chainId: quote.chainId,
+        } as TransactionRequest;
+      }
+      // Use default 0x proxy contract
+      else {
+        return {
+          to: quote.to,
+          from: quote.from || account,
+          nonce: undefined,
+
+          gasLimit: BigNumber.from(quote.gas),
+
+          data: quote.data,
+          value: BigNumber.from(quote.value),
+          chainId: quote.chainId,
+        } as TransactionRequest;
+      }
     });
   }
 }

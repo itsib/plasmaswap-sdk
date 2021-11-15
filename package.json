@@ -1,7 +1,7 @@
 {
   "name": "@plasma-fi/sdk",
   "description": "🛠 An SDK for building dapp on PlasmaSwap.",
-  "version": "2.6.2-beta.2",
+  "version": "2.6.2-beta.3",
   "license": "MIT",
   "author": "itsib.su@gmail.com",
   "main": "dist/index.js",
@@ -38,6 +38,7 @@
     "toformat": "^2.0.0"
   },
   "peerDependencies": {
+    "@ethersproject/abi": "^5.0.0-beta",
     "@ethersproject/address": "^5.0.0-beta",
     "@ethersproject/bignumber": "^5.0.0-beta",
     "@ethersproject/bytes": "^5.0.0-beta",
@@ -48,6 +49,7 @@
     "@ethersproject/solidity": "^5.0.0-beta"
   },
   "devDependencies": {
+    "@ethersproject/abi": "^5.5.0",
     "@ethersproject/address": "^5.0.2",
     "@ethersproject/bignumber": "^5.0.2",
     "@ethersproject/bytes": "^5.4.0",
