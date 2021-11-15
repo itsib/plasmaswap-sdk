@@ -16,6 +16,7 @@ const ADDITIONAL_PRICE_ESTIMATE_GAS = 200000;
 const ADDITIONAL_GAS_FOR_ROUTER_CONTRACT = 60000;
 
 const HYPER_DEX_ROUTER_INTERFACE = new Interface(hyperDexRouterAbi);
+const HYPER_DEX_ROUTER_METHOD_NAME = 'MultiRoute(bytes,address,address,uint256,address,uint256)';
 
 export interface Trade0xSwapOptions {
   /**
@@ -281,7 +282,7 @@ export class Trade0xSwap extends BaseTrade {
         }
 
         const callParams = [quote.data, feeCurrency, inputCurrency, quote.sellAmount, outputCurrency, feeAmount];
-        const data = HYPER_DEX_ROUTER_INTERFACE.encodeFunctionData('MultiRoute', callParams);
+        const data = HYPER_DEX_ROUTER_INTERFACE.encodeFunctionData(HYPER_DEX_ROUTER_METHOD_NAME, callParams);
 
         return {
           to: quote.to,
