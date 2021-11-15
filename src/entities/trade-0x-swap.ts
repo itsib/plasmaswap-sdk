@@ -277,6 +277,7 @@ export class Trade0xSwap extends BaseTrade {
         let value: BigNumber;
         let sellAmount: string;
         let feeAmount: string;
+
         if (this.tradeType === TradeType.EXACT_INPUT) {
           sellAmount = Trade0xSwap._changeAmountByPercent(quote.sellAmount, this._optSellTokenPercentageFee);
           feeAmount = Big(sellAmount).minus(quote.sellAmount).toFixed(0);
@@ -300,7 +301,7 @@ export class Trade0xSwap extends BaseTrade {
           }
         }
 
-        const callParams = [quote.data, feeCurrency, inputCurrency, sellAmount, outputCurrency, feeAmount];
+        const callParams = [quote.data, feeCurrency, inputCurrency, quote.sellAmount, outputCurrency, feeAmount];
         const data = HYPER_DEX_ROUTER_INTERFACE.encodeFunctionData(HYPER_DEX_ROUTER_METHOD_NAME, callParams);
 
         return {
