@@ -204,7 +204,7 @@ export class Trade0xSwap extends BaseTrade {
   /**
    * Returns transaction data
    */
-  public async getTransactionData(account?: string): Promise<TransactionRequest> {
+  public async getTransactionData(account?: string, skipValidation?: boolean): Promise<TransactionRequest> {
     const chainId = this.inputAmount.currency.chainId;
     const query: Fetch0xQuoteQuery = {
       buyToken: this.outputAmount.currency instanceof Token ? this.outputAmount.currency.address : (this.outputAmount.currency.symbol as string),
@@ -217,6 +217,7 @@ export class Trade0xSwap extends BaseTrade {
       feeRecipient: this._optsFeeRecipient,
       buyTokenPercentageFee: this._optsBuyTokenPercentageFee,
       affiliateAddress: this._optsAffiliateAddress,
+      skipValidation,
     };
     return fetch0xQuote(chainId, false, query).then(quote => {
       return {
