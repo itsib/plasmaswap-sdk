@@ -279,8 +279,8 @@ export class Trade0xSwap extends BaseTrade {
         let feeAmount: string;
 
         if (this.tradeType === TradeType.EXACT_INPUT) {
-          sellAmount = Trade0xSwap._changeAmountByPercent(quote.sellAmount, this._optSellTokenPercentageFee);
-          feeAmount = Big(sellAmount).minus(quote.sellAmount).toFixed(0);
+          sellAmount = quote.sellAmount;
+          feeAmount = Big(Trade0xSwap._changeAmountByPercent(sellAmount, this._optSellTokenPercentageFee)).minus(sellAmount).toFixed(0);
 
           value = BigNumber.from(quote.value);
           if (inputCurrency === NATIVE_ADDRESSES[0]) {
@@ -290,18 +290,17 @@ export class Trade0xSwap extends BaseTrade {
           const sellAmountMultiplier = Math.pow(10, this.inputAmount.currency.decimals);
           const buyAmountMultiplier = Math.pow(10, this.outputAmount.currency.decimals);
 
-          const sellAmountMax = Big(quote.buyAmount).div(buyAmountMultiplier).times(quote.guaranteedPrice).times(sellAmountMultiplier).toFixed(0);
-          sellAmount = Trade0xSwap._changeAmountByPercent(sellAmountMax, this._optSellTokenPercentageFee);
-          feeAmount = Big(sellAmount).minus(sellAmountMax).toFixed(0);
+          sellAmount = Big(quote.buyAmount).div(buyAmountMultiplier).times(quote.guaranteedPrice).times(sellAmountMultiplier).toFixed(0);
+          feeAmount = Big(Trade0xSwap._changeAmountByPercent(sellAmount, this._optSellTokenPercentageFee)).minus(sellAmount).toFixed(0);
 
           if (inputCurrency === NATIVE_ADDRESSES[0]) {
-            value = BigNumber.from(sellAmount);
+            value = BigNumber.from(sellAmount).add(feeAmount);
           } else {
             value = BigNumber.from(quote.value);
           }
         }
 
-        const callParams = [quote.data, feeCurrency, inputCurrency, quote.sellAmount, outputCurrency, feeAmount];
+        const callParams = [quote.data, feeCurrency, inputCurrency, sellAmount, outputCurrency, feeAmount];
         const data = HYPER_DEX_ROUTER_INTERFACE.encodeFunctionData(HYPER_DEX_ROUTER_METHOD_NAME, callParams);
 
         return {
