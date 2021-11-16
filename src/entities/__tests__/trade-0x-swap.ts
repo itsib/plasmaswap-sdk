@@ -116,7 +116,7 @@ describe.only('Trade0xSwap', () => {
       });
   });
 
-  it('Create EXACT_OUTPUT Trade0xSwap with fee', () => {
+  it.only('Create EXACT_OUTPUT Trade0xSwap with fee', () => {
     const buyFieldValue = '12.345';
     const sellToken = token0;
     const buyToken = token1;
