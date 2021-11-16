@@ -224,13 +224,6 @@ export class Trade0xSwap extends BaseTrade {
           const slippageAdjustedAmount = new Fraction(ONE).add(slippageTolerance).multiply(inputAmount.raw).quotient;
           const inputAmountMax = toCurrencyAmount(inputAmount.currency, slippageAdjustedAmount);
 
-          const t1 = slippageTolerance.toSignificant();
-          const t2 = inputAmount.toExact();
-          const t3 = inputAmountWithoutFee.toExact();
-          const t4 = inputAmountMax.toExact();
-
-          console.debug(t1, t2, t3, t4);
-
           if (inputCurrencyAddress === NATIVE_ADDRESSES[0]) {
             value = BigNumber.from(inputAmountMax.add(plasmaFee as TokenAmount).raw.toString());
           } else {
