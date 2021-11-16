@@ -41,7 +41,7 @@ export interface Fetch0xQuoteQuery {
    * in % of the sellAmount amount if buyAmount is provided.
    * This parameter will change over time with market conditions.
    */
-  slippagePercentage?: string;
+  slippagePercentage: string;
   /**
    * (Optional, defaults to ethgasstation "fast") The target gas price (in wei)
    * for the swap transaction. If the price is too low to achieve

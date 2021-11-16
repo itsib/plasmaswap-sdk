@@ -1,5 +1,5 @@
 import Big from 'big.js';
-import { ChainId } from '../../constants/constants';
+import { ChainId, TradeType } from '../../constants/constants';
 import { NATIVE } from '../../entities';
 import { InsufficientReservesError, ValidationError } from '../../errors';
 import { Fetch0xPriceResponse, Fetch0xQuoteQuery, Fetch0xQuoteResponse } from '../fetch-0x-quote';
@@ -41,12 +41,13 @@ export const fetch0xQuote = jest.fn<Promise<Fetch0xPriceResponse | Fetch0xQuoteR
       );
     }
 
+    const tradeType = query.sellAmount ? TradeType.EXACT_INPUT : TradeType.EXACT_OUTPUT;
     const pricePercent = Big(FAKE_DATA.pricePercent).div(100);
-    const guaranteedPricePercent = Big(FAKE_DATA.guaranteedPricePercent).div(100);
+    const guaranteedPricePercent = Big(FAKE_DATA.pricePercent).div(100).add(query.slippagePercentage);
 
-    const rate: Big = query.sellAmount ? Big(buyToken.toEthRate).div(sellToken.toEthRate) : Big(sellToken.toEthRate).div(buyToken.toEthRate);
-    const price: string = rate[query.sellAmount ? 'minus' : 'add'](rate.times(pricePercent)).toString(); // Rate minus 10%
-    const guaranteedPrice: string = rate[query.sellAmount ? 'minus' : 'add'](rate.times(guaranteedPricePercent)).toString(); // Rate minus 13%
+    const rate: Big = tradeType === TradeType.EXACT_INPUT ? Big(buyToken.toEthRate).div(sellToken.toEthRate) : Big(sellToken.toEthRate).div(buyToken.toEthRate);
+    const price: string = rate[tradeType === TradeType.EXACT_INPUT ? 'minus' : 'add'](rate.times(pricePercent)).toString(); // Rate minus 10%
+    const guaranteedPrice: string = rate[tradeType === TradeType.EXACT_INPUT ? 'minus' : 'add'](rate.times(guaranteedPricePercent)).toString(); // Rate minus 13%
 
     const excludedSources = query.excludedSources ? query.excludedSources.split(',') : [];
     const sources = FAKE_DATA.defaultQuoteFields.sources.filter(source => !excludedSources.includes(source.name));

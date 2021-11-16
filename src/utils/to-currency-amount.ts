@@ -1,8 +1,8 @@
 import { BigintIsh } from '../constants/constants';
 import { Currency, Token } from '../entities/currency';
-import { NativeAmount, TokenAmount } from '../amounts/currency-amount';
+import { CurrencyAmount, NativeAmount, TokenAmount } from '../amounts/currency-amount';
 
-export function toCurrencyAmount(currency: Currency, amount: BigintIsh): NativeAmount | TokenAmount {
+export function toCurrencyAmount(currency: Currency, amount: BigintIsh): CurrencyAmount {
   if (currency instanceof Token) {
     return new TokenAmount(currency, amount);
   }

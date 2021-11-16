@@ -4,7 +4,7 @@ import { ChainId, HYPER_DEX_ROUTER_ADDRESS, InsufficientReservesError, NATIVE, t
 
 jest.mock('../../api/fetch-0x-quote.ts');
 
-describe('Trade0xSwap', () => {
+describe.only('Trade0xSwap', () => {
   const account = '0x5e900d9b641a8a9c8420f615032c6c88aa18817a';
   const hyperDexRouterAddress = HYPER_DEX_ROUTER_ADDRESS[ChainId.ROPSTEN];
 
