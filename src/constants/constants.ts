@@ -141,9 +141,11 @@ export const ZERO_EX_PROXY_ADDRESS: { [chainId in ChainId]?: string } = {
 };
 
 export const HYPER_DEX_ROUTER_ADDRESS: { [chainId in ChainId]?: string } = {
-  [ChainId.ROPSTEN]: '0x36fc68cd9d7fbd5d1c8fb2c5920696108ee870e9',
-  [ChainId.KOVAN]: '0x92551AA390154C7C7AE0A23a77960a2Cd23Ab62D',
-  [ChainId.MATIC]: '0xedaadaac42eb112a9a1ead39de8576cccf52c6b3',
+  [ChainId.MAINNET]: '0x0019f661c0798affea4dd0949a526b873511a9f5',
+  [ChainId.BSC]: '0x77a9f45dd68142221cdcb06df1a67307399b8aae',
+  [ChainId.MATIC]: '0xe0c4c4e104615dbcbc3718b79de803f2fffe680c',
+  [ChainId.ROPSTEN]: '0x34fb8116b7add1441d7197cf71a2ec48f3b055bd',
+  [ChainId.KOVAN]: '0x9abb6b05734b3a8422a4ee50a5ddd76764424734',
 };
 
 export interface LpConfiguration {

@@ -17,7 +17,7 @@ const ADDITIONAL_PRICE_ESTIMATE_GAS = 200000;
 const ADDITIONAL_GAS_FOR_ROUTER_CONTRACT = 60000;
 
 const HYPER_DEX_ROUTER_INTERFACE = new Interface(hyperDexRouterAbi);
-const HYPER_DEX_ROUTER_METHOD_NAME = 'MultiRoute(bytes,address,address,uint256,address,uint256)';
+const HYPER_DEX_ROUTER_METHOD_NAME = 'multiRoute(bytes,address,address,uint256,address,uint256)';
 
 export interface Trade0xSwapOptions {
   /**
@@ -221,7 +221,7 @@ export class Trade0xSwap extends BaseTrade {
           methodArgs = [data, feeCurrencyAddress, inputCurrencyAddress, inputAmountWithoutFee.raw.toString(), outputCurrencyAddress, plasmaFee.raw.toString()];
         } else {
           const slippageTolerance = new Percent(JSBI.BigInt(Big(opts.slippagePercentage).times(10000).toFixed(0)), JSBI.BigInt(10000));
-          const slippageAdjustedAmount = new Fraction(ONE).add(slippageTolerance).multiply(inputAmount.raw).quotient;
+          const slippageAdjustedAmount = new Fraction(ONE).add(slippageTolerance).multiply(inputAmountWithoutFee.raw).quotient; // TODO: Fixed inputAmountWithoutFee to inputAmount
           const inputAmountMax = toCurrencyAmount(inputAmount.currency, slippageAdjustedAmount);
 
           if (inputCurrencyAddress === NATIVE_ADDRESSES[0]) {
