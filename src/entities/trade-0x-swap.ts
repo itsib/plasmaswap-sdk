@@ -106,6 +106,11 @@ export class Trade0xSwap extends BaseTrade {
   private readonly _optsExcludedSources?: Trade0xLiquiditySource[];
   private readonly _optSellTokenPercentageFee?: number;
 
+  /**
+   * 0x Trade Class factory
+   * @param opts
+   * @param abort
+   */
   public static async getTrade(opts: Trade0xSwapOptions, abort?: AbortSignal): Promise<Trade0xSwap> {
     invariant((isCurrencyAmount(opts.from) && isCurrency(opts.to)) || (isCurrency(opts.from) && isCurrencyAmount(opts.to)), 'One of from or to amount should be passed');
 
@@ -137,6 +142,13 @@ export class Trade0xSwap extends BaseTrade {
     );
   }
 
+  /**
+   * Fetch quote and reformat output for using with the Hyper Dex Router Contract
+   * @param opts
+   * @param justPrice
+   * @param abort
+   * @private
+   */
   private static async _fetchQuote(opts: FetchQuoteMethodOpts, justPrice = true, abort?: AbortSignal): Promise<FetchQuoteMethodReturn> {
     const chainId = (opts.from as Currency)?.chainId || (opts.to as Currency)?.chainId;
     const tradeType = isCurrencyAmount(opts.from) ? TradeType.EXACT_INPUT : TradeType.EXACT_OUTPUT;
@@ -298,7 +310,7 @@ export class Trade0xSwap extends BaseTrade {
       .toString();
   }
 
-  constructor(
+  private constructor(
     tradeType: TradeType,
     inputAmount: CurrencyAmount,
     outputAmount: CurrencyAmount,
