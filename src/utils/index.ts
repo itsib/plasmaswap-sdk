@@ -11,3 +11,4 @@ export * from './to-query-string';
 export * from './eip712';
 export * from './format-hex-string';
 export * from './router';
+export * from './get-exact-input-amount';

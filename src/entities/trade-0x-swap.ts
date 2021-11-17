@@ -9,7 +9,7 @@ import { NativeAmount } from '../amounts/currency-amount';
 import { Fetch0xPriceResponse, fetch0xQuote, Fetch0xQuoteQuery } from '../api';
 import { ChainId, HYPER_DEX_ROUTER_ADDRESS, NATIVE_ADDRESSES, SUPPORTED_0X_CHAINS, Trade0xLiquiditySource, TradeType, ZERO_ADDRESS } from '../constants/constants';
 import { BaseTrade } from '../types';
-import { toCurrencyAmount } from '../utils';
+import { getExactInputAmount, toCurrencyAmount } from '../utils';
 import { Currency, isCurrency, Token } from './currency';
 
 const ADDITIONAL_PRICE_ESTIMATE_GAS = 200000;
@@ -238,7 +238,8 @@ export class Trade0xSwap extends BaseTrade {
             value = value.add(plasmaFee.raw.toString());
           } else {
             // Calculate maximum amount to cell
-            inputCurrencyAmount = Big(opts.slippagePercentage).add(1).times(quote.sellAmount).round(0, 3).toString(); // RoundUp
+            const inputCurrencyAmountMax = Big(opts.slippagePercentage).add(1).times(quote.sellAmount).round(0, 3).toString(); // RoundUp
+            inputCurrencyAmount = getExactInputAmount(inputCurrencyAmountMax, data);
           }
           methodArgs = [data, feeCurrencyAddress, inputCurrencyAddress, inputCurrencyAmount, outputCurrencyAddress, plasmaFee.raw.toString()];
         }
