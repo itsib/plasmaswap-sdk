@@ -4,7 +4,7 @@ import { ChainId, HYPER_DEX_ROUTER_ADDRESS, InsufficientReservesError, NATIVE, t
 
 jest.mock('../../api/fetch-0x-quote.ts');
 
-describe.only('Trade0xSwap', () => {
+describe('Trade0xSwap', () => {
   const account = '0x5e900d9b641a8a9c8420f615032c6c88aa18817a';
   const hyperDexRouterAddress = HYPER_DEX_ROUTER_ADDRESS[ChainId.ROPSTEN];
 
@@ -116,7 +116,7 @@ describe.only('Trade0xSwap', () => {
       });
   });
 
-  it.only('Create EXACT_OUTPUT Trade0xSwap with fee', () => {
+  it('Create EXACT_OUTPUT Trade0xSwap with fee', () => {
     const buyFieldValue = '12.345';
     const sellToken = token0;
     const buyToken = token1;
