@@ -8,7 +8,6 @@ import { CurrencyAmount, Fraction, isCurrencyAmount, Percent, TokenAmount } from
 import { NativeAmount } from '../amounts/currency-amount';
 import { Fetch0xPriceResponse, fetch0xQuote, Fetch0xQuoteQuery } from '../api';
 import { ChainId, HYPER_DEX_ROUTER_ADDRESS, NATIVE_ADDRESSES, ONE, SUPPORTED_0X_CHAINS, Trade0xLiquiditySource, TradeType, ZERO_ADDRESS } from '../constants/constants';
-import { JSBI } from '../index';
 import { BaseTrade } from '../types';
 import { toCurrencyAmount } from '../utils';
 import { Currency, isCurrency, Token } from './currency';
@@ -211,26 +210,25 @@ export class Trade0xSwap extends BaseTrade {
         const inputCurrencyAddress = inputAmount.currency instanceof Token ? inputAmount.currency.address : NATIVE_ADDRESSES[0];
         const outputCurrencyAddress = outputAmount.currency instanceof Token ? outputAmount.currency.address : NATIVE_ADDRESSES[0];
         const feeCurrencyAddress = inputCurrencyAddress;
+        const inputAmountWithoutFee = inputAmount.subtract(plasmaFee as TokenAmount);
 
         let methodArgs: string[];
         if (tradeType === TradeType.EXACT_INPUT) {
           if (inputCurrencyAddress === NATIVE_ADDRESSES[0]) {
             value = value.add(plasmaFee.raw.toString());
           }
-          const inputAmountWithoutFee = inputAmount.subtract(plasmaFee as TokenAmount);
           methodArgs = [data, feeCurrencyAddress, inputCurrencyAddress, inputAmountWithoutFee.raw.toString(), outputCurrencyAddress, plasmaFee.raw.toString()];
         } else {
-          const slippageTolerance = new Percent(JSBI.BigInt(Big(opts.slippagePercentage).times(10000).toFixed(0)), JSBI.BigInt(10000));
-          const slippageAdjustedAmount = new Fraction(ONE).add(slippageTolerance).multiply(inputAmount.raw).quotient;
-          const inputAmountMax = toCurrencyAmount(inputAmount.currency, slippageAdjustedAmount);
-
+          let inputCurrencyAmount: string;
           if (inputCurrencyAddress === NATIVE_ADDRESSES[0]) {
-            value = BigNumber.from(inputAmountMax.add(plasmaFee as TokenAmount).raw.toString());
+            inputCurrencyAmount = value.toString();
+            value = value.add(plasmaFee.raw.toString());
           } else {
-            value = BigNumber.from(quote.value);
+            const slippageTolerance = new Percent(Big(opts.slippagePercentage).times(10000).toFixed(0), '10000');
+            // Calculate maximum amount to cell
+            inputCurrencyAmount = new Fraction(ONE).add(slippageTolerance).multiply(inputAmountWithoutFee.raw).quotient.toString();
           }
-
-          methodArgs = [data, feeCurrencyAddress, inputCurrencyAddress, inputAmountMax.raw.toString(), outputCurrencyAddress, plasmaFee.raw.toString()];
+          methodArgs = [data, feeCurrencyAddress, inputCurrencyAddress, inputCurrencyAmount, outputCurrencyAddress, plasmaFee.raw.toString()];
         }
         data = HYPER_DEX_ROUTER_INTERFACE.encodeFunctionData(HYPER_DEX_ROUTER_METHOD_NAME, methodArgs);
       }
