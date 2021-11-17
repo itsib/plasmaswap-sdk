@@ -211,17 +211,17 @@ export class Trade0xSwap extends BaseTrade {
         const inputCurrencyAddress = inputAmount.currency instanceof Token ? inputAmount.currency.address : NATIVE_ADDRESSES[0];
         const outputCurrencyAddress = outputAmount.currency instanceof Token ? outputAmount.currency.address : NATIVE_ADDRESSES[0];
         const feeCurrencyAddress = inputCurrencyAddress;
-        const inputAmountWithoutFee = inputAmount.subtract(plasmaFee as TokenAmount);
 
         let methodArgs: string[];
         if (tradeType === TradeType.EXACT_INPUT) {
           if (inputCurrencyAddress === NATIVE_ADDRESSES[0]) {
             value = value.add(plasmaFee.raw.toString());
           }
+          const inputAmountWithoutFee = inputAmount.subtract(plasmaFee as TokenAmount);
           methodArgs = [data, feeCurrencyAddress, inputCurrencyAddress, inputAmountWithoutFee.raw.toString(), outputCurrencyAddress, plasmaFee.raw.toString()];
         } else {
           const slippageTolerance = new Percent(JSBI.BigInt(Big(opts.slippagePercentage).times(10000).toFixed(0)), JSBI.BigInt(10000));
-          const slippageAdjustedAmount = new Fraction(ONE).add(slippageTolerance).multiply(inputAmountWithoutFee.raw).quotient; // TODO: Fixed inputAmountWithoutFee to inputAmount
+          const slippageAdjustedAmount = new Fraction(ONE).add(slippageTolerance).multiply(inputAmount.raw).quotient;
           const inputAmountMax = toCurrencyAmount(inputAmount.currency, slippageAdjustedAmount);
 
           if (inputCurrencyAddress === NATIVE_ADDRESSES[0]) {
